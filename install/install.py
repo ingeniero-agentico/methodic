@@ -656,7 +656,8 @@ def check_zips(plat: dict, cfg: dict, zips: list[Path]) -> list[str]:
 def run_self_test(cfg: dict, with_scripts: bool) -> int:
     results = []
     with tempfile.TemporaryDirectory(prefix="ingeniero-agentico-test-") as tmp:
-        tmp = Path(tmp)
+        # resolve(): CI runners hand out 8.3 short names (RUNNER~1) on Windows and /var -> /private/var on macOS
+        tmp = Path(tmp).resolve()
         for key, plat in cfg["platforms"].items():
             home = tmp / key
             home.mkdir()

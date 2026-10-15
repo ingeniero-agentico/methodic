@@ -163,7 +163,8 @@ def run_test() -> int:
         return cond
 
     before = repo_snapshot()
-    tmp = Path(tempfile.mkdtemp(prefix="test-mcp-"))
+    # resolve(): 8.3 short names on Windows CI and /var -> /private/var on macOS
+    tmp = Path(tempfile.mkdtemp(prefix="test-mcp-")).resolve()
     data, work = tmp / "data", tmp / "work"
     (data / "profiles").mkdir(parents=True)
     work.mkdir()
