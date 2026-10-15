@@ -64,6 +64,28 @@ def load_config() -> dict:
         return json.load(fh)
 
 
+def unquote(value: str) -> str:
+    """A YAML quoted scalar to text: "double" follows JSON escapes, 'single' doubles its quote."""
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        try:
+            return json.loads(value)
+        except ValueError:
+            return value[1:-1]
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    return value
+
+
+def plain_scalar_problem(value: str) -> str | None:
+    """Strict YAML forbids ': ' and ' #' inside an unquoted value; Claude Code tolerates them, other
+    platforms (and the Agent Skills reference validator) reject the whole frontmatter."""
+    if not value or value[0] in "\"'[{>|":
+        return None
+    if ": " in value or " #" in value or value.endswith(":"):
+        return "unquoted value contains ': ' or ' #' (invalid strict YAML); wrap it in double quotes"
+    return None
+
+
 def read_frontmatter(path: Path) -> tuple[dict, str]:
     """Returns (fields, body). Reads the YAML subset the repo uses: `key: value` and lists
     `  - item`. Fails if the file has a BOM or does not open with `---`."""
@@ -84,9 +106,7 @@ def read_frontmatter(path: Path) -> tuple[dict, str]:
         m = re.match(r"^([A-Za-z_][\w-]*):\s?(.*)$", line)
         if m:
             key, value = m.group(1), m.group(2).strip()
-            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-                value = value[1:-1]
-            fields[key] = value if value else []
+            fields[key] = unquote(value) if value else []
         elif key and re.match(r"^\s+-\s+", line):
             if not isinstance(fields.get(key), list):
                 fields[key] = []
@@ -118,6 +138,13 @@ def validate_skill(folder: Path) -> list[str]:
         errors.append(f"{folder.name}: invalid name (lowercase, digits and hyphens, max. {MAX_NAME})")
     if not fields.get("description"):
         errors.append(f"{folder.name}: description is missing")
+    raw = (folder / "SKILL.md").read_text(encoding="utf-8").replace("\r\n", "\n").split("\n---", 1)[0]
+    for line in raw.split("\n")[1:]:
+        key, sep, value = line.partition(": ")
+        if sep and not line[:1].isspace():
+            problem = plain_scalar_problem(value.strip())
+            if problem:
+                errors.append(f"{folder.name}: {key}: {problem}")
     return errors
 
 

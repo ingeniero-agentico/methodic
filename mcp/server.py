@@ -46,7 +46,7 @@ REPO = HERE.parent
 SKILLS = REPO / "skills"
 
 NAME = "ingeniero-agentico"
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 SERVER_INFO = {"name": NAME, "title": "ingeniero-agentico · industrial engineering methods", "version": VERSION}
 
 MODERN_VERSIONS = ["2026-07-28"]
@@ -280,7 +280,17 @@ def frontmatter(text: str) -> dict:
         m = re.match(r"([A-Za-z_][\w-]*):\s*(.*)$", ln)
         if m and not ln.startswith(" "):
             key, value = m.group(1), m.group(2).strip()
-            out[key] = "" if value in (">", "|", ">-", "|-") else value.strip("\"'")
+            if value in (">", "|", ">-", "|-"):
+                out[key] = ""
+            elif len(value) >= 2 and value[0] == value[-1] == '"':
+                try:
+                    out[key] = json.loads(value)
+                except ValueError:
+                    out[key] = value[1:-1]
+            elif len(value) >= 2 and value[0] == value[-1] == "'":
+                out[key] = value[1:-1].replace("''", "'")
+            else:
+                out[key] = value
         elif key and ln.startswith(" "):
             out[key] = (out[key] + " " + ln.strip()).strip()
     return out

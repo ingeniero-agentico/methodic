@@ -237,8 +237,13 @@ def frontmatter(text):
             v = re.sub(r"^[>|][+-]?\s*", "", v).strip()
             if v.startswith("[") and v.endswith("]"):
                 v = [x.strip().strip("\"'") for x in v[1:-1].split(",") if x.strip()]
-            elif len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
-                v = v[1:-1]
+            elif len(v) >= 2 and v[0] == v[-1] == '"':
+                try:
+                    v = json.loads(v)
+                except ValueError:
+                    v = v[1:-1]
+            elif len(v) >= 2 and v[0] == v[-1] == "'":
+                v = v[1:-1].replace("''", "'")
             data[k] = v
     return data, text[m.end():]
 

@@ -2,6 +2,19 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.2] · 15-10-2026
+
+### Fixed
+- Frontmatter of every skill, agent and command is now valid strict YAML: descriptions are
+  double-quoted. Five descriptions contained ': ' unquoted, which Claude Code tolerates but the
+  Agent Skills reference validator (and stricter platforms) reject.
+- The four in-repo frontmatter readers (install, MCP server, map-context, security scan) unquote
+  double- and single-quoted values correctly.
+
+### Added
+- `install.py` rejects an unquoted value containing ': ' or ' #' before installing anything.
+- The `skills-ref validate` CI job now blocks instead of only reporting.
+
 ## [1.1.1] · 15-10-2026
 
 ### Changed

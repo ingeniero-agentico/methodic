@@ -89,12 +89,11 @@ jobs:
           claude plugin validate .
 
   skills-spec:
-    name: skills-ref validate (Agent Skills reference validator, informational)
+    name: skills-ref validate (Agent Skills reference validator)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # The reference library says it is "for demonstration purposes only"; install.py already enforces
-    # the spec (name, description, BOM). This job reports, it does not block.
-    continue-on-error: true
+    # Blocking since 1.1.2: it caught unquoted descriptions with ': ' (invalid strict YAML) that Claude
+    # Code tolerates but stricter platforms reject. install.py now checks the same rule locally.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

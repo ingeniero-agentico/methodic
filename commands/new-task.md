@@ -1,5 +1,5 @@
 ---
-description: Receives an engineering or management task, maps the context, proposes the agent plan and runs it with your approval
+description: "Receives an engineering or management task, maps the context, proposes the agent plan and runs it with your approval"
 argument-hint: "<the task in your words> [reread | first-run] [without agents]"
 ---
 

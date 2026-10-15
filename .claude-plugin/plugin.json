@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ingeniero-agentico",
   "displayName": "Ingeniero agéntico",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Industrial engineering methods as agent skills: procurement, cost and pricing, economic and financial evaluation, plus orchestrate, map-context, research and audit. Every number comes from a script with a test that must match; the company's data lives outside the plugin. Guides in English and Spanish.",
   "author": {
     "name": "camiloalonsomerino-spec",

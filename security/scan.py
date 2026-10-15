@@ -469,6 +469,13 @@ def frontmatter(text: str) -> tuple[dict, int] | None:
         m = re.match(r"^([A-Za-z_][\w-]*):\s?(.*)$", line)
         if m:
             key, value = m.group(1), m.group(2).strip()
+            if len(value) >= 2 and value[0] == value[-1] == '"':
+                try:
+                    value = json.loads(value)
+                except ValueError:
+                    value = value[1:-1]
+            elif len(value) >= 2 and value[0] == value[-1] == "'":
+                value = value[1:-1].replace("''", "'")
             fields[key] = value if value else []
         elif key and re.match(r"^\s+-\s+", line):
             if not isinstance(fields.get(key), list):

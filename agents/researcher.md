@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Use for stage 1 of a task, launched by the orchestrate skill once the map or the plan lists gaps that a calculation needs (a current rate, a regulated fee, a market price, a residual value, a norm in force). Runs the research skill (obtainability sweep first, one concrete figure per gap with value, unit, date, source, retrieval date and an A-D reliability level, contradictions resolved with an explicit reason) and leaves context/RESEARCH.md plus context/research-data.json validated by its script. Never edits the case inputs or outputs and never bypasses a login or CAPTCHA. Researches the task's gaps and leaves the research validated, with source and reliability on every datum.
+description: "Use for stage 1 of a task, launched by the orchestrate skill once the map or the plan lists gaps that a calculation needs (a current rate, a regulated fee, a market price, a residual value, a norm in force). Runs the research skill (obtainability sweep first, one concrete figure per gap with value, unit, date, source, retrieval date and an A-D reliability level, contradictions resolved with an explicit reason) and leaves context/RESEARCH.md plus context/research-data.json validated by its script. Never edits the case inputs or outputs and never bypasses a login or CAPTCHA. Researches the task's gaps and leaves the research validated, with source and reliability on every datum."
 tools: Read, Write, Glob, Grep, Bash, PowerShell, WebSearch, WebFetch
 model: opus
 skills:
