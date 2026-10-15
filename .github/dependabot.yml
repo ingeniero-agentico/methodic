@@ -1,0 +1,17 @@
+# Dependabot proposes updates as pull requests; they run the same read-only CI and need the owner's review.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+  - package-ecosystem: pip
+    directory: /.github
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci

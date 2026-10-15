@@ -1,99 +1,112 @@
 # ingeniero-agentico
 
-Métodos de ingeniería industrial convertidos en **skills para agentes de IA**: cada método trae la
-skill que ejecuta el agente, la guía para una persona, plantillas, el cálculo en un script y una
-prueba que tiene que cuadrar.
+[Leer en español → README.es.md](README.es.md)
 
-Sirve para cualquier empresa. Los datos de cada empresa viven **fuera de este repo**, en un perfil
-propio (ver «Datos privados»).
+Industrial engineering methods turned into **skills for AI agents**: each method brings the skill
+the agent runs, a guide for a person (English `GUIDE.md`, Spanish `GUIA.md`), templates, the
+calculation in a script and a test that has to match.
 
-## Métodos
+It works for any company. Each company's data lives **outside this repo**, in its own profile (see
+«Private data»).
 
-| Método | Qué resuelve | Estado |
+## Methods
+
+| Method | What it solves | Status |
 |---|---|---|
-| [adquisiciones](skills/adquisiciones/) | A quién comprar qué, cuando cada proveedor cubre solo una parte | v1 |
-| [costo-y-precio](skills/costo-y-precio/) | Cuánto cuesta de verdad un trabajo y a cuánto venderlo | v1 |
-| [evaluacion-economica](skills/evaluacion-economica/) | Si un proyecto o inversión conviene: flujo de caja, VAN, TIR, sensibilidad | v1 |
-| [evaluacion-financiera](skills/evaluacion-financiera/) | Cómo financiarlo: crédito, leasing, arriendo o compra al contado | v1 |
+| [procurement](skills/procurement/) | Whom to buy what from, when each supplier covers only part of the list | v1 |
+| [cost-and-pricing](skills/cost-and-pricing/) | What a job really costs and what to sell it for (markup on cost) | v1 |
+| [economic-evaluation](skills/economic-evaluation/) | Whether a project or investment pays off: cash flow, NPV, IRR, sensitivity | v1 |
+| [financial-evaluation](skills/financial-evaluation/) | How to finance it: loan, leasing, rental or paying cash | v1 |
 
-Cada método se prueba con `python skills/<metodo>/scripts/<script>.py --probar`: corre un caso
-ficticio cuyo resultado se calculó por un segundo camino, y termina en `OK` o falla.
+Each method is tested with `python skills/<method>/scripts/<script>.py --test`: it runs a
+fictitious case whose result was computed by a second route, and ends in `OK` or fails.
 
-## Cómo se trabaja un encargo
+## How a task is orchestrated
 
 ```
-/nuevo-encargo ¿me conviene comprar otra camioneta para arrendarla?
+/new-task should I buy another van to rent it out?
 ```
 
-La skill `orquestar` lo lleva por seis etapas (detalle en [ARQUITECTURA.md](ARQUITECTURA.md)):
+The `orchestrate` skill takes it through six stages (details in [ARCHITECTURE.md](ARCHITECTURE.md)):
 
-1. **Cartografiar:** un agente barato hace el mapa de las carpetas que toca el encargo.
-2. **Investigar:** solo si faltan datos; cada dato con fuente, fecha y fiabilidad.
-3. **Planificar y pedir:** te muestra qué agentes lanzará, con qué skill y modelo. Espera tu sí.
-4. **Ejecutar:** un agente por método, en paralelo cuando no dependen entre sí.
-5. **Auditar:** un agente independiente vuelve a correr cada cálculo y compara.
-6. **Consolidar:** una respuesta con la decisión, los supuestos que la deciden y qué falta.
+1. **Map context:** a cheap agent maps the folders the task touches.
+2. **Research:** only if data is missing; every figure with source, date and reliability (A–D).
+3. **Plan and ask:** it shows you which agents it will launch, with which skill and model. It waits for your yes.
+4. **Execute:** one agent per method, in parallel when they do not depend on each other.
+5. **Audit:** an independent agent reruns every calculation and compares.
+6. **Consolidate:** one answer with the decision, the assumptions that decide it and what is missing.
 
-**Dos modos.** La *primera vez* sobre un tema se investiga y se mapea completo. Las siguientes son
-*relectura*: se lee el mapa en vez de las carpetas, con modelos económicos. El modo lo decide la
-comparación de huellas de los archivos, no el modelo.
+**Two modes.** The *first run* on a topic researches and maps everything. The following ones are a
+*reread*: the map is read instead of the folders, with cheaper models. The mode is decided by
+comparing the files' fingerprints, not by the model.
 
-## Cómo está ordenado
+## How it is organized
 
 ```
 ingeniero-agentico/
-├── skills/        los métodos + orquestar · cartografiar · investigar · auditar
-├── agents/        trabajadores de una etapa: cartografo · investigador · ejecutor · auditor
-├── commands/      /nuevo-encargo
-├── grafo/         notas enlazadas método ↔ ramo ↔ patrón, para Obsidian y graphify
-└── perfiles/      la plantilla del perfil de empresa (vacía)
+├── skills/        the methods + orchestrate · map-context · research · audit
+├── agents/        workers for one stage: cartographer · researcher · executor · auditor
+├── commands/      /new-task
+├── mcp/           MCP server: the methods as tools for any MCP client
+├── install/       installer for Codex, Cursor, Gemini CLI, Hermes and others
+├── graph/         linked notes method ↔ course ↔ pattern, for Obsidian and graphify
+└── profiles/      the company profile template (empty)
 ```
 
-La forma es la de un plugin de Claude Code: más adelante se agrega `.claude-plugin/plugin.json`
-y se instala con `/plugin install`, sin mover nada.
+## Install
 
-## Instalar
-
-| Dónde | Cómo | Detalle |
+| Where | How | Notes |
 |---|---|---|
-| Claude Code | `/plugin marketplace add camiloalonsomerino-spec/ingeniero-agentico` y `/plugin install ingeniero-agentico@ingeniero-agentico` | Trae skills, agentes, `/nuevo-encargo` y el servidor MCP |
-| Claude Desktop / claude.ai | `python instalar/instalar.py --plataforma claude-desktop` y sube los ZIP en Ajustes → Capacidades | Sin agentes: `orquestar` corre las etapas en secuencia |
-| Codex · Cursor · Gemini CLI · Hermes · otros con Agent Skills | `python instalar/instalar.py --plataforma codex` (o `cursor`, `gemini`, `hermes`, `agents`) | Leen `AGENTS.md` |
-| Cualquier cliente MCP | `python mcp/servidor.py` en su configuración | Los métodos como herramientas |
+| Claude Code | `/plugin marketplace add ingeniero-agentico/ingeniero-agentico` and `/plugin install ingeniero-agentico@ingeniero-agentico` | Brings skills, agents, `/new-task` and the MCP server |
+| Claude Code without the plugin | `python install/install.py --platform claude-code` | Skills, agents and commands in `~/.claude/` |
+| Claude Desktop / claude.ai | `python install/install.py --platform claude-desktop` and upload the ZIPs in Customize | No agents in chat: `orchestrate` runs the stages in sequence |
+| Codex | `python install/install.py --platform codex` | Skills in `~/.agents/skills/`, agents as TOML; reads `AGENTS.md` |
+| Cursor | `python install/install.py --platform cursor` | Skills and subagents in `~/.cursor/`; reads `AGENTS.md` |
+| Gemini CLI | `python install/install.py --platform gemini` | Skills and subagents in `~/.gemini/`; reads `GEMINI.md` → `AGENTS.md` |
+| Hermes Agent | `python install/install.py --platform hermes` | Skills in `HERMES_HOME/skills/`; delegates with `delegate_task` |
+| Other Agent Skills agents | `python install/install.py --platform agents` | Skills in `~/.agents/skills/`, in sequence |
+| Any MCP client | `python mcp/server.py` in its configuration | The methods as tools |
 
-Paso a paso por plataforma en [docs/INSTALAR.md](docs/INSTALAR.md); el servidor MCP en
-[docs/MCP.md](docs/MCP.md).
+Step by step per platform in [docs/INSTALL.md](docs/INSTALL.md); the MCP server in
+[docs/MCP.md](docs/MCP.md). `python install/install.py --test` installs into a temporary HOME for
+every platform and checks it without touching your configuration.
 
-## Datos privados
+## Private data
 
-Cada skill busca el perfil de la empresa en este orden:
+Each skill looks for the company profile in this order:
 
-1. La ruta en la variable de entorno `INGENIERO_DATOS`.
-2. La carpeta hermana `../ingeniero-agentico-datos/`.
-3. Si no encuentra ninguna, trabaja con `perfiles/_plantilla.yaml` y te pide los datos que falten.
+1. The path given with `--profile`.
+2. The path in the `INGENIERO_DATOS` environment variable.
+3. The sibling folder `../ingeniero-agentico-datos/`.
+4. If it finds none, it works with `profiles/_template.yaml` and asks you for the missing data
+   (everything it fills in comes out marked as an assumption).
 
-Esa carpeta lleva `perfiles/<empresa>.yaml` y `casos/<caso>/`. **Nunca se sube a este repo.**
+That folder holds `profiles/<company>.yaml` and `cases/<case>/` (the older `perfiles/` and `casos/`
+still work). **It is never uploaded to this repo.**
 
-## Próxima versión (1.1)
+The profile's `language: es | en` field sets the language of the outputs (Excel labels, the
+`SUPUESTO` / `ASSUMPTION` marker, console text). It defaults to `es`, so cases built with version
+1.0 produce the same files. Spanish profile and input keys are still accepted.
 
-Salió de la primera auditoría sobre casos reales (15-10-2026):
+## Next version
 
-1. `adquisiciones` y `costo-y-precio` reciben y devuelven `supuestos`, como los métodos de evaluación.
-2. Un mismo formato de `datos-investigados.json` entre `investigar`, `ejecutor` y `auditor`.
-3. El núcleo del mapa excluye un archivo que otro declara reemplazado («Reemplaza a»).
-4. `evaluacion-financiera` avisa cuando el proyecto y el financiamiento usan regímenes tributarios distintos.
-5. Cada skill autosuficiente: los scripts buscan la plantilla de perfil también dentro de su
-   carpeta, para funcionar en claude.ai sin `--perfil` y sin copiar nada fuera de la skill.
-6. Probar el instalador dentro de Codex, Cursor y Gemini reales (hoy se verificó solo el formato).
+Version 1.1 (this branch) moves the repo to English with Spanish alongside, and closes the first
+three items of the audit on real cases (15-10-2026): `procurement` and `cost-and-pricing` take and
+return `assumptions` like the evaluation methods; one `research-data.json` format shared by
+`research`, `executor` and `auditor`; and the map's core excludes a file that another declares
+replaced («Replaces»). What remains:
 
-Al publicar una versión nueva, sube `version` en `.claude-plugin/plugin.json`: quien instaló el
-plugin no recibe cambios mientras la versión sea la misma.
+1. **Self-contained skills.** The profile template inside each skill, so the scripts work on
+   claude.ai without `--profile` and without copying anything outside the skill.
+2. **Tested inside real Codex, Cursor and Gemini.** Today only the installed format was checked.
+3. **Release versioning rule.** Every release bumps `version` in `.claude-plugin/plugin.json`:
+   whoever installed the plugin receives no changes while the version stays the same.
 
-## De dónde sale
+## Where it comes from
 
-Cada método nace de ramos de Ingeniería Civil Industrial y de su uso en empresas reales. El
-`fuentes.md` de cada método cita la bibliografía; el material de los cursos no se reproduce.
+Each method comes from Industrial Engineering courses and from its use in real companies. Each
+method's `SOURCES.md` cites the bibliography; course material is not reproduced.
 
-## Licencia
+## License
 
-Código y scripts: MIT. Guías y notas: CC BY-SA 4.0. Ver `LICENSE`.
+Code and scripts: MIT. Guides and notes: CC BY-SA 4.0. See `LICENSE`.

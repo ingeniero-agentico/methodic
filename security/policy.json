@@ -1,0 +1,46 @@
+{
+  "_help": "Policy read by security/scan.py. Changing it widens what the scanner accepts, so every change goes through a PR reviewed by CODEOWNERS. Exceptions for single findings go in security/allowlist.json, not here.",
+  "code_scope": ["skills", "mcp", "install", "instalar", ".claude-plugin"],
+  "code_scope_rationale": "Everything an installation copies or runs. No script in these folders may touch the network, read the user's home or credentials, or start a shell.",
+  "instruction_files": {
+    "folders": ["skills", "agents", "commands", "graph", "grafo", "docs", "profiles", "perfiles"],
+    "root_files": ["AGENTS.md", "CLAUDE.md", "GEMINI.md", "ARCHITECTURE.md", "ARQUITECTURA.md", "README.md"],
+    "rationale": "Markdown an agent reads as instructions. Prompt-injection and URL rules apply to these."
+  },
+  "doc_domains": [
+    "agentskills.io",
+    "anthropic.com", "claude.com", "claude.ai",
+    "modelcontextprotocol.io",
+    "openai.com", "chatgpt.com",
+    "cursor.com",
+    "geminicli.com", "google-gemini.github.io",
+    "nousresearch.com",
+    "github.com", "docs.github.com",
+    "json.schemastore.org",
+    "creativecommons.org", "opensource.org", "spdx.org",
+    "python.org", "pypi.org", "readthedocs.io",
+    "unpaywall.org", "doi.org", "openalex.org",
+    "example.com", "example.org", "example.net", "ejemplo.org", "ejemplo.cl", "ejemplo.com",
+    "sii.cl", "cmfchile.cl", "bcentral.cl", "bcn.cl", "leychile.cl", "gob.cl", "diariooficial.interior.gob.cl",
+    "ine.gob.cl", "sernac.cl", "chilecompra.cl", "mercadopublico.cl", "registrocivil.cl"
+  ],
+  "doc_domains_rationale": "A URL in an instruction file or in distributable code whose host is not one of these (or a subdomain) is reported MEDIUM so a reviewer looks at it. Paste sites, raw-file hosts, tunnels, webhooks, shorteners and IP addresses are HIGH regardless (see scan.py BAD_HOSTS).",
+  "agent_tools": {
+    "cartographer": {"aliases": ["cartografo"], "tools": ["Read", "Glob", "Grep", "Bash", "PowerShell"], "role": "maps folders; Bash/PowerShell only to run map_context.py; never writes case files"},
+    "researcher": {"aliases": ["investigador"], "tools": ["Read", "Write", "Glob", "Grep", "Bash", "PowerShell", "WebSearch", "WebFetch"], "role": "the only agent allowed on the web; writes only context/RESEARCH.md and research-data.json"},
+    "executor": {"aliases": ["ejecutor"], "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "PowerShell", "Skill"], "role": "builds one input and runs one method script"},
+    "auditor": {"aliases": [], "tools": ["Read", "Glob", "Grep", "Bash", "PowerShell", "Write"], "must_disallow": ["Edit", "NotebookEdit"], "role": "re-runs scripts in a temp folder; writes only context/AUDIT.md"}
+  },
+  "agent_tools_rationale": "An agent file not listed here, an agent without a tools: line (it would inherit every tool, MCP tools included) or a tool outside its list is HIGH.",
+  "install_roots": ["{HOME}/.claude", "{HOME}/.agents", "{HOME}/.codex", "{HOME}/.cursor", "{HOME}/.gemini", "{HOME}/.hermes", "{LOCALAPPDATA}/hermes"],
+  "install_roots_rationale": "The documented install targets (docs/INSTALL.md, install/platforms.json with its sources). Any other {HOME}/{LOCALAPPDATA} target in platforms.json is HIGH.",
+  "install_env_vars": ["CLAUDE_CONFIG_DIR", "CODEX_HOME", "HERMES_HOME"],
+  "plugin_mcp_commands": ["python", "python3", "py", "${user_config.python}"],
+  "plugin_mcp_args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.py", "${CLAUDE_PLUGIN_ROOT}/mcp/servidor.py"],
+  "fixtures": [],
+  "fixtures_rationale": "Globs where binary office files (xlsx, xls, pdf, zip, docx) are allowed as documented test fixtures. Empty: the repo ships none.",
+  "placeholder_users": ["you", "user", "username", "usuario", "nombre", "name", "me", "yo", "tu", "runner", "runneradmin", "public", "default", "shared", "x", "..."],
+  "email_allow_domains": ["users.noreply.github.com", "example.com", "example.org", "example.net", "ejemplo.cl", "ejemplo.com", "ejemplo.org"],
+  "email_allow_addresses": ["git@github.com", "noreply@anthropic.com", "noreply@github.com"],
+  "rut_placeholders": ["11111111-1", "22222222-2", "12345678-5", "1-9", "11111111-K"]
+}

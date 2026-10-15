@@ -1,5 +1,5 @@
 # ingeniero-agentico
 
-Gemini CLI lee `GEMINI.md` y no `AGENTS.md`: este archivo solo importa las instrucciones comunes.
+Gemini CLI reads `GEMINI.md` and not `AGENTS.md`: this file only imports the common instructions.
 
 @./AGENTS.md

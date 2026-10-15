@@ -1,0 +1,31 @@
+{
+  "case": "transportes-del-valle-van",
+  "description": "Transportes del Valle (fictitious) needs a van. Does it pay cash, take a 36-month loan or a leasing? A loan with German amortization and a rental are added as references.",
+  "horizon_years": 5,
+  "vat_recoverable": true,
+  "project_flow": "sample-project-flow.csv",
+  "asset": {
+    "description": "Cargo van (fictitious)",
+    "net_price": 24000000,
+    "depreciation": "straight_line",
+    "useful_life_years": 7,
+    "market_value_at_horizon": {"value": 9000000, "assumption": true, "source": "fictitious estimate for the test"}
+  },
+  "alternatives": [
+    {"name": "Cash", "type": "cash"},
+    {"name": "Loan 36 months", "type": "loan", "system": "french",
+     "down_payment_fraction": 0.20, "term_months": 36, "monthly_rate": 0.015,
+     "upfront_fees": 250000, "monthly_insurance": 8000,
+     "loan_tax": {"monthly_rate": 0.00066, "cap": 0.008}},
+    {"name": "Loan 36 months (German)", "type": "loan", "system": "german",
+     "down_payment_fraction": 0.20, "term_months": 36, "monthly_rate": 0.015,
+     "upfront_fees": 250000, "monthly_insurance": 8000,
+     "loan_tax": {"monthly_rate": 0.00066, "cap": 0.008}},
+    {"name": "Leasing 36 months", "type": "leasing", "term_months": 36, "monthly_rate": 0.013,
+     "initial_installment": "one_installment", "purchase_option": "one_installment"},
+    {"name": "Rental 60 months", "type": "rental", "monthly_rent": 620000, "term_months": 60,
+     "deposit": 620000,
+     "non_comparable_notes": ["the rent includes maintenance and insurance; the other alternatives do not"]}
+  ],
+  "sensitivity": {"tax_rates": [0.0, 0.10]}
+}

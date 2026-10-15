@@ -1,0 +1,41 @@
+# Every self-test of the repo on Linux, Windows and macOS, Python 3.11 and 3.13.
+# Read-only token, no secrets, actions pinned by full commit SHA (see security.yml for the sources).
+# openpyxl is installed from .github/requirements-ci.txt with --require-hashes.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests · ${{ matrix.os }} · py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install openpyxl (pinned by hash)
+        run: python -m pip install --require-hashes --no-deps -r .github/requirements-ci.txt
+      - name: Every script --test, mcp/test_server.py, install/install.py --test, security self-tests
+        run: python security/run_tests.py

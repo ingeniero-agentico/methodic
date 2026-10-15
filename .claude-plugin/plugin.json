@@ -2,51 +2,52 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ingeniero-agentico",
   "displayName": "Ingeniero agéntico",
-  "version": "1.0.0",
-  "description": "Métodos de ingeniería industrial como skills para agentes: adquisiciones, costo y precio, evaluación económica y financiera, más orquestar, cartografiar, investigar y auditar. Cada número sale de un script con prueba que cuadra; los datos de la empresa viven fuera del plugin.",
+  "version": "1.1.0",
+  "description": "Industrial engineering methods as agent skills: procurement, cost and pricing, economic and financial evaluation, plus orchestrate, map-context, research and audit. Every number comes from a script with a test that must match; the company's data lives outside the plugin. Guides in English and Spanish.",
   "author": {
     "name": "camiloalonsomerino-spec",
     "url": "https://github.com/camiloalonsomerino-spec"
   },
-  "homepage": "https://github.com/camiloalonsomerino-spec/ingeniero-agentico",
-  "repository": "https://github.com/camiloalonsomerino-spec/ingeniero-agentico",
+  "homepage": "https://github.com/ingeniero-agentico/ingeniero-agentico",
+  "repository": "https://github.com/ingeniero-agentico/ingeniero-agentico",
   "license": "MIT AND CC-BY-SA-4.0",
   "keywords": [
-    "ingenieria-industrial",
-    "adquisiciones",
-    "costos",
-    "evaluacion-de-proyectos",
-    "finanzas",
+    "industrial-engineering",
+    "procurement",
+    "costing",
+    "project-evaluation",
+    "finance",
     "agent-skills",
-    "espanol"
+    "english",
+    "spanish"
   ],
   "userConfig": {
     "python": {
       "type": "string",
-      "title": "Comando de Python",
-      "description": "Con qué se lanza el servidor MCP: python (Windows con Python en el PATH), py (lanzador de Windows), python3 (macOS y Linux) o la ruta absoluta al ejecutable. Python 3.11 o más nuevo, con openpyxl.",
+      "title": "Python command",
+      "description": "What launches the MCP server: python (Windows with Python on the PATH), py (Windows launcher), python3 (macOS and Linux) or the absolute path to the executable. Python 3.11 or newer, with openpyxl.",
       "default": "python"
     },
-    "datos": {
+    "data": {
       "type": "string",
-      "title": "Carpeta de datos (opcional)",
-      "description": "Ruta absoluta a ingeniero-agentico-datos (la que tiene perfiles/ y casos/). Vacío: el servidor usa INGENIERO_DATOS o la carpeta temporal.",
+      "title": "Data folder (optional)",
+      "description": "Absolute path to ingeniero-agentico-datos (the one with profiles/ and cases/). Empty: the server uses INGENIERO_DATOS or the temp folder.",
       "default": ""
     },
-    "raices": {
+    "roots": {
       "type": "string",
-      "title": "Carpetas extra que el servidor puede leer y escribir (opcional)",
-      "description": "Rutas absolutas separadas por ; en Windows o : en macOS y Linux (las carpetas de un encargo que quieras mapear). Vacío: solo el repo, la carpeta de datos y la de trabajo.",
+      "title": "Extra folders the server can read and write (optional)",
+      "description": "Absolute paths separated by ; on Windows or : on macOS and Linux (the folders of a task you want to map). Empty: only the repo, the data folder and the work folder.",
       "default": ""
     }
   },
   "mcpServers": {
     "ingeniero-agentico": {
       "command": "${user_config.python}",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/servidor.py"],
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.py"],
       "env": {
-        "INGENIERO_DATOS": "${user_config.datos}",
-        "INGENIERO_MCP_RAICES": "${user_config.raices}"
+        "INGENIERO_DATOS": "${user_config.data}",
+        "INGENIERO_MCP_ROOTS": "${user_config.roots}"
       }
     }
   }

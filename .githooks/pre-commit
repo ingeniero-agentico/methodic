@@ -1,0 +1,42 @@
+#!/bin/sh
+# ingeniero-agentico · pre-commit
+# Scans the STAGED version of the staged files with security/scan.py (private denylist included when
+# ../ingeniero-agentico-datos/security/denylist.txt or $INGENIERO_DATOS/security/denylist.txt exists)
+# and blocks the commit on any HIGH finding. Works in Git for Windows (sh) and on macOS/Linux.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Skipping it (git commit --no-verify) skips this layer only: CI runs the same scan on every push and PR.
+
+ROOT=$(git rev-parse --show-toplevel) || exit 1
+
+find_python() {
+    for cand in "py -3" python3 python; do
+        # shellcheck disable=SC2086
+        if $cand -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' >/dev/null 2>&1; then
+            echo "$cand"
+            return 0
+        fi
+    done
+    return 1
+}
+
+PY=$(find_python) || {
+    echo "pre-commit: Python 3.11+ not found (tried py -3, python3, python); commit blocked." >&2
+    exit 1
+}
+
+# shellcheck disable=SC2086
+$PY "$ROOT/security/scan.py" --root "$ROOT" --staged --hook
+status=$?
+if [ "$status" -ne 0 ]; then
+    [ "$status" -eq 1 ] || echo "pre-commit: the scanner failed (exit $status); commit blocked." >&2
+    exit 1
+fi
+
+# Reminder (does not block): distributable files changed but the manifest was not restaged.
+if git diff --cached --name-only | grep -Eq '^(skills|agents|commands|mcp|install|\.claude-plugin)/|^(profiles/_template\.yaml|ARCHITECTURE\.md|AGENTS\.md)$'; then
+    if ! git diff --cached --name-only | grep -qx 'security/MANIFEST.sha256'; then
+        echo "pre-commit: distributable files changed; run  python security/manifest.py write  and stage" \
+             "security/MANIFEST.sha256 before pushing (pre-push verifies it)." >&2
+    fi
+fi
+exit 0

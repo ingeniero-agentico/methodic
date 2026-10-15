@@ -1,0 +1,76 @@
+{
+ "_help": "What --test requires. «files» does not count data/sheet.xlsx (added if openpyxl is installed).",
+ "first": {
+  "mode": "first-run",
+  "files": 9,
+  "links": [
+   ["README.md", "purchasing/notes.md", "wikilink"],
+   ["README.md", "data/profile.yaml", "link"],
+   ["purchasing/notes.md", "README.md", "wikilink"],
+   ["purchasing/notes.md", "scripts/calculation.py", "mention"],
+   ["purchasing/notes.md", "data/summary.json", "mention"],
+   ["agents/buyer.md", "skills/buy/SKILL.md", "uses_skill"],
+   ["agents/buyer.md", "skill:quote", "uses_skill"],
+   ["skills/buy/SKILL.md", "purchasing/notes.md", "mention"]
+  ],
+  "summaries": {
+   "README.md": "Ferretería Andes task · Folder of the purchasing task",
+   "purchasing/notes.md": "Purchasing notes · Three quotes arrived",
+   "scripts/calculation.py": "Computes the total of the fictitious purchase.",
+   "data/summary.json": "keys: suppliers, total, date",
+   "data/profile.yaml": "keys: company, currency, vat",
+   "orphan.txt": "Loose note",
+   "JOB.md": "Fictitious job · status: open · client: Constructora Sur · Pipes are bought for a water network. · sections: What was asked; What is missing"
+  },
+  "orphans": ["orphan.txt", "JOB.md"],
+  "excluded_dirs": [".git", "node_modules"]
+ },
+ "no_changes": {"mode": "reread", "changed": 0},
+ "core": {
+  "_help": "rule: key names (README before JOB, both at the root) and then the most linked (purchasing/notes.md, 2 inbound). with_pin: --core data/profile.yaml goes first and the rule fills the rest.",
+  "rule": ["README.md", "JOB.md", "purchasing/notes.md"],
+  "pin": ["data/profile.yaml"],
+  "with_pin": ["data/profile.yaml", "README.md", "JOB.md"]
+ },
+ "one_change": {"mode": "reread", "modify": "purchasing/notes.md"},
+ "accumulated": {
+  "_help": "without --mark-read in between, the second change adds to the first; threshold 0.30 so that 2 changes stay reread with or without the sheet",
+  "modify": "scripts/calculation.py",
+  "threshold": 0.30
+ },
+ "many_changes": {
+  "mode": "first-run",
+  "modify": ["README.md", "data/profile.yaml", "scripts/calculation.py"],
+  "delete": ["orphan.txt"]
+ },
+ "large": {"folders": 40, "files_per_folder": 30, "max_words": 3000},
+ "replaced": {
+  "_help": "The replaced list is the most linked file, so without the rule it would enter the core. «en» uses «**Replaces:** `file`»; «es» uses the Spanish table field «| **Reemplaza a** | name |» with a bare name.",
+  "trees": {
+   "en": {
+    "README.md": "# Fictitious pipe job\n\nStart with `lists/LIST-002.md` and [the notes](notes/a.md).\n",
+    "lists/LIST-001.md": "# List 001\n\n**Purpose:** quote to suppliers\n\nRaw transcription of the handwritten sheet.\n",
+    "lists/LIST-002.md": "# List 002\n\n**Replaces:** `LIST-001.md` (kept as the raw sheet)\n\nThe current list.\n",
+    "notes/a.md": "# Note A\n\nSee lists/LIST-001.md and lists/LIST-002.md.\n",
+    "notes/b.md": "# Note B\n\nThe first list is lists/LIST-001.md.\n",
+    "notes/c.md": "# Note C\n\nAlso lists/LIST-001.md.\n"
+   },
+   "es": {
+    "TRABAJO.md": "# Trabajo ficticio\n\n**Estado:** abierto\n\nEmpezar por `listados/LISTADO-002.md` y [las notas](notas/a.md).\n",
+    "listados/LISTADO-001.md": "# Listado 001\n\nTranscripción de la hoja.\n",
+    "listados/LISTADO-002.md": "# Listado 002\n\n| | |\n|---|---|\n| **Reemplaza a** | LISTADO-001 (queda como el crudo) |\n\nEl listado vigente.\n",
+    "notas/a.md": "# Nota A\n\nVer listados/LISTADO-001.md y listados/LISTADO-002.md.\n",
+    "notas/b.md": "# Nota B\n\nEl primer listado es listados/LISTADO-001.md.\n",
+    "notas/c.md": "# Nota C\n\nTambién listados/LISTADO-001.md.\n"
+   }
+  },
+  "replaced": {
+   "en": {"lists/LIST-001.md": "lists/LIST-002.md"},
+   "es": {"listados/LISTADO-001.md": "listados/LISTADO-002.md"}
+  },
+  "core": {
+   "en": ["README.md", "lists/LIST-002.md", "notes/a.md"],
+   "es": ["TRABAJO.md", "listados/LISTADO-002.md", "notas/a.md"]
+  }
+ }
+}

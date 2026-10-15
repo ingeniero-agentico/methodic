@@ -1,0 +1,35 @@
+# Company profile · template
+# Copy this file to ingeniero-agentico-datos/profiles/<company>.yaml and fill it in.
+# Every skill in the repo reads it. An empty field is asked by the skill, never invented.
+# Spanish keys (empresa, compras, precios, finanzas, idioma...) are still accepted: every
+# script normalizes them to the English keys below at load time.
+
+language: es            # es | en · language of script outputs (Excel labels, the SUPUESTO /
+                        # ASSUMPTION marker, console text). Default es keeps existing cases identical.
+
+company:
+  name: ""              # trade name
+  tax_id: ""            # Chile: RUT; elsewhere, the country's tax identifier
+  country: CL           # ISO code; CL turns on the Chilean notes (IVA, SII, Pro Pyme, UF)
+  currency: CLP
+  currency_decimals: 0  # CLP 0 · USD 2
+  vat: 0.19             # value added tax (IVA in Chile)
+  income_tax: 0.27      # company income tax rate
+
+purchasing:
+  # Known suppliers, identified by tax ID (the trade name changes; the tax ID does not)
+  suppliers: []
+  #  - tax_id: ""
+  #    name: ""
+  #    lead_time_days: 0
+  tie_break: highest_availability   # at equal price, the one that covers more wins (fewer POs)
+
+pricing:
+  # Markup ON COST: 0.30 means cost × 1.30. It is not a margin on the sale price.
+  default_markup: 0.30
+  overhead: 0.00                    # share of direct cost charged as indirect cost
+
+finance:
+  discount_rate: null      # annual rate the company uses to evaluate projects (if missing, it is asked)
+  horizon_years: 5
+  depreciation: straight_line   # straight_line · accelerated

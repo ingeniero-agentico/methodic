@@ -1,0 +1,45 @@
+{
+  "_help": "Empty input for economic-evaluation. Yearly amounts, in the profile's currency. Keys starting with _ are ignored. \"assumption\": true marks the whole item; a list marks only those fields. \"source\": where the number came from or why it was assumed. Spanish keys (ingresos, costos_fijos, supuesto...) are also accepted.",
+  "project": "",
+  "company": "",
+  "note": "net or gross of VAT, today's money or with inflation, what the client pays apart (it goes to the assumptions sheet, marked)",
+  "horizon_years": null,
+  "_horizon_years": "null = the profile's (finance.horizon_years)",
+  "tax_losses": {"value": "carry_forward", "assumption": true, "source": ""},
+  "_tax_losses": "carry_forward (stand-alone project) · offset (the company has other profits). A plain value without source is marked as an assumption",
+  "salvage_method": "market",
+  "_salvage_method": "market (sold at salvage_value, tax on the gain) · book (at book value)",
+  "revenues": [
+    {
+      "name": "",
+      "unit": "",
+      "price": 0,
+      "quantity": 0,
+      "_or_else": "instead of quantity: capacity + occupancy (fraction 0 to 1)",
+      "price_growth": 0,
+      "quantity_growth": 0,
+      "source": "",
+      "assumption": false
+    }
+  ],
+  "variable_costs": [
+    { "name": "", "per_unit_of": "", "amount_per_unit": 0, "growth": 0, "source": "", "assumption": false }
+  ],
+  "fixed_costs": [
+    { "name": "", "annual_amount": 0, "growth": 0, "source": "", "assumption": false }
+  ],
+  "investments": [
+    {
+      "name": "",
+      "year": 0,
+      "amount": 0,
+      "depreciable": true,
+      "useful_life": 0,
+      "accelerated_life": null,
+      "salvage_value": 0,
+      "source": "",
+      "assumption": false
+    }
+  ],
+  "working_capital": { "amount": 0, "year": 0, "recovered": true, "source": "", "assumption": false }
+}

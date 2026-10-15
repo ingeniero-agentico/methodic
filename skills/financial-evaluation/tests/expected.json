@@ -1,0 +1,43 @@
+{
+  "case": "transportes-del-valle-van",
+  "profile": "sample-profile.yaml",
+  "project_npv": 5291023.15,
+  "winner": "Leasing 36 months",
+  "pv_difference": 633551.13,
+  "alternatives": {
+    "Cash": {
+      "pv_cost": 15884462.44,
+      "investor_npv": 5291023.15
+    },
+    "Loan 36 months": {
+      "installment": 694126.0,
+      "pv_cost": 16948620.24,
+      "investor_npv": 4226865.35,
+      "total_interest": 5788532.0,
+      "cae": 0.203737,
+      "after_tax_effective_rate": 0.163762
+    },
+    "Loan 36 months (German)": {
+      "installment": 821333.0,
+      "pv_cost": 16905971.59,
+      "investor_npv": 4269514.0,
+      "total_interest": 5328000.0,
+      "cae": 0.205592,
+      "after_tax_effective_rate": 0.165471
+    },
+    "Leasing 36 months": {
+      "installment": 794063.0,
+      "pv_cost": 15250911.31,
+      "investor_npv": 5924574.28,
+      "total_interest": 6174394.0,
+      "cae": 0.156,
+      "after_tax_effective_rate": 0.102194
+    },
+    "Rental 60 months": {
+      "installment": 620000.0,
+      "pv_cost": 21291353.63,
+      "investor_npv": -115868.04,
+      "after_tax_effective_rate": 0.215304
+    }
+  }
+}

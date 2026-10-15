@@ -1,0 +1,58 @@
+{
+ "title": "",
+ "requirement": [
+  {"n": 1, "item": "", "quantity": 0, "unit": "pc"}
+ ],
+ "quotes": [
+  {
+   "id": "",
+   "supplier": "",
+   "tax_id": "",
+   "salesperson": "",
+   "date": "YYYY-MM-DD",
+   "expires": "",
+   "terms": "",
+   "lead_time_days": null,
+   "currency": "",
+   "exchange_rate": null,
+   "exchange_rate_date": null,
+   "printed_subtotal": null,
+   "file": "",
+   "lines": [
+    {
+     "line": 1,
+     "description": "",
+     "quantity": 0,
+     "printed_unit_price": null,
+     "discount": "",
+     "line_total": 0,
+     "item": null,
+     "available": null,
+     "sale_unit": null,
+     "rejected": "",
+     "note": ""
+    }
+   ]
+  }
+ ],
+ "assumptions": [],
+ "_help": {
+  "requirement": "What must be bought. `n` is the key: numbered once and never changed.",
+  "id": "Identifies the quote (its number). Unique in the input.",
+  "tax_id": "Supplier tax ID (RUT in Chile). Without it the purchase order is not issued.",
+  "salesperson": "Only if the same company quoted through two different salespeople (they compete in parallel).",
+  "date": "Required if the same salesperson sent two quotes with the same item: the newest replaces the old one.",
+  "currency": "The quote's currency. If it is not the profile's, `exchange_rate` and `exchange_rate_date` are required: the rate is set by whoever pays.",
+  "printed_subtotal": "The net subtotal the document prints. The lines must add up to it or the script aborts.",
+  "line": "The line number in the supplier's document. It is the trace.",
+  "quantity": "In the unit the supplier sells (lengths, boxes, pieces).",
+  "line_total": "What it charges for the line, discount included. The effective unit price comes from here.",
+  "printed_unit_price": "Reference, not data: it may be a list price.",
+  "item": "The `n` of the requirement this line belongs to. null = the line is not bought (freight, an alternative nobody asked for).",
+  "available": "How much it can deliver, in its unit. Empty = what it quoted (marked as an assumption).",
+  "sale_unit": "If it sells in multiples: {\"name\": \"length\", \"content\": 6, \"unit\": \"m\", \"verbatim\": \"x 6 Mts\"}. `content` is how much of the item each supplier unit holds.",
+  "rejected": "Reason if the line does not meet the specification. It stays out of the allocation and is listed in VERIFICATION. The line is never deleted.",
+  "assumptions": "Assumptions you make yourself, carried to the output with origin `input`: a text, or {\"parameter\": \"\", \"value\": null, \"source\": \"\"}.",
+  "_spanish_keys": "Spanish keys (requerimiento, cotizaciones, lineas, total_linea, unidad_venta, descarte, supuestos...) are still accepted."
+ }
+}

@@ -1,0 +1,36 @@
+{
+  "_help": "Empty cost-and-pricing template. Delete the keys that start with _ if you want; the script ignores them. Net amounts, without value added tax. Spanish keys (compras, tipos_de_cambio, precio_unit, factor_unidad, recargo, equilibrio, supuestos...) are still accepted.",
+  "case": "",
+  "profile": "",
+  "_profile": "Profile name (looks for <name>.yaml in INGENIERO_DATOS and ../ingeniero-agentico-datos, profiles/ then perfiles/) or a path. Empty = the only profile found there, or the repo template, and then everything taken from it is an assumption. --profile on the command line overrides this field.",
+
+  "global_markup": null,
+  "_global_markup": "Markup ON COST for items without their own: 0.30 = cost × 1.30. null = the profile's (pricing.default_markup).",
+  "overhead": null,
+  "_overhead": "Share of direct cost charged as indirect cost: 0.08 = 8 %. null = the profile's; if the profile has none either, 0 % marked as an assumption.",
+  "min_margin_alert": null,
+  "_min_margin_alert": "Optional: warns if an item's real margin falls below this share.",
+
+  "exchange_rates": {
+    "_example_USD": {"value": 0.00, "date": "DD-MM-YYYY", "source": ""}
+  },
+  "_exchange_rates": "One per foreign currency that appears in purchases. Without a declared exchange rate the script stops: it does not invent one.",
+
+  "items": [
+    {"id": "", "description": "", "sale_unit": "un", "quantity_sold": null, "markup": null, "manual_price": null}
+  ],
+  "_items": "What is sold. quantity_sold in the sale unit (if missing, = what was bought). An item's own markup overrides the global one. manual_price overrides everything and the real markup is recomputed. If you leave out items, one is created per «item» in purchases.",
+
+  "purchases": [
+    {"doc": "", "line": null, "supplier": "", "item": "", "description": "", "quantity": null, "unit": "", "unit_factor": 1, "unit_price": null, "currency": ""}
+  ],
+  "_purchases": "One row per purchase order line or awarded quote line, in the supplier's unit and currency. item = which sale item it is charged to. unit_factor = sale units per supplier unit (6 m length sold by the metre = 6). Empty currency = the profile's.",
+
+  "breakeven": [
+    {"name": "", "unit": "", "unit_price": null, "unit_variable_cost": null, "fixed_production_costs": 0, "fixed_operating_costs": 0, "expected_volume": null, "units_produced": null, "units_sold": null}
+  ],
+  "_breakeven": "Optional. Contribution margin and break-even of a service or product, with fixed costs of the same period. With units produced and sold, it compares variable and absorption costing (no opening inventory).",
+
+  "assumptions": [],
+  "_assumptions": "Assumptions you make yourself, carried to the output with origin `input`: a text, or {\"parameter\": \"\", \"value\": null, \"source\": \"\"}."
+}

@@ -1,0 +1,16 @@
+{
+ "_help": "Fictitious folder of a Ferretería Andes task. --test creates it in a temporary folder (plus data/sheet.xlsx if openpyxl is installed), maps it and deletes it.",
+ "files": {
+  "README.md": "---\ndescription: Folder of the purchasing task of Ferretería Andes.\n---\n# Ferretería Andes task\n\nSee [[purchasing/notes]] and [the profile](data/profile.yaml).\n",
+  "purchasing/notes.md": "# Purchasing notes\n\nThree quotes arrived from Supplier A, B and C. The calculation is in `scripts/calculation.py` and the summary in data/summary.json.\n\nBack to the [[README]].\n",
+  "agents/buyer.md": "---\nname: buyer\ndescription: Fictitious agent that buys for Constructora Sur.\nskills: [buy, quote]\n---\n# Buyer\n\nRead skills/buy/SKILL.md before starting.\n",
+  "skills/buy/SKILL.md": "---\nname: buy\ndescription: Fictitious purchase for the test.\n---\n# Buy\n\nBody of the skill. The example is in purchasing/notes.md.\n",
+  "scripts/calculation.py": "\"\"\"Computes the total of the fictitious purchase.\"\"\"\n\nTOTAL = 1000\n",
+  "data/summary.json": "{\"suppliers\": [\"Supplier A\", \"Supplier B\", \"Supplier C\"], \"total\": 1000, \"date\": \"01-10-2026\"}\n",
+  "data/profile.yaml": "company: Ferretería Andes\ncurrency: CLP\nvat: 0.19\n",
+  "JOB.md": "# Fictitious job\n\n| | |\n|---|---|\n| **Status** | open |\n| **Client** | Constructora Sur |\n\n**Job:** pipe purchase\n\nPipes are bought for a water network. They come in 6 m lengths.\n\n## 1 · What was asked\n\nText.\n\n## 2 · What is missing\n\nText.\n",
+  "orphan.txt": "Loose note: nobody cites it.\n",
+  ".git/config": "[core]\n",
+  "node_modules/package/index.js": "// fictitious package\n"
+ }
+}

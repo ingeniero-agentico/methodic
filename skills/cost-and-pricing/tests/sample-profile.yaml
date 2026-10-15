@@ -1,0 +1,31 @@
+# Fictitious profile for the cost-and-pricing test. Same fields as profiles/_template.yaml.
+
+language: es
+
+company:
+  name: "Ferretería Andes"
+  tax_id: ""
+  country: CL
+  currency: CLP
+  currency_decimals: 0
+  vat: 0.19
+  income_tax: 0.27
+
+purchasing:
+  suppliers:
+    - tax_id: ""
+      name: "Supplier A"
+      lead_time_days: 2
+    - tax_id: ""
+      name: "Supplier B"
+      lead_time_days: 15
+  tie_break: highest_availability
+
+pricing:
+  default_markup: 0.30   # cost × 1.30
+  overhead: 0.05         # the case overrides it with 0.08
+
+finance:
+  discount_rate: 0.12
+  horizon_years: 5
+  depreciation: straight_line

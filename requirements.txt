@@ -1,0 +1,3 @@
+# The only dependency of the scripts (the Excel outputs). Exact version tested on 15-10-2026
+# with Python 3.11.9 and 3.14.4. The MCP server and the installer use the standard library only.
+openpyxl==3.1.5

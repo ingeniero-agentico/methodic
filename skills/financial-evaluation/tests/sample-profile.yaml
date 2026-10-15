@@ -1,0 +1,14 @@
+# FICTITIOUS profile for the financial-evaluation test. It describes no real company.
+company:
+  name: "Transportes del Valle"
+  tax_id: ""
+  country: CL
+  currency: CLP
+  currency_decimals: 0
+  vat: 0.19
+  income_tax: 0.27
+
+finance:
+  discount_rate: 0.12
+  horizon_years: 5
+  depreciation: straight_line

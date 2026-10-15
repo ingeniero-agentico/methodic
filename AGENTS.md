@@ -1,93 +1,102 @@
-# ingeniero-agentico · instrucciones para cualquier agente
+# ingeniero-agentico · instructions for any agent
 
-Este archivo lo leen Codex, Cursor, Hermes Agent y Gemini CLI (vía `GEMINI.md`) al abrir el repo.
-Claude Code lee `CLAUDE.md`, que tiene las reglas de quien **modifica** el repo; las de quien lo
-**usa** están acá. Cómo instalarlo en cada plataforma: `docs/INSTALAR.md`.
+This file is read by Codex, Cursor, Hermes Agent and Gemini CLI (through `GEMINI.md`) when they
+open the repo. Claude Code reads `CLAUDE.md`, which holds the rules for whoever **modifies** the
+repo; the rules for whoever **uses** it are here. How to install it on each platform:
+`docs/INSTALL.md`.
 
-## Qué es
+## What it is
 
-Métodos de ingeniería industrial convertidos en skills (formato [Agent Skills](https://agentskills.io/specification)).
-Cada método trae un `SKILL.md` (lo que decide el agente), un script en Python (lo que calcula), plantillas
-de entrada y una prueba que cuadra. **Ningún número se calcula de cabeza: sale del script.**
+Industrial engineering methods turned into skills ([Agent Skills](https://agentskills.io/specification)
+format). Each method carries a `SKILL.md` (what the agent decides), a Python script (what it
+calculates), input templates and a test that has to add up. **No number is calculated from memory:
+it comes from the script.**
 
-| Skill | Para qué |
+| Skill | What for |
 |---|---|
-| `orquestar` | Recibe un encargo, elige el método y lleva las seis etapas. Empieza por acá si no es obvio qué método aplica |
-| `cartografiar` | Etapa 0: mapa de las carpetas del encargo y modo (primera vez o relectura) |
-| `investigar` | Etapa 1: un dato con fuente, fecha y fiabilidad por cada hueco que el cálculo necesita |
-| `adquisiciones` | A quién comprar qué, cuando cada proveedor cubre solo una parte |
-| `costo-y-precio` | Costo real de un trabajo y precio de venta por recargo |
-| `evaluacion-economica` | Si un proyecto o inversión conviene: flujo de caja, VAN, TIR, sensibilidad |
-| `evaluacion-financiera` | Cómo financiarlo: contado, crédito, leasing o arriendo |
-| `auditar` | Etapa 4: vuelve a correr cada script con la misma entrada y compara |
+| `orchestrate` | Receives a task, chooses the method and runs the six stages. Start here if it is not obvious which method applies |
+| `map-context` | Stage 0: map of the task's folders and mode (first run or reread) |
+| `research` | Stage 1: one datum with source, date and reliability for each gap the calculation needs |
+| `procurement` | Who to buy what from, when each supplier covers only a part |
+| `cost-and-pricing` | Real cost of a job and sale price by markup on cost |
+| `economic-evaluation` | Whether a project or investment is worth it: cash flow, NPV, IRR, sensitivity |
+| `financial-evaluation` | How to finance it: cash, loan, leasing or rental |
+| `audit` | Stage 4: re-runs each script with the same input and compares |
 
-Cada skill vive en `skills/<nombre>/SKILL.md`. En `agents/` están los trabajadores de cada etapa
-(`cartografo`, `investigador`, `ejecutor`, `auditor`) en formato de Claude Code; `instalar/instalar.py`
-los convierte al formato de Codex, Cursor y Gemini.
+Each skill lives in `skills/<name>/SKILL.md`. In `agents/` are the workers of each stage
+(`cartographer`, `researcher`, `executor`, `auditor`) in Claude Code format; `install/install.py`
+converts them to the Codex, Cursor and Gemini format.
 
-## Cómo correr un método
+## How to run a method
 
-1. Lee **solo** el `SKILL.md` del método que corresponde (no los cuatro).
-2. Arma la entrada desde `skills/<metodo>/plantillas/` con los datos de la persona.
-3. Corre el script que indica el `SKILL.md`, desde la carpeta de la skill:
-   `python scripts/<script>.py <entrada> --perfil <empresa|ruta.yaml> ...`
-4. Antes de confiar en una instalación nueva: `python scripts/<script>.py --probar` tiene que terminar en `OK`.
+1. Read **only** the `SKILL.md` of the method that applies (not all four).
+2. Build the input from `skills/<method>/templates/` with the person's data.
+3. Run the script the `SKILL.md` names, from the skill's folder:
+   `python scripts/<script>.py <input> --profile <company|path.yaml> ...`
+4. Before trusting a new installation: `python scripts/<script>.py --test` has to end in `OK`.
 
-Requisitos: Python 3.11 o superior, biblioteca estándar y `openpyxl` (para los Excel).
+Requirements: Python 3.11 or later, the standard library and `openpyxl` (for the Excel files).
+Flags and file names from before v1.1 (Spanish: `--perfil`, `--probar`, `contexto/`…) still work.
 
-## Datos privados (regla dura)
+## Private data (hard rule)
 
-Los datos de una empresa **nunca** entran a este repo ni a la carpeta donde quedaron instaladas las
-skills. Viven en una carpeta aparte, `ingeniero-agentico-datos/`, con `perfiles/<empresa>.yaml` y
-`casos/<caso>/` (ahí va también `contexto/`, el mapa y el plan de cada encargo).
+A company's data **never** enters this repo nor the folder where the skills were installed. It
+lives in a separate folder, `ingeniero-agentico-datos/`, with `profiles/<company>.yaml` and
+`cases/<case>/` (`context/`, the map and the plan of each task, go there too). Older data folders
+use `perfiles/` and `casos/`; the scripts look in both.
 
-Cada script busca el perfil en este orden:
+Each script looks for the profile in this order:
 
-1. `--perfil <nombre o ruta>`.
-2. La variable de entorno `INGENIERO_DATOS`.
-3. La carpeta hermana `../ingeniero-agentico-datos/` (hermana del repo; en una instalación por copia,
-   hermana de la carpeta de configuración, p. ej. `~/ingeniero-agentico-datos/`).
-4. `perfiles/_plantilla.yaml`: todo lo que sale de ahí queda marcado `SUPUESTO`.
+1. `--profile <name or path>`.
+2. The environment variable `INGENIERO_DATOS`.
+3. The sibling folder `../ingeniero-agentico-datos/` (sibling of the repo; in an install by copy,
+   sibling of the configuration folder, e.g. `~/ingeniero-agentico-datos/`).
+4. `profiles/_template.yaml`: everything that comes from there is marked as an assumption.
 
-Si hay más de un perfil y el encargo no dice cuál, **pregunta**. Si la plataforma corre en un entorno
-aislado (claude.ai, un contenedor), pide a la persona que suba su perfil y pásalo con `--perfil`.
+If there is more than one profile and the task does not say which, **ask**. If the platform runs
+in an isolated environment (claude.ai, a container), ask the person to upload their profile and pass
+it with `--profile`. The profile's `language` (`es` or `en`, default `es`) sets the language of
+the outputs for people.
 
-## Orquestar un encargo
+## Orchestrate a task
 
-Usa la skill `orquestar`. Las seis etapas son siempre las mismas; cambia solo quién las hace.
+Use the `orchestrate` skill. The six stages are always the same; only who does them changes.
 
-| # | Etapa | Lee primero |
+| # | Stage | Read first |
 |---|---|---|
-| 0 | Cartografiar | `skills/cartografiar/SKILL.md` y `agents/cartografo.md` |
-| 1 | Investigar (solo si hay huecos) | `skills/investigar/SKILL.md` y `agents/investigador.md` |
-| 2 | Planificar y **pedir aprobación** | `skills/orquestar/SKILL.md` |
-| 3 | Ejecutar (un método por fila del plan) | el `SKILL.md` del método y `agents/ejecutor.md` |
-| 4 | Auditar | `skills/auditar/SKILL.md` y `agents/auditor.md` |
-| 5 | Consolidar | `skills/orquestar/SKILL.md` |
+| 0 | Map the context | `skills/map-context/SKILL.md` and `agents/cartographer.md` |
+| 1 | Research (only if there are gaps) | `skills/research/SKILL.md` and `agents/researcher.md` |
+| 2 | Plan and **ask for approval** | `skills/orchestrate/SKILL.md` |
+| 3 | Execute (one method per plan row) | the method's `SKILL.md` and `agents/executor.md` |
+| 4 | Audit | `skills/audit/SKILL.md` and `agents/auditor.md` |
+| 5 | Consolidate | `skills/orchestrate/SKILL.md` |
 
-### Sin subagentes (modo «sin agentes»)
+The full contract (modes, core, one research format, contexts from before v1.1) is in
+`ARCHITECTURE.md`.
 
-Si tu plataforma no lanza subagentes, o la persona dice «sin agentes», haz las seis etapas **tú, en
-secuencia, en esta conversación**:
+### Without subagents ("without agents" mode)
 
-1. Haz cada etapa leyendo el archivo del agente como si fueran tus instrucciones para esa etapa. Al
-   terminarla, deja su salida en `contexto/` antes de pasar a la siguiente.
-2. **La etapa 2 es una puerta.** Escribe `contexto/PLAN.md` con la tabla de etapas, muéstrasela a la
-   persona y **detente hasta que diga «sí»** (o cambie una fila). No corras ningún método antes.
-3. En la etapa 4 vuelve a correr cada script con `skills/auditar/scripts/recorrer.py`; no revises tu
-   propio cálculo «de memoria». Como la auditoría no la hizo otro agente, dilo en la respuesta:
-   «auditoría en la misma conversación».
-4. Si una etapa falla, informa y propone el arreglo; no la reemplaces con un cálculo tuyo.
+If your platform does not launch subagents, or the person says "without agents", do the six stages
+**yourself, in sequence, in this conversation**:
 
-### Con subagentes
+1. Do each stage reading the agent's file as if it were your instructions for that stage. When it
+   ends, leave its output in `context/` before moving to the next one.
+2. **Stage 2 is a gate.** Write `context/PLAN.md` with the stage table, show it to the person and
+   **stop until they say "yes"** (or change a row). Run no method before that.
+3. In stage 4 re-run each script with `skills/audit/scripts/rerun.py`; do not review your own
+   calculation "from memory". Since the audit was not done by another agent, say so in the answer:
+   "audit in the same conversation".
+4. If a stage fails, report it and propose the fix; do not replace it with a calculation of yours.
 
-Codex, Cursor y Gemini CLI tienen subagentes, y Hermes delega con `delegate_task`. Lánzalos solo
-después del «sí» de la etapa 2, uno por fila del plan, en paralelo lo que no depende entre sí. A cada
-uno pásale su fila del plan, la ruta de `contexto/`, el perfil, la carpeta del caso y el archivo de
-`agents/` que le toca. Un subagente no lanza a otro: la orquestación queda en la conversación principal.
+### With subagents
 
-## Si vas a modificar el repo
+Codex, Cursor and Gemini CLI have subagents, and Hermes delegates with `delegate_task`. Launch them
+only after the "yes" of stage 2, one per plan row, in parallel what does not depend on each other.
+Pass each one its plan row, the path of `context/`, the profile, the case folder and the `agents/`
+file it gets. A subagent does not launch another: the orchestration stays in the main conversation.
 
-Lee `CLAUDE.md` antes. Lo mínimo: cero datos reales (ni RUT, ni empresas, ni personas, ni rutas
-locales; los ejemplos son ficticios), todo número sale de un script con prueba que cuadra, los `.md`
-con frontmatter van en UTF-8 **sin BOM**, y en la redacción el inciso va entre paréntesis.
+## If you are going to modify the repo
+
+Read `CLAUDE.md` first. The minimum: zero real data (no tax IDs, no companies, no people, no local
+paths; the examples are fictitious), every number comes from a script with a test that adds up, the
+`.md` files with frontmatter go in UTF-8 **without BOM**, and an aside goes in parentheses.

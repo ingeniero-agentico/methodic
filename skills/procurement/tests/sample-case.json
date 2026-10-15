@@ -1,0 +1,57 @@
+{
+ "title": "Constructora Sur · site water network (fictitious case)",
+ "requirement": [
+  {"n": 1, "item": "Grooved steel pipe sch 10 2\"", "quantity": 104, "unit": "m"},
+  {"n": 2, "item": "Grooved 90° elbow 2\"", "quantity": 40, "unit": "pc"},
+  {"n": 3, "item": "Bronze ball valve 1\"", "quantity": 12, "unit": "pc"},
+  {"n": 4, "item": "Rigid grooved coupling 2\"", "quantity": 60, "unit": "pc"},
+  {"n": 5, "item": "4\" glycerin-filled pressure gauge 0-200 psi", "quantity": 4, "unit": "pc"},
+  {"n": 6, "item": "Grooved cap 2\"", "quantity": 10, "unit": "pc"}
+ ],
+ "quotes": [
+  {"id": "A-101", "supplier": "Supplier A", "tax_id": "FICTITIOUS-A", "date": "2026-09-01",
+   "expires": "15 days", "terms": "30 days", "lead_time_days": 3, "currency": "CLP",
+   "printed_subtotal": 1377000, "file": "A-101.pdf",
+   "lines": [
+    {"line": 1, "description": "Grooved pipe sch10 2\" x 6 Mts", "quantity": 17, "printed_unit_price": 60000,
+     "line_total": 1020000, "item": 1,
+     "sale_unit": {"name": "length", "content": 6, "unit": "m", "verbatim": "x 6 Mts"}},
+    {"line": 2, "description": "Grooved elbow 90 2\"", "quantity": 40, "available": 25,
+     "printed_unit_price": 3000, "line_total": 120000, "item": 2, "note": "25 in stock, rest in 3 weeks"},
+    {"line": 3, "description": "Ball valve 1\" bronze", "quantity": 12, "printed_unit_price": 8500,
+     "line_total": 102000, "item": 3},
+    {"line": 4, "description": "Rigid grooved coupling 2\"", "quantity": 60, "printed_unit_price": 2000,
+     "line_total": 120000, "item": 4},
+    {"line": 5, "description": "Grooved cap 2\"", "quantity": 10, "available": 6, "printed_unit_price": 1500,
+     "line_total": 15000, "item": 6}
+   ]},
+  {"id": "B-202", "supplier": "Supplier B", "tax_id": "FICTITIOUS-B", "date": "2026-09-02",
+   "expires": "7 days", "terms": "cash", "lead_time_days": 5, "currency": "CLP",
+   "printed_subtotal": 786200, "file": "B-202.pdf",
+   "lines": [
+    {"line": 1, "description": "Grooved 90° elbow 2\"", "quantity": 40, "available": 30,
+     "printed_unit_price": 4000, "discount": "30%", "line_total": 112000, "item": 2},
+    {"line": 2, "description": "Ball valve 1\"", "quantity": 12, "printed_unit_price": 12000,
+     "discount": "30%", "line_total": 100800, "item": 3},
+    {"line": 3, "description": "2.5\" glycerin pressure gauge", "quantity": 4, "printed_unit_price": 8000,
+     "discount": "30%", "line_total": 22400, "item": 5,
+     "rejected": "2.5\" dial; 4\" is required. It is another product."},
+    {"line": 4, "description": "Grooved pipe 2\" length 5.8 mts", "quantity": 10, "available": 10,
+     "printed_unit_price": 78714, "discount": "30%", "line_total": 551000, "item": 1,
+     "sale_unit": {"name": "length", "content": 5.8, "unit": "m", "verbatim": "length 5.8 mts"}}
+   ]},
+  {"id": "C-303", "supplier": "Supplier C", "tax_id": "FICTITIOUS-C", "date": "2026-09-02",
+   "expires": "10 days", "terms": "30 days", "lead_time_days": 2, "currency": "CLP",
+   "printed_subtotal": 294000, "file": "C-303.pdf",
+   "lines": [
+    {"line": 1, "description": "Grooved elbow 90 2\"", "quantity": 40, "printed_unit_price": 3200,
+     "line_total": 128000, "item": 2},
+    {"line": 2, "description": "Grooved coupling 2\" rigid", "quantity": 60, "printed_unit_price": 2100,
+     "line_total": 126000, "item": 4},
+    {"line": 3, "description": "Grooved cap 2\"", "quantity": 10, "printed_unit_price": 1500,
+     "line_total": 15000, "item": 6},
+    {"line": 4, "description": "Delivery to site", "quantity": 1, "printed_unit_price": 25000,
+     "line_total": 25000, "item": null}
+   ]}
+ ]
+}

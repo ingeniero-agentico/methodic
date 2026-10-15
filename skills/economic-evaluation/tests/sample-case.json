@@ -1,0 +1,61 @@
+{
+  "project": "Van for daily rental",
+  "company": "Transportes del Valle",
+  "note": "FICTITIOUS case. Amounts net of VAT (the company recovers the input VAT). Today's money, no inflation.",
+  "tax_losses": "carry_forward",
+  "salvage_method": "market",
+  "revenues": [
+    {
+      "name": "Daily rental",
+      "unit": "day",
+      "price": 45000,
+      "capacity": 360,
+      "occupancy": 0.55,
+      "source": "competitors' rate; occupancy estimated by management",
+      "assumption": ["occupancy"]
+    }
+  ],
+  "variable_costs": [
+    {
+      "name": "Washing and wear",
+      "per_unit_of": "Daily rental",
+      "amount_per_unit": 6000,
+      "source": "workshop estimate",
+      "assumption": true
+    }
+  ],
+  "fixed_costs": [
+    { "name": "Insurance", "annual_amount": 900000, "source": "broker's quote" },
+    { "name": "Scheduled maintenance", "annual_amount": 600000, "source": "dealer's maintenance plan" },
+    { "name": "Registration and technical inspection", "annual_amount": 250000, "source": "last year" },
+    { "name": "GPS platform", "annual_amount": 180000, "source": "supplier's quote" }
+  ],
+  "investments": [
+    {
+      "name": "Van",
+      "year": 0,
+      "amount": 18000000,
+      "depreciable": true,
+      "useful_life": 7,
+      "accelerated_life": 2,
+      "salvage_value": 7000000,
+      "source": "net list price; useful life from the tax table; salvage value from listings of 5-year-old used vans",
+      "assumption": ["salvage_value"]
+    },
+    {
+      "name": "GPS unit and installation",
+      "year": 0,
+      "amount": 160000,
+      "depreciable": true,
+      "useful_life": 3,
+      "salvage_value": 0,
+      "source": "supplier's quote"
+    }
+  ],
+  "working_capital": {
+    "amount": 1000000,
+    "recovered": true,
+    "source": "insurance and registration paid before the first rental is collected",
+    "assumption": true
+  }
+}

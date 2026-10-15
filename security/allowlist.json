@@ -1,0 +1,4 @@
+{
+  "_help": "Justified exceptions to single scanner findings. Each entry: rule (id or glob, e.g. net-import), path (glob relative to the repo root), optional match (substring of the matched text; never put a secret or private term here), and reason (required, non-empty: who decided and why). An entry without a reason makes the scan fail. Changes go through a PR reviewed by CODEOWNERS.",
+  "exceptions": []
+}

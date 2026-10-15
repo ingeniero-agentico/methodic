@@ -1,0 +1,28 @@
+{
+  "case": "Ferretería Andes · irrigation network for Constructora Sur",
+  "_note": "Fictitious case. Valve bought from two suppliers (one in USD), pipe bought by the length and sold by the metre, elbow with its own markup and tape with a manual price.",
+  "overhead": 0.08,
+  "exchange_rates": {
+    "USD": {"value": 945.30, "date": "01-10-2026", "source": "declared by the user"}
+  },
+  "items": [
+    {"id": "VAL-50", "description": "Bronze ball valve 2\"", "sale_unit": "pc", "quantity_sold": 40},
+    {"id": "TUB-110", "description": "PVC pressure pipe 110 mm", "sale_unit": "m", "quantity_sold": 40},
+    {"id": "COD-110", "description": "PVC elbow 110 mm 90°", "sale_unit": "pc", "quantity_sold": 12, "markup": 0.40},
+    {"id": "TEF-34", "description": "PTFE tape 3/4\"", "sale_unit": "pc", "quantity_sold": 24, "manual_price": 1990}
+  ],
+  "purchases": [
+    {"doc": "PO-101", "line": 1, "supplier": "Supplier A", "item": "VAL-50", "description": "Bronze ball valve 2 in.", "quantity": 30, "unit": "pc", "unit_price": 18500, "currency": "CLP"},
+    {"doc": "PO-101", "line": 2, "supplier": "Supplier A", "item": "TEF-34", "description": "PTFE tape 3/4", "quantity": 24, "unit": "pc", "unit_price": 1150, "currency": "CLP"},
+    {"doc": "PO-102", "line": 1, "supplier": "Supplier B", "item": "VAL-50", "description": "Ball valve bronze 2\"", "quantity": 10, "unit": "pc", "unit_price": 21.40, "currency": "USD"},
+    {"doc": "PO-103", "line": 1, "supplier": "Supplier C", "item": "TUB-110", "description": "PVC pipe 110 C10 6 m length", "quantity": 7, "unit": "6 m length", "unit_factor": 6, "unit_price": 21900, "currency": "CLP"},
+    {"doc": "PO-103", "line": 2, "supplier": "Supplier C", "item": "COD-110", "description": "PVC elbow 110x90", "quantity": 12, "unit": "pc", "unit_price": 3450, "currency": "CLP"}
+  ],
+  "breakeven": [
+    {"name": "Irrigation installation", "unit": "hour", "unit_price": 28000, "unit_variable_cost": 12500,
+     "fixed_production_costs": 1400000, "fixed_operating_costs": 460000, "expected_volume": 160},
+    {"name": "Assembled irrigation kit", "unit": "kit", "unit_price": 45000, "unit_variable_cost": 27000,
+     "fixed_production_costs": 900000, "fixed_operating_costs": 360000, "expected_volume": 400,
+     "units_produced": 500, "units_sold": 400}
+  ]
+}

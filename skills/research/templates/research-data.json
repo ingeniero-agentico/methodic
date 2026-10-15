@@ -1,0 +1,25 @@
+{
+  "task": "<one line: which decision, for whom>",
+  "research_date": "DD-MM-YYYY",
+  "gaps_source": "context/MAP.md, Gaps section | context/PLAN.md | task",
+  "contradiction_threshold": 0.10,
+  "validity_days": 365,
+  "gaps": [
+    {"id": "H1", "question": "<which number, of which exact segment>", "precision": "<how much error the calculation tolerates>",
+     "method": "<skill that uses it>", "for": "<field of the method's input>", "status": "has_data",
+     "chosen": "D01", "choice_reason": "<why this one and not another>"},
+    {"id": "H2", "question": "", "precision": "", "method": "", "for": "", "status": "no_data",
+     "how_to_close": "<a call, a quote, a freedom-of-information request>"}
+  ],
+  "sweep": [
+    {"id": "B1", "source": "<body or site>", "url": "https://", "access": "open", "gaps": ["H1"], "note": ""}
+  ],
+  "data": [
+    {"id": "D01", "gap": "H1", "description": "", "quantity": "", "value": 0, "unit": "",
+     "data_date": "DD-MM-YYYY", "source": {"url": "https://", "document": ""}, "retrieval_date": "DD-MM-YYYY",
+     "reliability": "A", "status": "verified", "usable": true, "assumption": false, "note": ""}
+  ],
+  "contradictions": [
+    {"data": ["D01", "D02"], "prevails": "D01", "reason": ""}
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "_help": "Copy this file to ingeniero-agentico-datos/cases/<case>/input.json. Every number may go alone or as {\"value\": x, \"source\": \"URL or who said it, with date\", \"assumption\": true}. Amounts net of VAT. Delete the alternatives that do not apply. Spanish keys (caso, activo, alternativas, valor, supuesto...) are also accepted.",
+  "case": "short-case-name",
+  "description": "",
+  "profile": "",
+  "horizon_years": null,
+  "vat_recoverable": true,
+  "project_flow": "project-flow.csv",
+  "_project_flow": "the output JSON of economic-evaluation (its tax regime is checked against this case) or a CSV year,flow",
+  "asset": {
+    "description": "",
+    "net_price": null,
+    "depreciation": "straight_line",
+    "_depreciation": "straight_line · accelerated · instant (Chile: Pro Pyme regime)",
+    "useful_life_years": null,
+    "accelerated_life_years": null,
+    "market_value_at_horizon": {"value": null, "source": "", "assumption": true}
+  },
+  "alternatives": [
+    {"name": "Cash", "type": "cash"},
+    {"name": "Loan", "type": "loan", "system": "french",
+     "down_payment_fraction": null, "term_months": null, "monthly_rate": null,
+     "upfront_fees": 0, "fees_financed": false, "monthly_insurance": 0,
+     "loan_tax": {"monthly_rate": 0.00066, "cap": 0.008},
+     "_loan_tax": "Chile: stamp tax (impuesto de timbres) 0.066 % per month of term, capped at 0.8 %; elsewhere, the country's tax on credit or {} if none",
+     "non_comparable_notes": []},
+    {"name": "Leasing", "type": "leasing", "term_months": null, "monthly_rate": null,
+     "monthly_installment": null, "initial_installment": "one_installment", "purchase_option": "one_installment",
+     "non_comparable_notes": []},
+    {"name": "Rental", "type": "rental", "monthly_rent": null, "term_months": null,
+     "deposit": 0, "non_comparable_notes": []}
+  ],
+  "sensitivity": {"tax_rates": []}
+}

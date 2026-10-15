@@ -1,0 +1,8 @@
+# Every path needs the owner's review. Enforced only where GitHub enforces CODEOWNERS (see SECURITY.md).
+* @camiloalonsomerino-spec
+
+# Explicit for the paths that decide what the security layer accepts.
+/security/ @camiloalonsomerino-spec
+/.github/ @camiloalonsomerino-spec
+/.githooks/ @camiloalonsomerino-spec
+/SECURITY.md @camiloalonsomerino-spec

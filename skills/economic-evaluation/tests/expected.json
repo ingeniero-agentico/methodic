@@ -1,0 +1,24 @@
+{
+  "case": "sample-case.json with sample-profile.yaml (rate 12 %, tax 27 %, 5 years, straight-line)",
+  "how_obtained": "Second path independent of the script: exact arithmetic with fractions year by year, IRR by Newton (the script uses bisection), critical values by linear interpolation on spans where the tax is linear; the critical salvage value was solved on the tax-free span of year 5 (negative profit with tax losses carried forward). Checked by hand: year 1 = 8,910,000 − 1,188,000 − 1,930,000 − 2,624,761.90 = 3,167,238.10 of profit; tax 855,154.29; flow 4,936,845.71.",
+  "currency_tolerance": 1.0,
+  "rate_tolerance": 1e-6,
+  "critical_tolerance": {
+    "revenues[0].occupancy": 1e-6,
+    "revenues[0].price": 0.01,
+    "investments[0].salvage_value": 0.5,
+    "investments[0].amount": 0.5
+  },
+  "cash_flow": [-19160000.0, 4936845.714285715, 4936845.714285715, 4936845.714285715, 4922445.714285715, 12421017.142857144],
+  "npv": 2873792.3465503054,
+  "irr": 0.17079964878055984,
+  "payback": 3.883597932734947,
+  "discounted_payback": 4.592255289326349,
+  "npv_index": 0.14998916213728108,
+  "critical_values": {
+    "revenues[0].occupancy": 0.47221656670659584,
+    "revenues[0].price": 39484.447457376795,
+    "investments[0].salvage_value": 564413.1016704,
+    "investments[0].amount": 21516694.350935638
+  }
+}

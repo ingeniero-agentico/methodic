@@ -1,0 +1,11 @@
+# Add to Hermes Agent's config.yaml: %LOCALAPPDATA%\hermes\config.yaml on Windows,
+# ~/.hermes/config.yaml on Linux and macOS. If there is already an mcp_servers key, add the entry to it.
+mcp_servers:
+  ingeniero-agentico:
+    command: "python"
+    args: ["<path-to-repo>/mcp/server.py"]
+    env:
+      INGENIERO_DATOS: "<path-to-data>"
+    enabled: true
+    timeout: 300          # seconds per tool call
+    connect_timeout: 60   # seconds to start and list tools

@@ -1,190 +1,199 @@
-# Servidor MCP · los métodos en cualquier cliente
+# MCP server · the methods in any client
 
-`mcp/servidor.py` expone los métodos del repo por **MCP** (Model Context Protocol), para usarlos
-desde Claude Desktop, Claude Code, Codex, Cursor, Gemini CLI, Hermes Agent o cualquier otro cliente
-MCP. Es un solo archivo en Python estándar (3.11 o más nuevo), sin el SDK `mcp` ni otras dependencias.
-Habla por **stdio**: el cliente lo lanza como subproceso.
+`mcp/server.py` exposes the repo's methods over **MCP** (Model Context Protocol), to use them from
+Claude Desktop, Claude Code, Codex, Cursor, Gemini CLI, Hermes Agent or any other MCP client. It is a
+single file in standard Python (3.11 or newer), without the `mcp` SDK or any other dependency. It
+speaks over **stdio**: the client launches it as a subprocess.
 
-**El servidor no calcula.** Escribe la entrada en una carpeta de trabajo, corre el script del método
-con el mismo Python que lo ejecuta y devuelve lo que el script dejó (JSON, Excel y supuestos). Vale la
-regla del repo: todo número sale de un script.
+**The server does not compute.** It writes the input to a work folder, runs the method's script with
+the same Python that runs the server and returns what the script left (JSON, Excel and assumptions).
+The repo rule holds: every number comes from a script.
 
-## Qué expone
+## What it exposes
 
-### Herramientas
+### Tools
 
-| Herramienta | Qué hace | Escribe |
+| Tool | What it does | Writes |
 |---|---|---|
-| `listar_metodos` | Cada método y etapa: qué resuelve (la frase final de su `description`), qué entrada pide, con qué herramienta se corre y qué opciones acepta | No |
-| `leer_metodo(metodo, parte)` | El texto de `SKILL.md` (`skill`), `GUIA.md` (`guia`), `plantillas/` (`plantilla`) o `fuentes.md` (`fuentes`) | No |
-| `correr_metodo(metodo, entrada, perfil?, opciones?, caso?, archivos?)` | Corre `adquisiciones`, `costo-y-precio`, `evaluacion-economica` o `evaluacion-financiera`. Devuelve el JSON de salida, las rutas del Excel y los supuestos | Sí, en la carpeta de trabajo |
-| `probar_metodo(metodo)` | Corre `--probar` del método (también de `cartografiar`, `investigar` y `auditar`) | No |
-| `mapa_contexto(carpetas, salida, excluir?, nucleo?, marcar_leido?)` | Corre `skills/cartografiar/scripts/mapa_contexto.py`; devuelve el MODO, el núcleo y la ruta de `MAPA.md` | Sí, en `salida` |
-| `validar_investigacion(ruta, umbral?)` | Corre `skills/investigar/scripts/validar_investigacion.py --json` | No |
+| `list_methods` | Each method and stage: what it solves (the first sentence of its `description`), what input it needs, which tool runs it and which options it accepts | No |
+| `read_method(method, part)` | The text of `SKILL.md` (`skill`), `GUIDE.md` (`guide`), `GUIA.md` (`guia`, the Spanish guide), `templates/` (`template`) or `SOURCES.md` (`sources`) | No |
+| `run_method(method, input, profile?, options?, case?, files?)` | Runs `procurement`, `cost-and-pricing`, `economic-evaluation` or `financial-evaluation`. Returns the output JSON, the Excel paths and the assumptions | Yes, in the work folder |
+| `test_method(method)` | Runs the method's `--test` (also for `map-context`, `research` and `audit`) | No |
+| `map_context(folders, out, exclude?, core?, mark_read?)` | Runs `skills/map-context/scripts/map_context.py`; returns the MODE, the core files and the path of `MAP.md` | Yes, in `out` |
+| `validate_research(path, threshold?)` | Runs `skills/research/scripts/validate_research.py --json` | No |
 
-Detalles de `correr_metodo`:
+Details of `run_method`:
 
-- `entrada` es el caso como objeto JSON, con la forma de la plantilla del método (`leer_metodo` con
-  `parte: "plantilla"`).
-- `perfil` es un nombre (se busca en `<datos>/perfiles/<nombre>.yaml`) o la ruta absoluta a un `.yaml`.
-  Sin perfil, el script aplica su propia búsqueda.
-- `opciones` acepta solo una lista blanca: `--tasa`, `--impuesto`, `--delta` y `--barrer` en
-  `evaluacion-economica`; `--tasa`, `--impuesto` y `--proyecto` en `evaluacion-financiera`. Cualquier
-  otra (`--salida`, `--perfil`, `--probar`) se rechaza.
-- `archivos` lleva archivos de texto que acompañan la entrada, como `{nombre: contenido}`; por ejemplo,
-  el CSV del flujo del proyecto de `evaluacion-financiera`.
-- Los supuestos salen del campo `supuestos` del JSON cuando el método lo trae (los dos de evaluación
-  y `adquisiciones`). `costo-y-precio` todavía no lo trae (es el punto 1 de la versión 1.1): ahí el
-  servidor devuelve las líneas del texto del script que dicen `SUPUESTO`, y lo indica en
-  `origen_supuestos`.
+- `input` is the case as a JSON object, shaped like the method's template (`read_method` with
+  `part: "template"`). English keys are canonical; the Spanish keys of version 1.0 are still accepted
+  by the scripts.
+- `profile` is a name (looked up in `<data>/profiles/<name>.yaml`, then `<data>/perfiles/`) or the
+  absolute path to a `.yaml`. Without a profile, the script applies its own search.
+- `options` accepts only a whitelist: `--rate`, `--tax`, `--delta` and `--sweep` in
+  `economic-evaluation`; `--rate`, `--tax` and `--project` in `financial-evaluation`. Any other one
+  (`--out`, `--profile`, `--test`) is rejected. The 1.0 names (`--tasa`, `--impuesto`, `--barrer`,
+  `--proyecto`) are translated.
+- `files` carries text files that go with the input, as `{name: content}`; for example, the project
+  cash flow CSV of `financial-evaluation`.
+- `assumptions` is the method's own list, returned as-is: every method outputs
+  `assumptions: [{parameter, value, origin, text}]`, with `origin` one of `input`, `profile`,
+  `template`, `default`, `script` or `research:<id>`. An output from before v1.1 brings `supuestos`
+  (keys `parametro`, `valor`, `origen`, `marca`): the server normalizes it to the same shape and says
+  so in `assumptions_source`.
+- Input keys are the English ones of each template (for example, procurement's `rejected`,
+  `sale_unit.content`, `printed_subtotal`, `shortest_lead_time`; cost-and-pricing's
+  `quantity_sold`, `unit_factor`, `global_markup`, `min_margin_alert`, `exchange_rates`,
+  `breakeven`).
 
-### Recursos
+Version 1.0 tool and argument names (`listar_metodos`, `correr_metodo`, `metodo`, `entrada`, ...)
+are gone from the tool list; the server still translates the old argument names if a client sends them.
 
-El `SKILL.md` y el `GUIA.md` de cada skill, con URI `ingeniero://skills/<metodo>/SKILL.md` y
-`ingeniero://skills/<metodo>/GUIA.md` (`resources/list`, `resources/read`).
+### Resources
 
-## Dónde quedan las salidas
+The `SKILL.md`, `GUIDE.md` and `GUIA.md` of each skill, with URIs `ingeniero://skills/<method>/SKILL.md`,
+`ingeniero://skills/<method>/GUIDE.md` and `ingeniero://skills/<method>/GUIA.md` (`resources/list`,
+`resources/read`).
 
-La carpeta de datos se busca en el mismo orden que usan los scripts:
+## Where the outputs go
 
-1. `--datos <carpeta>` al lanzar el servidor;
-2. la variable de entorno `INGENIERO_DATOS`;
-3. la carpeta hermana `../ingeniero-agentico-datos/`.
+The data folder is found in the same order the scripts use:
 
-Cada corrida queda en `<base>/<caso>/<metodo>-<AAAAMMDD-HHMMSS>-<id>/`, con `entrada.json` y lo que
-escribió el script. La base es, en orden:
+1. `--data <folder>` when launching the server;
+2. the `INGENIERO_DATOS` environment variable;
+3. the sibling folder `../ingeniero-agentico-datos/`.
 
-1. `--trabajo <carpeta>`, si se dio;
-2. `<datos>/casos/`, si hay carpeta de datos;
-3. `<temporal del usuario>/ingeniero-agentico-mcp/`.
+Each run lands in `<base>/<case>/<method>-<YYYYMMDD-HHMMSS>-<id>/`, with `input.json` and whatever
+the script wrote. The base is, in order:
 
-**Nunca dentro del repo.** El servidor se niega a arrancar si la carpeta de trabajo cae dentro del repo.
+1. `--work <folder>`, if given;
+2. `<data>/cases/` (or the older `<data>/casos/` if that is the one that exists), if there is a data folder;
+3. `<user temp>/ingeniero-agentico-mcp/`.
 
-## Seguridad
+**Never inside the repo.** The server refuses to start if the work folder falls inside the repo.
 
-- **Rutas.** Toda ruta que llega en un argumento tiene que ser absoluta, no puede traer `..` y tiene
-  que caer dentro de una raíz permitida:
-  - se puede **leer** del repo, de la carpeta de datos, de la de trabajo y de las raíces extra
-    (`--raiz <carpeta>`, que se repite, o `INGENIERO_MCP_RAICES` con carpetas separadas por `;` en
-    Windows o `:` en macOS y Linux);
-  - se puede **escribir** en las mismas, menos el repo.
-  
-  Para mapear las carpetas de un encargo con `mapa_contexto`, esas carpetas tienen que estar en una
-  raíz. Los campos de la entrada que el script abre como archivo (`perfil`, y `flujo_proyecto` en
-  `evaluacion-financiera`) pasan por la misma validación.
-- **Procesos.** Cada script corre con `sys.executable`, sin `shell=True` y con la entrada estándar
-  cerrada. Hay un tiempo máximo por corrida (`--tiempo-max`, 300 s por defecto); si se pasa, el
-  proceso se detiene. `notifications/cancelled` también lo detiene.
-- **Tamaños.** La entrada y sus archivos pesan como máximo 2 MB. Una respuesta tiene como máximo
-  `--max-respuesta` caracteres (400.000 por defecto): si el JSON no cabe, se devuelve su ruta.
-- **El texto es dato.** Lo que el servidor lee de un archivo se devuelve como contenido; nunca se
-  interpreta como instrucción.
-- **Errores.** Una herramienta inexistente responde con el error JSON-RPC `-32602`. Un argumento mal
-  dado (método inexistente, ruta con `..`, opción no permitida) responde con un resultado
-  `isError: true` y el motivo, para que el modelo se corrija.
+## Security
 
-## Protocolo
+- **Paths.** Every path that arrives in an argument must be absolute, cannot contain `..` and must
+  fall inside an allowed root:
+  - it can **read** from the repo, the data folder, the work folder and the extra roots
+    (`--root <folder>`, repeatable, or `INGENIERO_MCP_ROOTS` with folders separated by `;` on
+    Windows or `:` on macOS and Linux; the 1.0 name `INGENIERO_MCP_RAICES` still works);
+  - it can **write** to the same ones, except the repo.
 
-El servidor sirve a clientes de **las dos eras** de MCP:
+  To map the folders of a task with `map_context`, those folders must be in a root. The input fields
+  the script opens as a file (`profile`, and `project_flow` in `financial-evaluation`) go through the
+  same validation.
+- **Processes.** Each script runs with `sys.executable`, without `shell=True` and with standard input
+  closed. There is a maximum time per run (`--max-time`, 300 s by default); past it, the process is
+  stopped. `notifications/cancelled` stops it too.
+- **Sizes.** The input and its files weigh at most 2 MB. A response has at most `--max-response`
+  characters (400,000 by default): if the JSON does not fit, its path is returned.
+- **Text is data.** What the server reads from a file is returned as content; it is never interpreted
+  as an instruction.
+- **Errors.** An unknown tool answers with the JSON-RPC error `-32602`. A badly given argument
+  (unknown method, path with `..`, option not allowed) answers with an `isError: true` result and the
+  reason, so the model can correct itself.
 
-- **Moderna, 2026-07-28** (la revisión vigente al 15-10-2026). No hay handshake. Cada pedido trae
-  `_meta["io.modelcontextprotocol/protocolVersion"]` y
-  `_meta["io.modelcontextprotocol/clientCapabilities"]`. El servidor responde `server/discover`, pone
-  `resultType: "complete"` y `serverInfo` en cada resultado, y `ttlMs`/`cacheScope` en las listas. Una
-  versión que no soporta responde `-32022` con la lista de versiones que sí.
-- **Legada, 2025-11-25, 2025-06-18, 2025-03-26 y 2024-11-05.** `initialize`, luego
-  `notifications/initialized` y `ping`. Si el cliente pide una versión que no conoce, responde con
-  2025-11-25.
+## Protocol
 
-Un mensaje JSON-RPC por línea (UTF-8). Por stdout sale solo protocolo; los avisos van a stderr.
+The server serves clients of **both MCP eras**:
 
-Fuentes (leídas el 15-10-2026):
+- **Modern, 2026-07-28** (the current revision on 15-10-2026). There is no handshake. Every request
+  carries `_meta["io.modelcontextprotocol/protocolVersion"]` and
+  `_meta["io.modelcontextprotocol/clientCapabilities"]`. The server answers `server/discover`, puts
+  `resultType: "complete"` and `serverInfo` in every result, and `ttlMs`/`cacheScope` in the lists. A
+  version it does not support answers `-32022` with the list of versions it does.
+- **Legacy, 2025-11-25, 2025-06-18, 2025-03-26 and 2024-11-05.** `initialize`, then
+  `notifications/initialized` and `ping`. If the client asks for a version it does not know, it
+  answers with 2025-11-25.
 
-- Especificación vigente: https://modelcontextprotocol.io/specification/2026-07-28
-- Cambios respecto de 2025-11-25: https://modelcontextprotocol.io/specification/2026-07-28/changelog
-- Versiones y compatibilidad entre eras: https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning
-- `_meta` y códigos de error: https://modelcontextprotocol.io/specification/2026-07-28/basic/index
+One JSON-RPC message per line (UTF-8). Only protocol goes to stdout; notices go to stderr.
+
+Sources (read on 15-10-2026):
+
+- Current specification: https://modelcontextprotocol.io/specification/2026-07-28
+- Changes from 2025-11-25: https://modelcontextprotocol.io/specification/2026-07-28/changelog
+- Versions and compatibility between eras: https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning
+- `_meta` and error codes: https://modelcontextprotocol.io/specification/2026-07-28/basic/index
 - `server/discover`: https://modelcontextprotocol.io/specification/2026-07-28/server/discover
-- Transporte stdio: https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio
-- Herramientas y recursos: https://modelcontextprotocol.io/specification/2026-07-28/server/tools ·
+- stdio transport: https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio
+- Tools and resources: https://modelcontextprotocol.io/specification/2026-07-28/server/tools ·
   https://modelcontextprotocol.io/specification/2026-07-28/server/resources
-- Handshake legado: https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle
+- Legacy handshake: https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle
 
-## Antes de configurar un cliente
+## Before configuring a client
 
-1. **Python 3.11 o más nuevo** y `openpyxl` (`python -m pip install openpyxl`); los scripts lo usan
-   para el Excel.
-2. Comprueba que arranca y mira qué raíces quedaron:
-
-   ```
-   python <ruta-al-repo>/mcp/servidor.py --comprobar
-   ```
-
-3. Prueba de punta a punta (termina en `OK`):
+1. **Python 3.11 or newer** and `openpyxl` (`python -m pip install -r requirements.txt`, the
+   tested version); the scripts use it for the Excel file.
+2. Check that it starts and see which roots it ended up with:
 
    ```
-   python <ruta-al-repo>/mcp/probar_servidor.py
+   python <path-to-repo>/mcp/server.py --check
    ```
 
-En los ejemplos, `<ruta-al-repo>` es la ruta absoluta de este repo y `<ruta-a-los-datos>` la de tu
-carpeta de datos (la que tiene `perfiles/` y `casos/`). Si no tienes carpeta de datos, borra el
-bloque `env` y las salidas irán al temporal.
+3. End-to-end test (ends in `OK`):
 
-**En Windows:**
+   ```
+   python <path-to-repo>/mcp/test_server.py
+   ```
 
-- En JSON, escribe las rutas con barras normales (`D:/proyectos/ingeniero-agentico`) o con la
-  barra invertida doble (`D:\\proyectos\\ingeniero-agentico`).
-- Si `python` no está en el PATH del cliente (o abre la Microsoft Store), pon en `command` la ruta
-  absoluta a `python.exe`, o usa `"command": "py"` con `"args": ["-3", "<ruta-al-repo>/mcp/servidor.py"]`.
+In the examples, `<path-to-repo>` is the absolute path of this repo and `<path-to-data>` that of your
+data folder (the one with `profiles/` and `cases/`). If you have no data folder, delete the `env`
+block and the outputs will go to the temp folder.
 
-**En macOS y Linux**, el comando suele ser `python3`.
+**On Windows:**
 
-Las plantillas listas están en `mcp/ejemplos/`. `probar_servidor.py` lee cada una y lanza el servidor
-tal como lo haría el cliente.
+- In JSON, write paths with forward slashes (`D:/projects/ingeniero-agentico`) or with a double
+  backslash (`D:\\projects\\ingeniero-agentico`).
+- If `python` is not on the client's PATH (or opens the Microsoft Store), put the absolute path to
+  `python.exe` in `command`, or use `"command": "py"` with `"args": ["-3", "<path-to-repo>/mcp/server.py"]`.
 
-## Configuración por cliente
+**On macOS and Linux**, the command is usually `python3`.
+
+The ready-made templates are in `mcp/examples/`. `test_server.py` reads each one and launches the
+server the way the client would.
+
+## Configuration per client
 
 ### Claude Desktop
 
-- Archivo `claude_desktop_config.json`; se abre desde Settings → Developer → Edit Config.
+- File `claude_desktop_config.json`; open it from Settings → Developer → Edit Config.
   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Se agrega la entrada en `mcpServers` y se reinicia la aplicación por completo.
-- Plantilla: `mcp/ejemplos/claude-desktop.json`.
+- Add the entry under `mcpServers` and restart the application completely.
+- Template: `mcp/examples/claude-desktop.json`.
 
 ```json
 {
   "mcpServers": {
     "ingeniero-agentico": {
       "command": "python",
-      "args": ["<ruta-al-repo>/mcp/servidor.py"],
-      "env": { "INGENIERO_DATOS": "<ruta-a-los-datos>" }
+      "args": ["<path-to-repo>/mcp/server.py"],
+      "env": { "INGENIERO_DATOS": "<path-to-data>" }
     }
   }
 }
 ```
 
-Los registros quedan en `%APPDATA%\Claude\logs\mcp-server-ingeniero-agentico.log` (macOS:
-`~/Library/Logs/Claude/`).
-Fuente: https://modelcontextprotocol.io/docs/develop/connect-local-servers
+Logs go to `%APPDATA%\Claude\logs\mcp-server-ingeniero-agentico.log` (macOS: `~/Library/Logs/Claude/`).
+Source: https://modelcontextprotocol.io/docs/develop/connect-local-servers
 
 ### Claude Code
 
-Por comando (todo lo que va después de `--` pasa intacto al servidor):
+By command (everything after `--` passes untouched to the server):
 
 ```
-claude mcp add --transport stdio --scope project ingeniero-agentico -- python <ruta-al-repo>/mcp/servidor.py
+claude mcp add --transport stdio --scope project ingeniero-agentico -- python <path-to-repo>/mcp/server.py
 ```
 
-- `--scope project` escribe `.mcp.json` en la raíz del proyecto. `local` (por defecto) y `user`
-  escriben en `~/.claude.json`.
-- Para pasar la carpeta de datos, agrega `--env INGENIERO_DATOS=<ruta-a-los-datos>` antes de
-  `--transport`. Si el nombre del servidor va justo después de `--env`, el CLI lo lee como otro par
-  `CLAVE=valor`.
-- `claude mcp list` muestra el estado y `claude mcp get ingeniero-agentico` el detalle. La primera vez
-  que se usa, un servidor de `.mcp.json` pide aprobación en la sesión interactiva.
-- En `.mcp.json` se aceptan `${VAR}` y `${VAR:-defecto}`.
-- Plantilla del `.mcp.json`: `mcp/ejemplos/claude-code.mcp.json`.
+- `--scope project` writes `.mcp.json` at the project root. `local` (the default) and `user`
+  write to `~/.claude.json`.
+- To pass the data folder, add `--env INGENIERO_DATOS=<path-to-data>` before `--transport`. If the
+  server name comes right after `--env`, the CLI reads it as another `KEY=value` pair.
+- `claude mcp list` shows the status and `claude mcp get ingeniero-agentico` the details. The first
+  time it is used, a server from `.mcp.json` asks for approval in the interactive session.
+- `.mcp.json` accepts `${VAR}` and `${VAR:-default}`.
+- `.mcp.json` template: `mcp/examples/claude-code.mcp.json`.
 
 ```json
 {
@@ -192,44 +201,42 @@ claude mcp add --transport stdio --scope project ingeniero-agentico -- python <r
     "ingeniero-agentico": {
       "type": "stdio",
       "command": "python",
-      "args": ["<ruta-al-repo>/mcp/servidor.py"],
-      "env": { "INGENIERO_DATOS": "<ruta-a-los-datos>" }
+      "args": ["<path-to-repo>/mcp/server.py"],
+      "env": { "INGENIERO_DATOS": "<path-to-data>" }
     }
   }
 }
 ```
 
-Fuente: https://code.claude.com/docs/en/mcp
+Source: https://code.claude.com/docs/en/mcp
 
 ### Codex (OpenAI)
 
-- Archivo `~/.codex/config.toml`, o `.codex/config.toml` en un proyecto marcado como confiable.
-- Sección `[mcp_servers.<nombre>]`.
-- Por comando: `codex mcp add ingeniero-agentico --env INGENIERO_DATOS=<ruta-a-los-datos> -- python <ruta-al-repo>/mcp/servidor.py`.
-- Plantilla: `mcp/ejemplos/codex.config.toml`.
+- File `~/.codex/config.toml`, or `.codex/config.toml` in a project marked as trusted.
+- Section `[mcp_servers.<name>]`.
+- By command: `codex mcp add ingeniero-agentico --env INGENIERO_DATOS=<path-to-data> -- python <path-to-repo>/mcp/server.py`.
+- Template: `mcp/examples/codex.config.toml`.
 
 ```toml
 [mcp_servers.ingeniero-agentico]
 command = "python"
-args = ["<ruta-al-repo>/mcp/servidor.py"]
+args = ["<path-to-repo>/mcp/server.py"]
 startup_timeout_sec = 20
 tool_timeout_sec = 300
 
 [mcp_servers.ingeniero-agentico.env]
-INGENIERO_DATOS = "<ruta-a-los-datos>"
+INGENIERO_DATOS = "<path-to-data>"
 ```
 
-`tool_timeout_sec` vale 60 por defecto; `cartografiar` sobre carpetas grandes puede tardar más, por
-eso la plantilla lo sube a 300. En TOML, una ruta de Windows entre comillas dobles necesita `\\`:
-usa `/` o comillas simples.
-Fuente: https://developers.openai.com/codex/mcp (redirige a https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
+`tool_timeout_sec` is 60 by default; `map_context` over large folders can take longer, so the
+template raises it to 300. In TOML, a Windows path in double quotes needs `\\`: use `/` or single quotes.
+Source: https://developers.openai.com/codex/mcp (redirects to https://learn.chatgpt.com/docs/extend/mcp?surface=cli)
 
 ### Cursor
 
-- Archivo `.cursor/mcp.json` (del proyecto) o `~/.cursor/mcp.json` (global). Se reinicia Cursor
-  después de cambiarlo.
-- Acepta `${workspaceFolder}`, `${userHome}` y `${env:NOMBRE}`.
-- Plantilla: `mcp/ejemplos/cursor.mcp.json`.
+- File `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global). Restart Cursor after changing it.
+- Accepts `${workspaceFolder}`, `${userHome}` and `${env:NAME}`.
+- Template: `mcp/examples/cursor.mcp.json`.
 
 ```json
 {
@@ -237,110 +244,110 @@ Fuente: https://developers.openai.com/codex/mcp (redirige a https://learn.chatgp
     "ingeniero-agentico": {
       "type": "stdio",
       "command": "python",
-      "args": ["<ruta-al-repo>/mcp/servidor.py"],
-      "env": { "INGENIERO_DATOS": "<ruta-a-los-datos>" }
+      "args": ["<path-to-repo>/mcp/server.py"],
+      "env": { "INGENIERO_DATOS": "<path-to-data>" }
     }
   }
 }
 ```
 
-Fuente: https://cursor.com/docs/context/mcp
+Source: https://cursor.com/docs/context/mcp
 
 ### Gemini CLI
 
-- Archivo `~/.gemini/settings.json` (del usuario) o `.gemini/settings.json` (del proyecto).
-- Clave `mcpServers`. `timeout` va en milisegundos (600000 por defecto).
-- Por comando: `gemini mcp add -s user -e INGENIERO_DATOS=<ruta-a-los-datos> ingeniero-agentico python <ruta-al-repo>/mcp/servidor.py`.
-  El alcance por defecto es `project`. Los argumentos del servidor que empiezan con guion van después
-  de `--`.
-- `/mcp` muestra el estado.
-- Plantilla: `mcp/ejemplos/gemini.settings.json`.
+- File `~/.gemini/settings.json` (user) or `.gemini/settings.json` (project).
+- Key `mcpServers`. `timeout` is in milliseconds (600000 by default).
+- By command: `gemini mcp add -s user -e INGENIERO_DATOS=<path-to-data> ingeniero-agentico python <path-to-repo>/mcp/server.py`.
+  The default scope is `project`. Server arguments that start with a hyphen go after `--`.
+- `/mcp` shows the status.
+- Template: `mcp/examples/gemini.settings.json`.
 
 ```json
 {
   "mcpServers": {
     "ingeniero-agentico": {
       "command": "python",
-      "args": ["<ruta-al-repo>/mcp/servidor.py"],
-      "env": { "INGENIERO_DATOS": "<ruta-a-los-datos>" },
+      "args": ["<path-to-repo>/mcp/server.py"],
+      "env": { "INGENIERO_DATOS": "<path-to-data>" },
       "timeout": 300000
     }
   }
 }
 ```
 
-Fuente: https://geminicli.com/docs/tools/mcp-server/ (el aviso de esa página dice que desde el
-18-06-2026 Antigravity CLI reemplaza a Gemini CLI en el plan gratuito y en Google One).
+Source: https://geminicli.com/docs/tools/mcp-server/ (the notice on that page says that since
+18-06-2026 Antigravity CLI replaces Gemini CLI on the free plan and on Google One).
 
 ### Hermes Agent (Nous Research)
 
-- Archivo `config.yaml` del directorio de Hermes:
+- The `config.yaml` file in the Hermes folder:
   - Windows: `%LOCALAPPDATA%\hermes\config.yaml`
-  - Linux y macOS: `~/.hermes/config.yaml`
-- Clave `mcp_servers`. Si ya existe, se suma la entrada.
-- Plantilla: `mcp/ejemplos/hermes.config.yaml`.
+  - Linux and macOS: `~/.hermes/config.yaml`
+- Key `mcp_servers`. If it already exists, add the entry to it.
+- Template: `mcp/examples/hermes.config.yaml`.
 
 ```yaml
 mcp_servers:
   ingeniero-agentico:
     command: "python"
-    args: ["<ruta-al-repo>/mcp/servidor.py"]
+    args: ["<path-to-repo>/mcp/server.py"]
     env:
-      INGENIERO_DATOS: "<ruta-a-los-datos>"
+      INGENIERO_DATOS: "<path-to-data>"
     enabled: true
-    timeout: 300          # segundos por llamada a una herramienta
-    connect_timeout: 60   # segundos para arrancar y listar herramientas
+    timeout: 300          # seconds per tool call
+    connect_timeout: 60   # seconds to start and list tools
 ```
 
-- Por comando:
-  `hermes mcp add ingeniero-agentico --command python --env INGENIERO_DATOS=<ruta-a-los-datos> --args <ruta-al-repo>/mcp/servidor.py`.
-  `--args` va al final, porque toma todo lo que sigue.
-- `hermes mcp test ingeniero-agentico` prueba la conexión y `/reload-mcp` recarga la configuración.
-- Las herramientas aparecen como `mcp__ingeniero_agentico__<herramienta>`.
-- La clave `protocol` (`auto`, que es el valor por defecto, `stateless` o `legacy`) elige la era.
-  Con `auto` intenta primero `initialize`, y este servidor lo atiende.
+- By command:
+  `hermes mcp add ingeniero-agentico --command python --env INGENIERO_DATOS=<path-to-data> --args <path-to-repo>/mcp/server.py`.
+  `--args` goes last, because it takes everything that follows.
+- `hermes mcp test ingeniero-agentico` tests the connection and `/reload-mcp` reloads the configuration.
+- Tools show up as `mcp__ingeniero_agentico__<tool>`.
+- The `protocol` key (`auto`, the default, `stateless` or `legacy`) picks the era. With `auto` it
+  tries `initialize` first, and this server answers it.
 
-Fuentes: https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference. Se verificó además
-en el código instalado de Hermes Agent: `tools/mcp_tool_config.py` lee `mcp_servers`,
-`tools/mcp_tool_transport.py` usa `command`, `args`, `env` y `cwd`, y `hermes_cli/subcommands/mcp.py`
-define `hermes mcp add`.
+Sources: https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference. Also checked in
+the installed Hermes Agent code: `tools/mcp_tool_config.py` reads `mcp_servers`,
+`tools/mcp_tool_transport.py` uses `command`, `args`, `env` and `cwd`, and `hermes_cli/subcommands/mcp.py`
+defines `hermes mcp add`.
 
-### Resumen
+### Summary
 
-| Cliente | Archivo de configuración | Plantilla | Fuente |
+| Client | Configuration file | Template | Source |
 |---|---|---|---|
 | Claude Desktop | `%APPDATA%\Claude\claude_desktop_config.json` · `~/Library/Application Support/Claude/claude_desktop_config.json` | `claude-desktop.json` | modelcontextprotocol.io/docs/develop/connect-local-servers |
-| Claude Code | `.mcp.json` (proyecto) · `~/.claude.json` (local, usuario) | `claude-code.mcp.json` | code.claude.com/docs/en/mcp |
+| Claude Code | `.mcp.json` (project) · `~/.claude.json` (local, user) | `claude-code.mcp.json` | code.claude.com/docs/en/mcp |
 | Codex | `~/.codex/config.toml` · `.codex/config.toml` | `codex.config.toml` | developers.openai.com/codex/mcp |
 | Cursor | `.cursor/mcp.json` · `~/.cursor/mcp.json` | `cursor.mcp.json` | cursor.com/docs/context/mcp |
 | Gemini CLI | `.gemini/settings.json` · `~/.gemini/settings.json` | `gemini.settings.json` | geminicli.com/docs/tools/mcp-server |
 | Hermes Agent | `%LOCALAPPDATA%\hermes\config.yaml` · `~/.hermes/config.yaml` | `hermes.config.yaml` | hermes-agent.nousresearch.com/docs/reference/mcp-config-reference |
 
-Otro cliente MCP con stdio sirve igual: comando `python`, argumento `<ruta-al-repo>/mcp/servidor.py`
-y, si hace falta, la variable `INGENIERO_DATOS`.
+Any other MCP client with stdio works the same: command `python`, argument `<path-to-repo>/mcp/server.py`
+and, if needed, the `INGENIERO_DATOS` variable.
 
-## Opciones del servidor
+## Server options
 
-| Opción | Qué hace |
+| Option | What it does |
 |---|---|
-| `--datos <carpeta>` | Carpeta de datos (`perfiles/` y `casos/`). Gana sobre `INGENIERO_DATOS` y la carpeta hermana |
-| `--trabajo <carpeta>` | Dónde quedan las corridas. Gana sobre la carpeta de datos |
-| `--raiz <carpeta>` | Raíz extra de lectura y escritura (se repite). También `INGENIERO_MCP_RAICES` |
-| `--tiempo-max <s>` | Segundos máximos por corrida de un script (300) |
-| `--max-respuesta <n>` | Caracteres máximos de una respuesta (400.000) |
-| `--comprobar` | Muestra la configuración, las herramientas y los recursos, y sale |
+| `--data <folder>` | Data folder (`profiles/` and `cases/`). Wins over `INGENIERO_DATOS` and the sibling folder |
+| `--work <folder>` | Where the runs go. Wins over the data folder |
+| `--root <folder>` | Extra read and write root (repeatable). Also `INGENIERO_MCP_ROOTS` |
+| `--max-time <s>` | Maximum seconds per script run (300) |
+| `--max-response <n>` | Maximum characters of a response (400,000) |
+| `--check` | Shows the configuration, the tools and the resources, then exits |
 
-## Límites conocidos
+The 1.0 flags (`--datos`, `--trabajo`, `--raiz`, `--tiempo-max`, `--max-respuesta`, `--comprobar`)
+are still accepted as hidden aliases.
 
-- **El perfil por defecto lo elige el script.** Sin `perfil`, cada script busca por su cuenta en
-  `INGENIERO_DATOS` y en la carpeta hermana `../ingeniero-agentico-datos/`, aunque el servidor se
-  haya lanzado con otro `--datos`. Para no depender de eso, pasa `perfil` explícito.
-- **Las raíces se fijan al lanzar el servidor.** No usa *roots* del cliente (la revisión 2026-07-28
-  los dejó obsoletos): una carpeta nueva se agrega con `--raiz` y reiniciando el servidor.
-- **Una corrida bloquea hasta terminar.** No usa la extensión de tareas ni avisa progreso. El tiempo
-  máximo por defecto es 300 s, y algunos clientes cortan antes (Codex, 60 s por defecto).
-- **`costo-y-precio` no trae `supuestos` en su JSON**: los supuestos salen del texto del script hasta
-  la versión 1.1.
-- **`auditar` solo se prueba.** `recorrer.py` compara corridas archivadas y lo maneja el agente
-  auditor, no tiene herramienta propia en el servidor.
-- **Sin HTTP.** Solo stdio, el transporte que lanzan todos los clientes de la tabla.
+## Known limits
+
+- **The default profile is chosen by the script.** Without `profile`, each script searches on its own
+  in `INGENIERO_DATOS` and in the sibling folder `../ingeniero-agentico-datos/`, even if the server
+  was launched with another `--data`. To avoid depending on that, pass `profile` explicitly.
+- **Roots are fixed when the server starts.** It does not use the client's *roots* (revision
+  2026-07-28 deprecated them): a new folder is added with `--root` and restarting the server.
+- **A run blocks until it finishes.** It does not use the tasks extension or report progress. The
+  default maximum time is 300 s, and some clients cut earlier (Codex, 60 s by default).
+- **`audit` is only tested.** `rerun.py` compares archived runs and is driven by the auditor agent;
+  it has no tool of its own in the server.
+- **No HTTP.** Only stdio, the transport every client in the table launches.

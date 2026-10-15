@@ -1,0 +1,22 @@
+# FICTITIOUS profile for the economic-evaluation test. Not a real company.
+company:
+  name: "Transportes del Valle"
+  tax_id: ""
+  country: CL
+  currency: CLP
+  currency_decimals: 0
+  vat: 0.19
+  income_tax: 0.27   # Chile: general regime (first category tax)
+
+purchasing:
+  suppliers: []
+  tie_break: highest_availability
+
+pricing:
+  default_markup: 0.30
+  overhead: 0.00
+
+finance:
+  discount_rate: 0.12   # annual rate the company uses to evaluate projects
+  horizon_years: 5
+  depreciation: straight_line

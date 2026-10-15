@@ -1,0 +1,28 @@
+{
+ "_how_computed": "By hand, before running the script. Effective unit price = line_total ÷ (quantity × content). Item 1: B sells 5.8 m lengths at 551,000/58 = 9,500 per metre and has 10 lengths (58 m); the 46 m balance goes to A (10,000 per metre) in 6 m lengths: 8 lengths = 48 m, 2 m left over. Item 2: B prints a list price of 4,000 but charges 112,000/40 = 2,800 and has 30; the balance of 10 goes to A (3,000). Item 3: B at 100,800/12 = 8,400 against A at 8,500. Item 4: A at 2,000 against C at 2,100. Item 5: the only offer (B, 2.5 inch) is rejected; it stays TO QUOTE. Item 6: A and C tie at 1,500; C wins on highest availability (10 against 6). Net 1,380,800; VAT 19 % (template profile) 262,352; total 1,643,152.",
+ "totals": {"net": 1380800, "vat": 262352, "total": 1643152, "items": 6, "complete": 5, "incomplete": 1},
+ "by_supplier": [
+  {"supplier": "Supplier B", "lines": 3, "net": 735800},
+  {"supplier": "Supplier A", "lines": 3, "net": 630000},
+  {"supplier": "Supplier C", "lines": 1, "net": 15000}
+ ],
+ "items": [
+  {"n": 1, "allocations": [
+   {"order": 1, "supplier": "Supplier B", "quote": "B-202", "line": "4", "units": 10, "quantity": 58, "leftover": 0, "unit_price": 9500, "subtotal": 551000},
+   {"order": 2, "supplier": "Supplier A", "quote": "A-101", "line": "1", "units": 8, "quantity": 48, "leftover": 2, "unit_price": 10000, "subtotal": 480000}]},
+  {"n": 2, "allocations": [
+   {"order": 1, "supplier": "Supplier B", "quote": "B-202", "line": "1", "quantity": 30, "unit_price": 2800, "subtotal": 84000},
+   {"order": 2, "supplier": "Supplier A", "quote": "A-101", "line": "2", "quantity": 10, "unit_price": 3000, "subtotal": 30000}]},
+  {"n": 3, "allocations": [
+   {"order": 1, "supplier": "Supplier B", "quote": "B-202", "line": "2", "quantity": 12, "unit_price": 8400, "subtotal": 100800}]},
+  {"n": 4, "allocations": [
+   {"order": 1, "supplier": "Supplier A", "quote": "A-101", "line": "4", "quantity": 60, "unit_price": 2000, "subtotal": 120000}]},
+  {"n": 5, "allocations": [
+   {"order": 1, "gap": true, "quantity": 4, "subtotal": null}]},
+  {"n": 6, "allocations": [
+   {"order": 1, "supplier": "Supplier C", "quote": "C-303", "line": "3", "quantity": 10, "unit_price": 1500, "subtotal": 15000}]}
+ ],
+ "missing": [{"n": 5, "quantity": 4}],
+ "printed_differs_from_effective": 4,
+ "rejected": 1
+}

@@ -1,0 +1,113 @@
+# Security gate. Read-only token, no secrets, actions pinned by full commit SHA (versions in the
+# trailing comment; Dependabot proposes updates). Never add pull_request_target or workflow_run:
+# they run fork code with a write token and secrets.
+#
+# Pinned commits, read from the official repositories with `git ls-remote --tags` on 15-10-2026:
+#   actions/checkout     v7.0.1  3d3c42e5aac5ba805825da76410c181273ba90b1  (released 20-07-2026)
+#   actions/setup-python v7.0.0  5fda3b95a4ea91299a34e894583c3862153e4b97  (released 20-07-2026)
+#   actions/setup-node   v7.0.0  820762786026740c76f36085b0efc47a31fe5020  (released 14-07-2026)
+# Tools pinned by version and checksum:
+#   gitleaks 8.30.1 linux x64, sha256 from gitleaks_8.30.1_checksums.txt of the official release
+#   @anthropic-ai/claude-code 2.1.292 (npm dist-tag "stable" on 15-10-2026; npm checks its sha512 integrity)
+#   skills-ref at agentskills/agentskills commit 69ef37e9424c0a7ea9dd2293b559e43ec8176379 (main, 15-10-2026)
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: scan · ${{ matrix.os }} · py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Scanner (network, execution, obfuscation, hidden Unicode, injection, secrets, private data)
+        run: python security/scan.py --no-denylist
+      - name: Manifest of distributable files
+        run: python security/manifest.py verify
+      - name: Scanner and manifest self-tests
+        run: |
+          python security/scan.py --test
+          python security/manifest.py --test
+
+  gitleaks:
+    name: gitleaks (second secrets layer, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download gitleaks 8.30.1 and verify its checksum
+        run: |
+          curl -fsSL -o gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf gitleaks.tar.gz gitleaks
+      - name: Scan the git history
+        run: ./gitleaks git . --redact --no-banner --exit-code 1
+
+  plugin:
+    name: claude plugin validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - name: Install Claude Code 2.1.292 (exact)
+        run: npm install --global --no-fund --no-audit @anthropic-ai/claude-code@2.1.292
+      - name: Validate the plugin and marketplace manifests
+        env:
+          DISABLE_AUTOUPDATER: "1"
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          claude --version
+          claude plugin validate .
+
+  skills-spec:
+    name: skills-ref validate (Agent Skills reference validator, informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The reference library says it is "for demonstration purposes only"; install.py already enforces
+    # the spec (name, description, BOM). This job reports, it does not block.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install skills-ref at a pinned commit
+        run: python -m pip install "skills-ref @ git+https://github.com/agentskills/agentskills@69ef37e9424c0a7ea9dd2293b559e43ec8176379#subdirectory=skills-ref"
+      - name: Validate every skill
+        run: |
+          status=0
+          for d in skills/*/; do
+            skills-ref validate "$d" || status=1
+          done
+          exit $status
