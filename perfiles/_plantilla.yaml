@@ -1,0 +1,30 @@
+# Perfil de empresa · plantilla
+# Copia este archivo a ingeniero-agentico-datos/perfiles/<empresa>.yaml y llénalo.
+# Lo leen todas las skills del repo. Un campo vacío lo pregunta la skill; no lo inventa.
+
+empresa:
+  nombre: ""            # nombre de fantasía
+  rut: ""               # o el identificador tributario del país
+  pais: CL
+  moneda: CLP
+  decimales_moneda: 0   # CLP 0 · USD 2
+  iva: 0.19             # impuesto al valor agregado
+  impuesto_renta: 0.27  # tasa de impuesto a la renta de la empresa
+
+compras:
+  # Proveedores conocidos, identificados por RUT (el nombre de fantasía cambia; el RUT no)
+  proveedores: []
+  #  - rut: ""
+  #    nombre: ""
+  #    plazo_entrega_dias: 0
+  desempate: mayor_disponibilidad   # con igual precio, gana quien cubre más (menos órdenes)
+
+precios:
+  # Recargo SOBRE EL COSTO: 30 significa costo × 1,30. No es margen sobre la venta.
+  recargo_por_defecto: 0.30
+  gastos_generales: 0.00            # fracción del costo directo que se carga como indirecto
+
+finanzas:
+  tasa_descuento: null     # tasa anual con que la empresa evalúa proyectos (si no hay, se pregunta)
+  horizonte_anios: 5
+  depreciacion: lineal     # lineal · acelerada

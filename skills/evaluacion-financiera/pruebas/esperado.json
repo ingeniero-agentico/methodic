@@ -1,0 +1,43 @@
+{
+  "caso": "transportes-del-valle-furgon",
+  "perfil": "perfil-ficticio.yaml",
+  "van_proyecto": 5291023.15,
+  "ganadora": "Leasing 36 cuotas",
+  "diferencia_vp": 633551.13,
+  "alternativas": {
+    "Contado": {
+      "costo_vp": 15884462.44,
+      "van_inversionista": 5291023.15
+    },
+    "Crédito 36 cuotas": {
+      "cuota": 694126.0,
+      "costo_vp": 16948620.24,
+      "van_inversionista": 4226865.35,
+      "total_intereses": 5788532.0,
+      "cae": 0.203737,
+      "tasa_efectiva_despues_impuesto": 0.163762
+    },
+    "Crédito 36 cuotas (alemana)": {
+      "cuota": 821333.0,
+      "costo_vp": 16905971.59,
+      "van_inversionista": 4269514.0,
+      "total_intereses": 5328000.0,
+      "cae": 0.205592,
+      "tasa_efectiva_despues_impuesto": 0.165471
+    },
+    "Leasing 36 cuotas": {
+      "cuota": 794063.0,
+      "costo_vp": 15250911.31,
+      "van_inversionista": 5924574.28,
+      "total_intereses": 6174394.0,
+      "cae": 0.156,
+      "tasa_efectiva_despues_impuesto": 0.102194
+    },
+    "Arriendo 60 meses": {
+      "cuota": 620000.0,
+      "costo_vp": 21291353.63,
+      "van_inversionista": -115868.04,
+      "tasa_efectiva_despues_impuesto": 0.215304
+    }
+  }
+}

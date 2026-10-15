@@ -1,0 +1,31 @@
+{
+  "caso": "transportes-del-valle-furgon",
+  "descripcion": "Transportes del Valle (ficticia) necesita un furgón. ¿Lo paga al contado, con crédito a 36 cuotas o con leasing? Se agrega el crédito con cuota alemana y el arriendo como referencia.",
+  "horizonte_anios": 5,
+  "iva_recuperable": true,
+  "flujo_proyecto": "flujo-proyecto-ficticio.csv",
+  "activo": {
+    "descripcion": "Furgón de carga (ficticio)",
+    "precio_neto": 24000000,
+    "depreciacion": "lineal",
+    "vida_util_anios": 7,
+    "valor_mercado_al_horizonte": {"valor": 9000000, "supuesto": true, "fuente": "estimación ficticia para la prueba"}
+  },
+  "alternativas": [
+    {"nombre": "Contado", "tipo": "contado"},
+    {"nombre": "Crédito 36 cuotas", "tipo": "credito", "sistema": "francesa",
+     "pie_fraccion": 0.20, "plazo_meses": 36, "tasa_mensual": 0.015,
+     "gastos_iniciales": 250000, "seguro_mensual": 8000,
+     "impuesto_credito": {"tasa_mensual": 0.00066, "tope": 0.008}},
+    {"nombre": "Crédito 36 cuotas (alemana)", "tipo": "credito", "sistema": "alemana",
+     "pie_fraccion": 0.20, "plazo_meses": 36, "tasa_mensual": 0.015,
+     "gastos_iniciales": 250000, "seguro_mensual": 8000,
+     "impuesto_credito": {"tasa_mensual": 0.00066, "tope": 0.008}},
+    {"nombre": "Leasing 36 cuotas", "tipo": "leasing", "plazo_meses": 36, "tasa_mensual": 0.013,
+     "cuota_inicial": "una_cuota", "opcion_compra": "una_cuota"},
+    {"nombre": "Arriendo 60 meses", "tipo": "arriendo", "renta_mensual": 620000, "plazo_meses": 60,
+     "garantia": 620000,
+     "notas_no_comparables": ["la renta incluye mantención y seguro; las otras alternativas no los incluyen"]}
+  ],
+  "sensibilidad": {"impuestos": [0.0, 0.10]}
+}

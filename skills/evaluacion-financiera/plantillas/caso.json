@@ -1,0 +1,31 @@
+{
+  "_ayuda": "Copia este archivo a ingeniero-agentico-datos/casos/<caso>/entrada.json. Cada número puede ir solo o como {\"valor\": x, \"fuente\": \"URL o quién lo dijo, con fecha\", \"supuesto\": true}. Montos netos de IVA. Borra las alternativas que no apliquen.",
+  "caso": "nombre-corto-del-caso",
+  "descripcion": "",
+  "perfil": "",
+  "horizonte_anios": null,
+  "iva_recuperable": true,
+  "flujo_proyecto": "flujo-proyecto.csv",
+  "activo": {
+    "descripcion": "",
+    "precio_neto": null,
+    "depreciacion": "lineal",
+    "vida_util_anios": null,
+    "vida_util_acelerada_anios": null,
+    "valor_mercado_al_horizonte": {"valor": null, "fuente": "", "supuesto": true}
+  },
+  "alternativas": [
+    {"nombre": "Contado", "tipo": "contado"},
+    {"nombre": "Crédito", "tipo": "credito", "sistema": "francesa",
+     "pie_fraccion": null, "plazo_meses": null, "tasa_mensual": null,
+     "gastos_iniciales": 0, "gastos_financiados": false, "seguro_mensual": 0,
+     "impuesto_credito": {"tasa_mensual": 0.00066, "tope": 0.008},
+     "notas_no_comparables": []},
+    {"nombre": "Leasing", "tipo": "leasing", "plazo_meses": null, "tasa_mensual": null,
+     "cuota_mensual": null, "cuota_inicial": "una_cuota", "opcion_compra": "una_cuota",
+     "notas_no_comparables": []},
+    {"nombre": "Arriendo", "tipo": "arriendo", "renta_mensual": null, "plazo_meses": null,
+     "garantia": 0, "notas_no_comparables": []}
+  ],
+  "sensibilidad": {"impuestos": []}
+}

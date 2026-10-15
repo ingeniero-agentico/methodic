@@ -1,0 +1,12 @@
+# Datos privados: nunca en este repo
+ingeniero-agentico-datos/
+**/datos-privados/
+**/*.privado.*
+perfiles/*.yaml
+!perfiles/_plantilla.yaml
+
+# Salidas generadas
+**/salidas/
+__pycache__/
+*.pyc
+.venv/

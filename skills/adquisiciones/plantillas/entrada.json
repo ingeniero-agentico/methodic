@@ -1,0 +1,55 @@
+{
+ "titulo": "",
+ "requerimiento": [
+  {"n": 1, "item": "", "cantidad": 0, "unidad": "un"}
+ ],
+ "cotizaciones": [
+  {
+   "id": "",
+   "proveedor": "",
+   "identificador": "",
+   "vendedor": "",
+   "fecha": "AAAA-MM-DD",
+   "vence": "",
+   "condiciones": "",
+   "plazo_dias": null,
+   "moneda": "",
+   "tipo_cambio": null,
+   "fecha_cambio": null,
+   "subtotal_impreso": null,
+   "archivo": "",
+   "lineas": [
+    {
+     "linea": 1,
+     "descripcion": "",
+     "cantidad": 0,
+     "unitario_impreso": null,
+     "descuento": "",
+     "total_linea": 0,
+     "item": null,
+     "disponible": null,
+     "unidad_venta": null,
+     "descarte": "",
+     "nota": ""
+    }
+   ]
+  }
+ ],
+ "_ayuda": {
+  "requerimiento": "Lo que se necesita comprar. `n` es la llave: se numera una vez y no se cambia.",
+  "id": "Identifica la cotización (su número). Único en la entrada.",
+  "identificador": "RUT o identificador tributario del proveedor. Sin él no se emite la orden.",
+  "vendedor": "Solo si la misma empresa cotizó por dos vendedores distintos (compiten en paralelo).",
+  "fecha": "Obligatoria si el mismo vendedor mandó dos cotizaciones con el mismo ítem: la más nueva reemplaza a la vieja.",
+  "moneda": "La de la cotización. Si no es la del perfil, `tipo_cambio` y `fecha_cambio` son obligatorios: el cambio lo pone quien paga.",
+  "subtotal_impreso": "El subtotal neto que imprime el documento. Las líneas tienen que sumar eso o el script aborta.",
+  "linea": "El número de línea en el documento del proveedor. Es la traza.",
+  "cantidad": "En la unidad en que vende el proveedor (tiras, cajas, unidades).",
+  "total_linea": "Lo que cobra por la línea, ya con descuento. El unitario efectivo sale de acá.",
+  "unitario_impreso": "Referencia, no dato: puede ser precio de lista.",
+  "item": "El `n` del requerimiento al que corresponde la línea. null = la línea no se compra (flete, alternativa no pedida).",
+  "disponible": "Cuánto puede entregar, en su unidad. Vacío = lo cotizado (queda marcado SUPUESTO).",
+  "unidad_venta": "Si vende en múltiplos: {\"nombre\": \"tira\", \"contenido\": 6, \"unidad\": \"m\", \"textual\": \"x 6 Mts\"}. `contenido` es cuánto del ítem trae cada unidad del proveedor.",
+  "descarte": "Motivo si la línea no cumple la especificación. Queda fuera del reparto y se lista en VERIFICACION. Nunca se borra la línea."
+ }
+}

@@ -1,0 +1,45 @@
+{
+  "_ayuda": "Entrada vacía de evaluacion-economica. Montos por año, en la moneda del perfil. Las claves que empiezan con _ se ignoran. «supuesto»: true marca el ítem entero; una lista marca solo esos campos. «fuente»: de dónde salió el número o por qué se supuso.",
+  "proyecto": "",
+  "empresa": "",
+  "nota": "neto o bruto de IVA, pesos de hoy o con inflación, qué paga el cliente aparte",
+  "horizonte_anios": null,
+  "_horizonte": "null = el del perfil (finanzas.horizonte_anios)",
+  "perdidas_tributarias": "arrastra",
+  "_perdidas": "arrastra (proyecto aislado) · compensa (la empresa tiene otras utilidades)",
+  "metodo_desecho": "comercial",
+  "_metodo_desecho": "comercial (se vende al valor_desecho, con impuesto sobre la ganancia) · contable (a valor libro)",
+  "ingresos": [
+    {
+      "nombre": "",
+      "unidad": "",
+      "precio": 0,
+      "cantidad": 0,
+      "_o_bien": "en vez de cantidad: capacidad + ocupacion (fracción 0 a 1)",
+      "crecimiento_precio": 0,
+      "crecimiento_cantidad": 0,
+      "fuente": "",
+      "supuesto": false
+    }
+  ],
+  "costos_variables": [
+    { "nombre": "", "por_unidad_de": "", "monto_por_unidad": 0, "crecimiento": 0, "fuente": "", "supuesto": false }
+  ],
+  "costos_fijos": [
+    { "nombre": "", "monto_anual": 0, "crecimiento": 0, "fuente": "", "supuesto": false }
+  ],
+  "inversiones": [
+    {
+      "nombre": "",
+      "anio": 0,
+      "monto": 0,
+      "depreciable": true,
+      "vida_util": 0,
+      "vida_util_acelerada": null,
+      "valor_desecho": 0,
+      "fuente": "",
+      "supuesto": false
+    }
+  ],
+  "capital_trabajo": { "monto": 0, "anio": 0, "recupera": true, "fuente": "", "supuesto": false }
+}

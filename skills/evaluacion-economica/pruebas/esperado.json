@@ -1,0 +1,24 @@
+{
+  "caso": "caso-ficticio.json con perfil-ficticio.yaml (tasa 12 %, impuesto 27 %, 5 años, lineal)",
+  "como_se_obtuvo": "Segundo camino independiente del script: aritmética exacta con fracciones año por año, TIR por Newton (el script usa bisección), críticos por interpolación lineal en tramos donde el impuesto es lineal; el desecho crítico se resolvió en el tramo sin impuesto del año 5 (utilidad negativa con arrastre de pérdidas). Revisado a mano: año 1 = 8.910.000 − 1.188.000 − 1.930.000 − 2.624.761,90 = 3.167.238,10 de utilidad; impuesto 855.154,29; flujo 4.936.845,71.",
+  "tolerancia_moneda": 1.0,
+  "tolerancia_tasa": 1e-6,
+  "tolerancia_critico": {
+    "ingresos[0].ocupacion": 1e-6,
+    "ingresos[0].precio": 0.01,
+    "inversiones[0].valor_desecho": 0.5,
+    "inversiones[0].monto": 0.5
+  },
+  "flujo": [-19160000.0, 4936845.714285715, 4936845.714285715, 4936845.714285715, 4922445.714285715, 12421017.142857144],
+  "van": 2873792.3465503054,
+  "tir": 0.17079964878055984,
+  "pri": 3.883597932734947,
+  "pri_descontado": 4.592255289326349,
+  "ivan": 0.14998916213728108,
+  "criticos": {
+    "ingresos[0].ocupacion": 0.47221656670659584,
+    "ingresos[0].precio": 39484.447457376795,
+    "inversiones[0].valor_desecho": 564413.1016704,
+    "inversiones[0].monto": 21516694.350935638
+  }
+}

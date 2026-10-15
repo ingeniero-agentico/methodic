@@ -1,0 +1,33 @@
+{
+  "_ayuda": "Plantilla vacía de costo-y-precio. Borra las claves que empiezan con _ si quieres; el script las ignora. Montos netos, sin impuesto al valor agregado.",
+  "caso": "",
+  "perfil": "",
+  "_perfil": "Nombre del perfil (busca <nombre>.yaml en INGENIERO_DATOS/perfiles y en ../ingeniero-agentico-datos/perfiles) o ruta. Vacío = plantilla del repo, y todo sale marcado SUPUESTO. --perfil en la línea de comandos manda sobre este campo.",
+
+  "recargo_global": null,
+  "_recargo_global": "Recargo SOBRE EL COSTO para los ítems sin recargo propio: 0.30 = costo × 1,30. null = el del perfil (precios.recargo_por_defecto).",
+  "gastos_generales": null,
+  "_gastos_generales": "Fracción del costo directo que se carga como indirecto: 0.08 = 8 %. null = la del perfil; si el perfil tampoco la tiene, 0 % marcado SUPUESTO.",
+  "margen_minimo_alerta": null,
+  "_margen_minimo_alerta": "Opcional: avisa si el margen real de un ítem queda bajo esta fracción.",
+
+  "tipos_de_cambio": {
+    "_ejemplo_USD": {"valor": 0.00, "fecha": "DD-MM-AAAA", "fuente": ""}
+  },
+  "_tipos_de_cambio": "Uno por cada moneda extranjera que aparezca en compras. Sin tipo de cambio declarado el script se detiene: no lo inventa.",
+
+  "items": [
+    {"id": "", "descripcion": "", "unidad_venta": "un", "cantidad_venta": null, "recargo": null, "precio_manual": null}
+  ],
+  "_items": "Lo que se vende. cantidad_venta en la unidad de venta (si falta, = lo comprado). recargo propio pisa el global. precio_manual pisa todo y el recargo real se recalcula. Si omites items, se crea uno por cada «item» de compras.",
+
+  "compras": [
+    {"doc": "", "linea": null, "proveedor": "", "item": "", "descripcion": "", "cantidad": null, "unidad": "", "factor_unidad": 1, "precio_unit": null, "moneda": ""}
+  ],
+  "_compras": "Una fila por línea de OC o de cotización adjudicada, en la unidad y la moneda del proveedor. item = a qué ítem de venta se carga. factor_unidad = unidades de venta por unidad del proveedor (tira de 6 m vendida por metro = 6). moneda vacía = la del perfil.",
+
+  "equilibrio": [
+    {"nombre": "", "unidad": "", "precio_unit": null, "costo_variable_unit": null, "costos_fijos_produccion": 0, "costos_fijos_operacion": 0, "volumen_esperado": null, "unidades_producidas": null, "unidades_vendidas": null}
+  ],
+  "_equilibrio": "Opcional. Margen de contribución y punto de equilibrio de un servicio o producto, con costos fijos del mismo período. Con unidades producidas y vendidas, compara costeo variable y por absorción (sin inventario inicial)."
+}

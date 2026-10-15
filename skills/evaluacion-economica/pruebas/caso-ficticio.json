@@ -1,0 +1,61 @@
+{
+  "proyecto": "Furgón para arriendo diario",
+  "empresa": "Transportes del Valle",
+  "nota": "Caso FICTICIO. Montos netos de IVA (la empresa recupera el IVA crédito). Pesos de hoy, sin inflación.",
+  "perdidas_tributarias": "arrastra",
+  "metodo_desecho": "comercial",
+  "ingresos": [
+    {
+      "nombre": "Arriendo diario",
+      "unidad": "día",
+      "precio": 45000,
+      "capacidad": 360,
+      "ocupacion": 0.55,
+      "fuente": "tarifa de la competencia; ocupación estimada por la gerencia",
+      "supuesto": ["ocupacion"]
+    }
+  ],
+  "costos_variables": [
+    {
+      "nombre": "Lavado y desgaste",
+      "por_unidad_de": "Arriendo diario",
+      "monto_por_unidad": 6000,
+      "fuente": "estimación del taller",
+      "supuesto": true
+    }
+  ],
+  "costos_fijos": [
+    { "nombre": "Seguro", "monto_anual": 900000, "fuente": "cotización de la corredora" },
+    { "nombre": "Mantención programada", "monto_anual": 600000, "fuente": "plan de mantención del concesionario" },
+    { "nombre": "Permiso de circulación y revisión técnica", "monto_anual": 250000, "fuente": "año anterior" },
+    { "nombre": "Plataforma GPS", "monto_anual": 180000, "fuente": "cotización del proveedor" }
+  ],
+  "inversiones": [
+    {
+      "nombre": "Furgón",
+      "anio": 0,
+      "monto": 18000000,
+      "depreciable": true,
+      "vida_util": 7,
+      "vida_util_acelerada": 2,
+      "valor_desecho": 7000000,
+      "fuente": "precio de lista neto; vida útil de la tabla tributaria; desecho por avisos de usados de 5 años",
+      "supuesto": ["valor_desecho"]
+    },
+    {
+      "nombre": "Equipo GPS e instalación",
+      "anio": 0,
+      "monto": 160000,
+      "depreciable": true,
+      "vida_util": 3,
+      "valor_desecho": 0,
+      "fuente": "cotización del proveedor"
+    }
+  ],
+  "capital_trabajo": {
+    "monto": 1000000,
+    "recupera": true,
+    "fuente": "seguro y permiso que se pagan antes de cobrar el primer arriendo",
+    "supuesto": true
+  }
+}

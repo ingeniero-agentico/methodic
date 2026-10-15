@@ -1,0 +1,28 @@
+{
+  "caso": "Ferretería Andes · red de riego Constructora Sur",
+  "_nota": "Caso ficticio. Válvula comprada a dos proveedores (uno en USD), tubo comprado por tira y vendido por metro, codo con recargo propio y cinta con precio manual.",
+  "gastos_generales": 0.08,
+  "tipos_de_cambio": {
+    "USD": {"valor": 945.30, "fecha": "01-10-2026", "fuente": "declarado por el usuario"}
+  },
+  "items": [
+    {"id": "VAL-50", "descripcion": "Válvula de bola bronce 2\"", "unidad_venta": "un", "cantidad_venta": 40},
+    {"id": "TUB-110", "descripcion": "Tubo PVC hidráulico 110 mm", "unidad_venta": "m", "cantidad_venta": 40},
+    {"id": "COD-110", "descripcion": "Codo PVC 110 mm 90°", "unidad_venta": "un", "cantidad_venta": 12, "recargo": 0.40},
+    {"id": "TEF-34", "descripcion": "Cinta teflón 3/4\"", "unidad_venta": "un", "cantidad_venta": 24, "precio_manual": 1990}
+  ],
+  "compras": [
+    {"doc": "OC-101", "linea": 1, "proveedor": "Proveedor A", "item": "VAL-50", "descripcion": "Válvula bola bronce 2 pulg.", "cantidad": 30, "unidad": "un", "precio_unit": 18500, "moneda": "CLP"},
+    {"doc": "OC-101", "linea": 2, "proveedor": "Proveedor A", "item": "TEF-34", "descripcion": "Teflón 3/4", "cantidad": 24, "unidad": "un", "precio_unit": 1150, "moneda": "CLP"},
+    {"doc": "OC-102", "linea": 1, "proveedor": "Proveedor B", "item": "VAL-50", "descripcion": "Ball valve bronze 2\"", "cantidad": 10, "unidad": "un", "precio_unit": 21.40, "moneda": "USD"},
+    {"doc": "OC-103", "linea": 1, "proveedor": "Proveedor C", "item": "TUB-110", "descripcion": "Tubo PVC 110 C10 tira 6 m", "cantidad": 7, "unidad": "tira 6 m", "factor_unidad": 6, "precio_unit": 21900, "moneda": "CLP"},
+    {"doc": "OC-103", "linea": 2, "proveedor": "Proveedor C", "item": "COD-110", "descripcion": "Codo PVC 110x90", "cantidad": 12, "unidad": "un", "precio_unit": 3450, "moneda": "CLP"}
+  ],
+  "equilibrio": [
+    {"nombre": "Instalación de riego", "unidad": "hora", "precio_unit": 28000, "costo_variable_unit": 12500,
+     "costos_fijos_produccion": 1400000, "costos_fijos_operacion": 460000, "volumen_esperado": 160},
+    {"nombre": "Kit de riego armado", "unidad": "kit", "precio_unit": 45000, "costo_variable_unit": 27000,
+     "costos_fijos_produccion": 900000, "costos_fijos_operacion": 360000, "volumen_esperado": 400,
+     "unidades_producidas": 500, "unidades_vendidas": 400}
+  ]
+}

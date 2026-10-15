@@ -1,0 +1,22 @@
+# Perfil FICTICIO para la prueba de evaluacion-economica. No es una empresa real.
+empresa:
+  nombre: "Transportes del Valle"
+  rut: ""
+  pais: CL
+  moneda: CLP
+  decimales_moneda: 0
+  iva: 0.19
+  impuesto_renta: 0.27   # régimen general de primera categoría
+
+compras:
+  proveedores: []
+  desempate: mayor_disponibilidad
+
+precios:
+  recargo_por_defecto: 0.30
+  gastos_generales: 0.00
+
+finanzas:
+  tasa_descuento: 0.12   # tasa anual con que la empresa evalúa proyectos
+  horizonte_anios: 5
+  depreciacion: lineal
