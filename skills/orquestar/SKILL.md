@@ -36,8 +36,9 @@ Lanza el agente `cartografo` sobre las carpetas que toca el encargo (las del cas
 persona nombró, el perfil). Devuelve el **modo** y la ruta de `contexto/MAPA.md`.
 
 - `primera-vez`: no había mapa o cambió más del umbral.
-- `relectura`: hay mapa y cambió poco. Desde acá **lees el mapa, no las carpetas**, y solo los
-  archivos que el cartógrafo listó como cambiados.
+- `relectura`: hay mapa y cambió poco. Desde acá **lees el mapa, no las carpetas**: el mapa, su
+  sección «Núcleo · leer siempre» (máximo 3 archivos) y los archivos que el cartógrafo listó como
+  cambiados. Nada más.
 
 La persona puede forzar el modo («hazlo en relectura», «investiga desde cero»). Su palabra manda.
 
@@ -76,7 +77,11 @@ haz cada etapa tú, en orden, en esta conversación.
 
 - Lanza en **un mismo mensaje** todos los agentes de una ola sin dependencias pendientes.
 - A cada uno le pasas: su fila del plan, la ruta de `contexto/`, el perfil, la carpeta del caso y
-  qué devolver. Nada más: el resto lo lee del mapa.
+  qué devolver. Nada más: el resto lo lee del mapa. Al ejecutor le dices **qué método** corre: lee
+  solo ese `SKILL.md` (no se le precargan los cuatro).
+- Cada ejecutor deja su manifiesto en `contexto/ejecuciones/<id>.json` (comando con `{SALIDA}`,
+  salidas, cifra decisiva y supuestos). Sin manifiesto no hay auditoría: si falta, se pide antes
+  de lanzar al auditor.
 - Al terminar una ola, revisa que la salida exista antes de lanzar la siguiente. Si un agente
   falla, no lo reemplazas con un cálculo tuyo: lo informas y propones el arreglo.
 
@@ -89,7 +94,8 @@ Con `AUDITORIA.md` a la vista. Si hay **NO CONFORME**, esa es la primera línea 
 3. **Dónde quedó** cada salida.
 4. **Qué falta** preguntarle a quien decide.
 
-Al cerrar, el cartógrafo ya dejó `huellas.json`: la próxima vez sobre el mismo caso será relectura.
+Al cerrar, corre `mapa_contexto.py --marcar-leido` sobre `contexto/`: vacía `cambios.json` y deja
+las huellas al día. La próxima vez sobre el mismo caso será relectura.
 
 ## Errores típicos
 

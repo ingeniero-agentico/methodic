@@ -1,0 +1,25 @@
+{
+  "encargo": "<una línea: qué decisión, para quién>",
+  "fecha_investigacion": "DD-MM-AAAA",
+  "origen_huecos": "contexto/MAPA.md, sección Huecos | contexto/PLAN.md | encargo",
+  "umbral_contradiccion": 0.10,
+  "vigencia_dias": 365,
+  "huecos": [
+    {"id": "H1", "pregunta": "<qué número, de qué segmento exacto>", "precision": "<cuánto error tolera el cálculo>",
+     "metodo": "<skill que lo usa>", "para_que": "<campo de la entrada del método>", "estado": "con_dato",
+     "elegido": "D01", "razon_eleccion": "<por qué este y no otro>"},
+    {"id": "H2", "pregunta": "", "precision": "", "metodo": "", "para_que": "", "estado": "sin_dato",
+     "como_se_cierra": "<una llamada, una cotización, una solicitud por transparencia>"}
+  ],
+  "barrido": [
+    {"id": "B1", "fuente": "<organismo o sitio>", "url": "https://", "acceso": "abierta", "huecos": ["H1"], "nota": ""}
+  ],
+  "datos": [
+    {"id": "D01", "hueco": "H1", "descripcion": "", "magnitud": "", "valor": 0, "unidad": "",
+     "fecha_dato": "DD-MM-AAAA", "fuente": {"url": "https://", "documento": ""}, "fecha_consulta": "DD-MM-AAAA",
+     "nivel": "A", "estado": "verificado", "usable": true, "supuesto": false, "nota": ""}
+  ],
+  "contradicciones": [
+    {"datos": ["D01", "D02"], "manda": "D01", "razon": ""}
+  ]
+}

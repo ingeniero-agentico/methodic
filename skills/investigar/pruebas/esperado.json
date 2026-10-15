@@ -1,0 +1,26 @@
+{
+  "caso_ficticio": {
+    "avisos": ["A01:F7", "A02:F7", "A03:F6", "A05:B2"],
+    "contradicciones_detectadas": [["F1", "F2", "F3"]],
+    "huecos_sin_dato": ["H3"],
+    "calculados_a_mano": {"F5": 2.5}
+  },
+  "caso_con_errores": {
+    "errores": [
+      "E01:G13",
+      "E02:G1",
+      "E03:G2",
+      "E04:G3",
+      "E05:H2",
+      "E05:H3",
+      "E06:G4",
+      "E07:H1:tasa_leasing",
+      "E08:G7",
+      "E09:G8",
+      "E11:G11",
+      "E12:H1",
+      "E13:G10",
+      "E15:G12"
+    ]
+  }
+}

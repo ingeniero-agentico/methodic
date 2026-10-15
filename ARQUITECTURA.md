@@ -31,12 +31,18 @@ el disco. No lo elige el modelo «a ojo».
 | Cuándo | No hay `contexto/MAPA.md`, o el ámbito es nuevo | Hay mapa y las huellas casi no cambiaron |
 | Etapa 0 | Mapa completo | Solo los archivos que cambiaron |
 | Etapa 1 | Investigación completa de los huecos | Se salta, salvo que el plan declare un hueco nuevo |
-| Lectura | Los archivos fuente | **Solo `MAPA.md`** (≤ 3.000 palabras) y los archivos que cambiaron |
+| Lectura | Los archivos fuente | `MAPA.md` (≤ 3.000 palabras) + su **núcleo** (máx. 3 archivos) + los que cambiaron |
 | Modelos | Fuerte en investigar y auditar | Económico en todo menos auditar |
 | Para quién | Quien llega a un tema y lo investiga por primera vez | Quien vuelve al mismo tema con presupuesto acotado |
 
-**El ahorro de la relectura es leer el mapa en vez de las carpetas.** Por eso el mapa tiene que
-bastar: qué hay, dónde, de cuándo, qué dice cada archivo en una línea y qué enlaza con qué.
+**El ahorro de la relectura es leer el mapa en vez de las carpetas.** El mapa dice qué hay, dónde,
+de cuándo, qué dice cada archivo en una línea y qué enlaza con qué. Pero **orienta, no reemplaza**:
+probado sobre un trabajo real (15-10-2026), el mapa decía qué abrir pero no lo pendiente ni las
+cifras. Por eso trae un **núcleo** de hasta 3 archivos que se leen siempre (el `TRABAJO.md`, el
+listado vigente, el `LEEME`), elegido por regla fija y corregible a mano con `--nucleo`.
+
+Los cambios se acumulan en `contexto/cambios.json` hasta que `orquestar` los marca como leídos al
+consolidar: dos corridas seguidas del cartógrafo no borran lo que nadie leyó.
 
 ## La petición (etapa 2)
 

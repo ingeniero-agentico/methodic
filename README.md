@@ -67,6 +67,16 @@ Cada skill busca el perfil de la empresa en este orden:
 
 Esa carpeta lleva `perfiles/<empresa>.yaml` y `casos/<caso>/`. **Nunca se sube a este repo.**
 
+## Próxima versión (1.1)
+
+Salió de la primera auditoría sobre casos reales (15-10-2026):
+
+1. `adquisiciones` y `costo-y-precio` reciben y devuelven `supuestos`, como los métodos de evaluación.
+2. Un mismo formato de `datos-investigados.json` entre `investigar`, `ejecutor` y `auditor`.
+3. El núcleo del mapa excluye un archivo que otro declara reemplazado («Reemplaza a»).
+4. `evaluacion-financiera` avisa cuando el proyecto y el financiamiento usan regímenes tributarios distintos.
+5. `.claude-plugin/plugin.json` para instalarlo con `/plugin install`.
+
 ## De dónde sale
 
 Cada método nace de ramos de Ingeniería Civil Industrial y de su uso en empresas reales. El
