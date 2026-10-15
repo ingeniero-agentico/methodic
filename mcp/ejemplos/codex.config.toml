@@ -1,0 +1,10 @@
+# Va en ~/.codex/config.toml (o .codex/config.toml de un proyecto confiable).
+# En Windows, la ruta con barras normales (C:/...) o entre comillas simples ('C:\...').
+[mcp_servers.ingeniero-agentico]
+command = "python"
+args = ["<ruta-al-repo>/mcp/servidor.py"]
+startup_timeout_sec = 20
+tool_timeout_sec = 300
+
+[mcp_servers.ingeniero-agentico.env]
+INGENIERO_DATOS = "<ruta-a-los-datos>"

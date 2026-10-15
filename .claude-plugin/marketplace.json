@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "ingeniero-agentico",
+  "description": "Catálogo del plugin ingeniero-agentico: métodos de ingeniería industrial convertidos en skills para agentes de IA.",
+  "owner": {
+    "name": "camiloalonsomerino-spec",
+    "url": "https://github.com/camiloalonsomerino-spec"
+  },
+  "plugins": [
+    {
+      "name": "ingeniero-agentico",
+      "source": "./",
+      "description": "Adquisiciones, costo y precio, evaluación económica y financiera, con un orquestador de seis etapas (cartografiar, investigar, planificar, ejecutar, auditar, consolidar).",
+      "category": "productivity",
+      "tags": ["ingenieria-industrial", "finanzas", "espanol"]
+    }
+  ]
+}

@@ -26,7 +26,8 @@ Repo **público**. Todo lo que entra acá lo puede leer cualquiera.
 ```
 skills/<metodo>/
 ├── SKILL.md      frontmatter name + description (en inglés las condiciones de uso, cierra con una
-│                 frase en español); cuerpo en español: cuándo, qué decide el agente, qué calcula
+│                 frase en español; máximo 1.024 caracteres, el límite del estándar Agent Skills y
+│                 de claude.ai); cuerpo en español: cuándo, qué decide el agente, qué calcula
 │                 el script, cómo se lee la salida, errores típicos
 ├── GUIA.md       el mismo método para una persona, paso a paso, con el caso ficticio
 ├── plantillas/   entradas vacías (YAML o JSON) y, si aplica, el Excel de salida

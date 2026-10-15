@@ -1,0 +1,120 @@
+{
+  "_ayuda": "Tabla que lee instalar.py. Cada plataforma dice dónde van las skills, los agentes y los comandos, en qué formato y con qué documentación se respalda la ruta. {HOME} es la carpeta del usuario (o --destino); {LOCALAPPDATA} es %LOCALAPPDATA% en Windows (o <destino>/AppData/Local). 'variable' es la variable de entorno que, si existe y no se pasó --destino, manda sobre 'defecto'. Revisada contra la documentación el 15-10-2026.",
+  "excluir": ["__pycache__", "*.pyc", "*.pyo", ".DS_Store", "Thumbs.db", "salidas"],
+  "excluir_justificacion": "Se excluye solo lo generado (bytecode, salidas de corridas). pruebas/ SÍ se instala: cada SKILL.md manda a correr scripts/<script>.py --probar, que lee pruebas/, y el auditor lo usa para confirmar que el método funciona donde quedó instalado (581 KB en total).",
+  "plantilla_perfil": "perfiles/_plantilla.yaml",
+  "plantilla_justificacion": "Los scripts buscan la plantilla en <raíz>/perfiles/_plantilla.yaml, con <raíz> = tres carpetas sobre scripts/ (skills/<metodo>/scripts/x.py). En una copia, <raíz> es la carpeta de configuración de la plataforma, así que la plantilla se copia ahí. Con --enlazar no hace falta: el script resuelve el enlace y llega al repo.",
+  "extras": {
+    "orquestar": ["ARQUITECTURA.md"]
+  },
+  "extras_justificacion": "orquestar, investigar y cartografiar citan ARQUITECTURA.md («raíz del repo»). En una copia no hay raíz del repo: se deja una copia junto a SKILL.md de orquestar.",
+  "plataformas": {
+    "claude-code": {
+      "nombre": "Claude Code (sin plugin)",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"variable": "CLAUDE_CONFIG_DIR", "defecto": "{HOME}/.claude"}, "carpeta": "skills"},
+      "agentes": {"raiz": {"variable": "CLAUDE_CONFIG_DIR", "defecto": "{HOME}/.claude"}, "carpeta": "agents", "formato": "claude-md"},
+      "comandos": {"raiz": {"variable": "CLAUDE_CONFIG_DIR", "defecto": "{HOME}/.claude"}, "carpeta": "commands", "formato": "claude-md"},
+      "orquestacion": "con agentes (la conversación principal lanza cartografo, investigador, ejecutor y auditor)",
+      "fuentes": [
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/plugins-reference"
+      ],
+      "nota": "La vía recomendada es el plugin (/plugin marketplace add camiloalonsomerino-spec/ingeniero-agentico). Esta copia es la alternativa sin GitHub; no instales las dos a la vez."
+    },
+    "claude-desktop": {
+      "nombre": "Claude Desktop y claude.ai (chat y Cowork)",
+      "tipo": "zip",
+      "salida": "instalar/salida/claude-desktop",
+      "zip_plugin": "ingeniero-agentico-plugin.zip",
+      "zip_plugin_incluye": [".claude-plugin/plugin.json", "skills", "agents", "commands", "mcp", "perfiles/_plantilla.yaml", "ARQUITECTURA.md", "README.md", "LICENSE"],
+      "zip_plugin_justificacion": "mcp/ va porque plugin.json declara el servidor MCP con ${CLAUDE_PLUGIN_ROOT}/mcp/servidor.py: el chat lo ignora (es local), Cowork lo arranca si la sesión corre en tu equipo.",
+      "orquestacion": "chat: sin agentes (etapas en secuencia); Cowork: carga agents/",
+      "fuentes": [
+        "https://claude.com/docs/skills/how-to",
+        "https://claude.com/docs/plugins/build",
+        "https://claude.com/docs/plugins/platform-support"
+      ],
+      "nota": "Un ZIP por skill con la carpeta <skill>/ como único nivel superior (Customize > Skills), y un ZIP del plugin completo (Customize > Plugins > Add > Upload plugin). Requiere ejecución de código activada."
+    },
+    "codex": {
+      "nombre": "Codex (OpenAI): CLI, IDE y app",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"defecto": "{HOME}/.agents"}, "carpeta": "skills"},
+      "agentes": {"raiz": {"variable": "CODEX_HOME", "defecto": "{HOME}/.codex"}, "carpeta": "agents", "formato": "codex-toml"},
+      "comandos": null,
+      "comandos_justificacion": "Codex invoca skills con $nombre o /skills; /nuevo-encargo solo envuelve a orquestar, así que se usa $orquestar.",
+      "orquestacion": "con subagentes TOML (convertidos desde agents/); si no los lanza, en secuencia",
+      "fuentes": [
+        "https://developers.openai.com/codex/skills",
+        "https://developers.openai.com/codex/subagents",
+        "https://developers.openai.com/codex/guides/agents-md"
+      ],
+      "nota": "Codex lee skills de $HOME/.agents/skills (usuario) y .agents/skills (repo). Los agentes se convierten a TOML con name, description y developer_instructions."
+    },
+    "cursor": {
+      "nombre": "Cursor",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"defecto": "{HOME}/.cursor"}, "carpeta": "skills"},
+      "agentes": {"raiz": {"defecto": "{HOME}/.cursor"}, "carpeta": "agents", "formato": "cursor-md"},
+      "comandos": null,
+      "comandos_justificacion": "Cursor está migrando los comandos a skills (/migrate-to-skills); orquestar se invoca escribiendo /orquestar.",
+      "orquestacion": "con subagentes (~/.cursor/agents); si no los lanza, en secuencia",
+      "fuentes": [
+        "https://cursor.com/docs/context/skills",
+        "https://cursor.com/docs/context/subagents",
+        "https://cursor.com/docs/context/rules"
+      ],
+      "nota": "Cursor también lee ~/.claude/skills y ~/.agents/skills: si ya instalaste para Claude Code o Codex, no hace falta repetir."
+    },
+    "gemini": {
+      "nombre": "Gemini CLI",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"defecto": "{HOME}/.gemini"}, "carpeta": "skills"},
+      "agentes": {"raiz": {"defecto": "{HOME}/.gemini"}, "carpeta": "agents", "formato": "gemini-md"},
+      "comandos": null,
+      "comandos_justificacion": "Los comandos de Gemini son TOML con otra sintaxis; orquestar se activa sola por su descripción (activate_skill).",
+      "orquestacion": "con subagentes (~/.gemini/agents); un subagente no lanza a otro, igual que en Claude Code",
+      "fuentes": [
+        "https://geminicli.com/docs/cli/skills/",
+        "https://geminicli.com/docs/core/subagents/",
+        "https://geminicli.com/docs/cli/gemini-md/"
+      ],
+      "nota": "Gemini también lee ~/.agents/skills (alias con precedencia). Los agentes quedan con name y description: tools y model de Claude no valen en Gemini."
+    },
+    "hermes": {
+      "nombre": "Hermes Agent (Nous Research)",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"variable": "HERMES_HOME", "defecto_windows": "{LOCALAPPDATA}/hermes", "defecto": "{HOME}/.hermes"}, "carpeta": "skills"},
+      "agentes": null,
+      "agentes_justificacion": "Hermes no carga definiciones de agentes desde archivos: delega con la herramienta delegate_task (hijos genéricos con goal y context).",
+      "comandos": null,
+      "comandos_justificacion": "Cada skill de Hermes ya es un comando /<nombre-skill>; /orquestar reemplaza a /nuevo-encargo.",
+      "orquestacion": "con delegate_task (hijos genéricos) o en secuencia",
+      "fuentes": [
+        "https://hermes-agent.nousresearch.com/docs/user-guide/features/skills",
+        "https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation",
+        "https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files",
+        "código instalado v0.21.4: hermes_constants.py (get_skills_dir = HERMES_HOME/skills; en Windows HERMES_HOME = %LOCALAPPDATA%\\hermes) y agent/skill_utils.py (búsqueda recursiva de SKILL.md, skills.external_dirs)"
+      ],
+      "nota": "Alternativa sin copiar: agregar la carpeta skills/ del repo en skills.external_dirs de config.yaml (lo haces tú; instalar.py no toca config.yaml)."
+    },
+    "agents": {
+      "nombre": "Cualquier agente compatible con Agent Skills (carpeta compartida ~/.agents/skills)",
+      "tipo": "carpetas",
+      "skills": {"raiz": {"defecto": "{HOME}/.agents"}, "carpeta": "skills"},
+      "agentes": null,
+      "agentes_justificacion": "El estándar Agent Skills no define agentes ni comandos.",
+      "comandos": null,
+      "orquestacion": "en secuencia (orquestar sin agentes)",
+      "fuentes": [
+        "https://agentskills.io/specification",
+        "https://developers.openai.com/codex/skills",
+        "https://cursor.com/docs/context/skills",
+        "https://geminicli.com/docs/cli/skills/"
+      ],
+      "nota": "La leen Codex, Cursor y Gemini CLI; en Hermes se suma con skills.external_dirs. Es la misma carpeta de skills que usa --plataforma codex."
+    }
+  }
+}

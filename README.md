@@ -52,10 +52,17 @@ ingeniero-agentico/
 La forma es la de un plugin de Claude Code: más adelante se agrega `.claude-plugin/plugin.json`
 y se instala con `/plugin install`, sin mover nada.
 
-## Instalar (por ahora)
+## Instalar
 
-Copia la carpeta del método que necesites a `~/.claude/skills/`, o usa
-`npx skills add <usuario>/ingeniero-agentico`.
+| Dónde | Cómo | Detalle |
+|---|---|---|
+| Claude Code | `/plugin marketplace add camiloalonsomerino-spec/ingeniero-agentico` y `/plugin install ingeniero-agentico@ingeniero-agentico` | Trae skills, agentes, `/nuevo-encargo` y el servidor MCP |
+| Claude Desktop / claude.ai | `python instalar/instalar.py --plataforma claude-desktop` y sube los ZIP en Ajustes → Capacidades | Sin agentes: `orquestar` corre las etapas en secuencia |
+| Codex · Cursor · Gemini CLI · Hermes · otros con Agent Skills | `python instalar/instalar.py --plataforma codex` (o `cursor`, `gemini`, `hermes`, `agents`) | Leen `AGENTS.md` |
+| Cualquier cliente MCP | `python mcp/servidor.py` en su configuración | Los métodos como herramientas |
+
+Paso a paso por plataforma en [docs/INSTALAR.md](docs/INSTALAR.md); el servidor MCP en
+[docs/MCP.md](docs/MCP.md).
 
 ## Datos privados
 
@@ -75,7 +82,12 @@ Salió de la primera auditoría sobre casos reales (15-10-2026):
 2. Un mismo formato de `datos-investigados.json` entre `investigar`, `ejecutor` y `auditor`.
 3. El núcleo del mapa excluye un archivo que otro declara reemplazado («Reemplaza a»).
 4. `evaluacion-financiera` avisa cuando el proyecto y el financiamiento usan regímenes tributarios distintos.
-5. `.claude-plugin/plugin.json` para instalarlo con `/plugin install`.
+5. Cada skill autosuficiente: los scripts buscan la plantilla de perfil también dentro de su
+   carpeta, para funcionar en claude.ai sin `--perfil` y sin copiar nada fuera de la skill.
+6. Probar el instalador dentro de Codex, Cursor y Gemini reales (hoy se verificó solo el formato).
+
+Al publicar una versión nueva, sube `version` en `.claude-plugin/plugin.json`: quien instaló el
+plugin no recibe cambios mientras la versión sea la misma.
 
 ## De dónde sale
 

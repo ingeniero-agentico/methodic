@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ingeniero-agentico": {
+      "command": "python",
+      "args": ["<ruta-al-repo>/mcp/servidor.py"],
+      "env": {
+        "INGENIERO_DATOS": "<ruta-a-los-datos>"
+      }
+    }
+  }
+}

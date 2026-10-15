@@ -1,0 +1,11 @@
+# Se agrega al config.yaml de Hermes Agent: %LOCALAPPDATA%\hermes\config.yaml en Windows,
+# ~/.hermes/config.yaml en Linux y macOS. Si ya hay una clave mcp_servers, se suma la entrada.
+mcp_servers:
+  ingeniero-agentico:
+    command: "python"
+    args: ["<ruta-al-repo>/mcp/servidor.py"]
+    env:
+      INGENIERO_DATOS: "<ruta-a-los-datos>"
+    enabled: true
+    timeout: 300          # segundos por llamada a una herramienta
+    connect_timeout: 60   # segundos para arrancar y listar herramientas
