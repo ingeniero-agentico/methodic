@@ -179,7 +179,9 @@ def run_test() -> int:
         res = r.get("result", {})
         check(res.get("protocolVersion") == "2025-11-25", f"initialize answers 2025-11-25 ({res.get('protocolVersion')})")
         check(res.get("serverInfo", {}).get("name") == "ingeniero-agentico", "serverInfo.name = ingeniero-agentico")
-        check(res.get("serverInfo", {}).get("version") == "1.1.0", "serverInfo.version = 1.1.0")
+        plugin_version = json.loads((REPO / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"]
+        check(res.get("serverInfo", {}).get("version") == plugin_version,
+              f"serverInfo.version = plugin.json version ({plugin_version})")
         check("tools" in res.get("capabilities", {}) and "resources" in res.get("capabilities", {}),
               "declares tools and resources")
         cli.send({"jsonrpc": "2.0", "method": "notifications/initialized"})

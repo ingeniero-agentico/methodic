@@ -46,7 +46,7 @@ REPO = HERE.parent
 SKILLS = REPO / "skills"
 
 NAME = "ingeniero-agentico"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 SERVER_INFO = {"name": NAME, "title": "ingeniero-agentico · industrial engineering methods", "version": VERSION}
 
 MODERN_VERSIONS = ["2026-07-28"]

@@ -2,6 +2,19 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] · 15-10-2026
+
+### Changed
+- Skill descriptions tell the agent to use the method even for a quick calculation (an
+  amortization table, an NPV of given flows, a break-even, a markup), and add the trigger phrases
+  that the first trigger evals missed: quotes in USD and CLP, an IRR that "came out weird", "I'm
+  back, what changed?", a price page behind a login, sources that disagree, the maximum
+  conventional rate. Trigger evals: precision 100 % on all 80 cases; the 10 missed positives now fire.
+- Two eval cases now carry the data they ask about (a markup per item, a two-sign-change IRR).
+
+### Fixed
+- Install and MCP self-tests resolve temp paths (Windows 8.3 short names, macOS `/private/var`).
+
 ## [1.1.0] · 15-10-2026
 
 ### Changed
