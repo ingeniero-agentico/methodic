@@ -2,6 +2,35 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] · 16-10-2026
+
+methodic. The repo stops being a box of methods and becomes a methodical documenter: it
+understands a business by asking, writes a traceable manual and only then intervenes on the
+operator's computer. The methods stay, as its tools.
+
+### Added
+- `interview`: batches of 3 to 4 questions with options from a fixed question bank (three rounds:
+  the business, the process that hurts, the limits); "don't know" becomes a dated gap; a form mode
+  for operators who prefer to fill a round at once.
+- `manual`: the index (≤ 400 words) and one page per process (≤ 800 words, SIPOC on top, steps
+  below); every step with a code, a responsible, a tool and its source (interview, document,
+  observed or assumption); status, revision and history. `manual.py check` verifies caps and
+  traceability.
+- `intervene`: plan → OK of the operator per action → backup → execute → verify → logbook line;
+  scope check that resolves links before deciding; a generator of the permissions file for the
+  operator's agent, because a skill's text alone does not enforce.
+- `docs/MANUAL-FORMAT.md`: the single contract of the manual, the scope and the logbook.
+- Repo rule 8: no script touches an operator's file outside the intervention cycle.
+
+### Changed
+- **Renamed to `methodic`** (repo, plugin, marketplace, MCP server). The GitHub organization stays
+  `ingeniero-agentico`. Reinstall: `/plugin marketplace add ingeniero-agentico/methodic`.
+- Data folder `methodic-data/` and variable `METHODIC_DATA`; the legacy `ingeniero-agentico-datos/`
+  and `INGENIERO_DATOS` are still read, so existing data keeps working without moving it.
+- `orchestrate` runs the new stages: understand → map → interview → research (only for gaps) →
+  document → plan and ask → execute and audit (interventions never delegated) → consolidate, writing
+  the lesson back into the manual. `ARCHITECTURE.md` version 3.0.
+
 ## [1.1.3] · 16-10-2026
 
 ### Changed

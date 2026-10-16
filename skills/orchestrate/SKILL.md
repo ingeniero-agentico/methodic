@@ -1,115 +1,133 @@
 ---
 name: orchestrate
-description: "Use when a business or engineering task needs more than one method in sequence (quotes, then purchase plan, then sale price; an investment, then whether it pays, then how to finance it), when it arrives as a folder or a vague brief and it is not obvious which method applies, or when the person asks to \"launch agents\", \"orchestrate\", \"research and calculate\", \"lánzale agentes\", \"orquesta esto\", \"no sé por dónde partir\". Maps the environment first, decides between a first run (with research) and a cheap reread, proposes a plan of agents with one skill per stage, waits for approval, launches them in parallel where possible, audits and consolidates one traceable answer. Not for a single calculation whose method is clear and whose data is in the message (an NPV, an amortization table, a markup): call that method directly. Receives the task, maps the context, proposes the agent plan, launches it with approval and delivers one audited answer."
+description: "Use when someone brings a business task and it is not obvious where to start: a company or process nobody has documented yet (\"entiende mi negocio\", \"documenta cómo trabajamos\", \"estandariza esto\"), a change to make on the operator's computer that needs the context first, a task that needs more than one method in sequence (quotes, then purchase plan, then sale price; an investment, then whether it pays, then how to finance it), a folder or vague brief, or when the person asks to \"launch agents\", \"orchestrate\", \"lánzale agentes\", \"orquesta esto\", \"no sé por dónde partir\". Runs methodic's stages in order: map, interview, research only for gaps, document the manual, plan and ask, execute (intervene or a method), audit, consolidate. Reads the manual instead of asking again when one exists. Not for a single calculation whose method is clear and whose data is in the message (call that method directly), nor for one small change in an already documented process (call intervene)."
 ---
 
 # Orchestrate a task
 
-You run in the **main conversation**: you are the only one who can launch agents. The agents in
-`agents/` are workers of one stage; none of them launches another. The full contract is in
-`ARCHITECTURE.md` (repo root): read it if something here is not enough.
+You run in the **main conversation**: you are the only one who can launch agents and the only one
+who talks with the operator. The agents in `agents/` are workers of one stage; none of them
+launches another. The contracts: `ARCHITECTURE.md` (stages, modes, `context/`) and
+`docs/MANUAL-FORMAT.md` (the manual, the scope, the logbook). Read them if something here is not
+enough.
 
-**You do not solve from memory.** Every number comes from a method's script, and every external
-datum from the research with its source.
+**Three things you never do:** solve a number from memory (it comes from a method's script),
+assume what the operator did not say (it is a gap or a `SUPUESTO`), and touch a file of the
+operator without the intervention cycle.
 
 ## 0. Understand the task and find the data
 
-1. Rewrite the task in one line: which decision has to be made and for whom.
-2. Company profile: `INGENIERO_DATOS` → `../ingeniero-agentico-datos/profiles/` (then
-   `perfiles/`) → template. If there is more than one profile and the task does not say which,
-   **ask**.
-3. Case folder: `<data>/cases/<method>-<case>/` (an existing `casos/` folder is used as it is;
-   create the case if it is new). `context/` lives there.
-4. Choose the method or the chain:
+1. Rewrite the task in one line: what has to be understood, decided or changed, and for whom.
+2. Data folder: `--data` · `METHODIC_DATA` · `INGENIERO_DATOS` · `../methodic-data/` ·
+   `../ingeniero-agentico-datos/`. Profile: `profiles/<company>.yaml` (then `perfiles/`). If there
+   is more than one profile and the task does not say which, **ask**. No profile: copy
+   `profiles/_template.yaml` with the operator in the first interview round.
+3. The manual: `<data>/manual/<company>/`. **If it exists, read its index (`NEGOCIO.md` /
+   `BUSINESS.md`) and only the process the task touches.** Nothing else from the manual. If it does
+   not exist, run `skills/manual/scripts/manual.py init --company <company>`.
+4. Classify the task:
 
-| The task asks… | Method |
+| The task is… | Route |
+|---|---|
+| Understand or standardize a business or process | 2 interview → 4 document → 7 (no execution) |
+| Change something on the operator's computer | process documented? (if not, 2 and 4 first) → 5 plan → 6 `intervene` |
+| A decision with numbers | 5 plan → 6 method(s) and audit → 7 |
+
+| The numbers ask… | Method |
 |---|---|
 | Who do I buy from, what is still to be quoted | `procurement` |
 | How much did it cost, what do I sell at, how much do I make | `cost-and-pricing` |
 | Is this project or investment worth it? | `economic-evaluation` |
 | How do I finance it? | `financial-evaluation` |
 
-Chains: quotes → `procurement` → `cost-and-pricing`. Investment → `economic-evaluation` →
-(if NPV ≥ 0) `financial-evaluation`. If none fits, say so; do not force one.
+Chains: quotes → `procurement` → `cost-and-pricing`. Investment → `economic-evaluation` → (if
+NPV ≥ 0) `financial-evaluation`. If none fits, say so; do not force one. A method call ties to the
+manual step that needs it (`→ \`procurement\`` in the page).
 
-## 1. Map the context (always, it is cheap)
+## 1. Map the context (cheap; only if there are folders)
 
-Launch the `cartographer` agent on the folders the task touches (the case's, the ones the person
-named, the profile). It returns the **mode** and the path of `context/MAP.md`.
+Launch the `cartographer` agent on the folders the task touches and the scope allows. It returns
+the **mode** (`first-run` or `reread`) and `context/MAP.md`. In a reread you read the map, its core
+(at most 3 files) and what changed. Nothing else. The operator's word overrides the mode.
 
-- `first-run`: there was no map, or more than the threshold changed.
-- `reread`: there is a map and little changed. From here on **you read the map, not the
-  folders**: the map, its "Core · always read" section (at most 3 files) and the files the
-  cartographer listed as changed. Nothing else.
+## 2. Interview (only what the manual does not answer)
 
-The person can force the mode ("do it as a reread", "research from scratch"). Their word rules.
-A map written before v1.1 says `primera-vez` (= `first-run`) or `relectura` (= `reread`) and
-lives in `contexto/MAPA.md`: read it the same way.
+Use the `interview` skill. Batches of 3 to 4 questions with options, one batch per turn, "don't
+know" always available. `interview.py next` chooses the batch; `interview.py record` writes the
+answers. Before asking, check the index: **a question the manual already answers is not asked
+again.** Round 3 (limits) is mandatory before any intervention: without a scope nothing is touched.
 
-## 2. Plan and ask
+## 3. Research (only for gaps that need outside data)
 
-With the map (and without opening more files than needed), write `context/PLAN.md`:
+Only if a gap needs a datum the operator cannot give (a market rate, a norm, a price). Launch the
+`researcher` agent with those gaps; every datum comes with source, date and reliability (A–D).
+
+## 4. Document
+
+Use the `manual` skill: write or update the index and the process page from the interview record,
+the documents and the research, every step with its source. Then
+`manual.py check --company <company>`: **a page with errors is not shown as done.** Show the
+operator the page (or the diff) and ask whether it is right; their approval is
+`manual.py revise <CODE> --approve --by <role>`. If the task was only to understand or standardize,
+go to 7.
+
+## 5. Plan and ask
+
+Write `context/PLAN.md`:
 
 ```
-Task: <one line>
-Mode: first-run | reread        Agents: N        Estimated cost: low | medium | high
+Task: <one line>          Process: <CODE> (rev. <x>)          Mode: first-run | reread
+Agents: N                 Estimated cost: low | medium | high
 
-| # | Stage    | Agent      | Skill                | Model   | Input              | Output             | Depends on |
-|---|----------|------------|----------------------|---------|--------------------|--------------------|------------|
-| 1 | Research | researcher | research             | opus    | gaps of the map    | RESEARCH.md        | —          |
-| 2 | Execute  | executor   | economic-evaluation  | sonnet  | input.json         | output.json        | 1          |
-| 3 | Execute  | executor   | financial-evaluation | sonnet  | output.json of 2   | result.json        | 2          |
-| 4 | Audit    | auditor    | audit                | opus    | everything above   | AUDIT.md           | 2, 3       |
+| # | Stage     | Who        | Skill                | Model  | Input             | Output         | Depends on |
+|---|-----------|------------|----------------------|--------|-------------------|----------------|------------|
+| 1 | Execute   | executor   | economic-evaluation  | sonnet | input.json        | output.json    | —          |
+| 2 | Audit     | auditor    | audit                | opus   | everything above  | AUDIT.md       | 1          |
+| 3 | Intervene | you        | intervene            | —      | plantilla-oc.xlsx | logbook line   | 2          |
 
-Gaps that justify researching: <list, or "none">
-Assumptions that will be used if there is no research: <list>
+Gaps still open: <list, or "none">        Assumptions that will be used: <list>
 ```
 
-Plan rules:
-- **Research only if there are gaps** the calculation needs. In a reread, by default not.
-- **Models:** reread → `haiku` or `sonnet` everywhere except the audit. First run → `opus` in
-  research and audit. The auditor never goes below `sonnet`.
-- **In parallel** what does not depend on each other; in sequence what is chained.
-- **The auditor always goes** if there are numbers someone will use.
-- Cost: low ≤ 2 economical agents · medium 3 to 4 · high ≥ 5 or two `opus`.
+Rules: research only for gaps; reread → `haiku` or `sonnet` except the audit; the auditor never
+below `sonnet` and always goes if someone will use the numbers; in parallel what does not depend
+on each other. Cost: low ≤ 2 economical agents · medium 3 to 4 · high ≥ 5 or two `opus`.
 
-**Show the plan to the person and wait.** They answer "yes", change a row or ask for another mode.
-Launch no agent before that. If the person says "without agents" or the environment does not
-allow them, do each stage yourself, in order, in this conversation.
+**Show the plan and wait for the yes.** Launch nothing before. "Without agents" or a platform
+without them: do each stage yourself, in order, in this conversation.
 
-## 3. Launch
+## 6. Execute and audit
 
-- Launch in **one single message** all the agents of a wave with no pending dependencies.
-- To each one you pass: its plan row, the path of `context/`, the profile, the case folder and
-  what to return. Nothing else: it reads the rest from the map. Tell the executor **which method**
-  it runs: it reads only that `SKILL.md` (the four are not preloaded).
-- If there is research, the executor and the auditor read the same `context/research-data.json`
-  (`chosen`, `reliability`, usage `yes` · `ASSUMPTION` · `no`; format in
-  `skills/research/SKILL.md`). Do not summarize it for them in other words.
-- Each executor leaves its manifest in `context/runs/<id>.json` (command with `{OUT}`, outputs,
-  decisive figure and assumptions). Without a manifest there is no audit: if it is missing, ask for
-  it before launching the auditor.
-- When a wave ends, check that the output exists before launching the next one. If an agent fails,
-  you do not replace it with a calculation of your own: report it and propose the fix.
+- **Methods:** one `executor` per plan row, all agents of a wave in one message. Each gets its row,
+  the path of `context/`, the profile and the case folder; it reads only its method's `SKILL.md`
+  and leaves its manifest in `context/runs/<id>.json`. Then the `auditor` re-runs every script.
+- **Interventions:** always you, in the main conversation, with the `intervene` skill: plan → OK of
+  the operator for that one action → backup → execute → verify with a fact → logbook line. An
+  intervention is never delegated to an agent: the OK has to come from the person.
+- If an agent fails, you do not replace it with a calculation of your own: report it and propose
+  the fix.
 
-## 4. Consolidate
+## 7. Consolidate
 
-With `AUDIT.md` in view. If there is a **NOT COMPLIANT**, that is the first line of the answer.
+With `AUDIT.md` in view; a **NOT COMPLIANT** is the first line of the answer. In the conversation,
+at most 150 words; the detail goes to a file.
 
-1. **The decision** in one sentence (what is worth it and by how much).
-2. **The assumptions that decide it**: the two or three that turn it around, with their threshold.
-3. **Where** each output was left.
+1. **The result** in one sentence (what was documented, decided or changed).
+2. **What decides it**: the two or three assumptions or gaps that would turn it around.
+3. **Where** each output was left (manual page, logbook line, case output).
 4. **What is missing** to ask whoever decides.
 
-When closing, run `map_context.py --out <context/> --mark-read`: it empties the changes and leaves
-the fingerprints up to date. The next time on the same case will be a reread.
+Then close the loop so the next session starts by reading, not asking:
+- What the task taught goes into the manual (`manual.py revise <CODE> --change "…"`), and
+  `manual.py check` passes.
+- `map_context.py --out <context/> --mark-read`.
 
-Outputs for a person (`PLAN.md`, the answer) follow the profile's `language` (`es` by default).
+Outputs for a person follow the profile's `language` (`es` by default).
 
 ## Typical errors
 
-- Reading the full folders in a reread "to be sure": it cancels the saving. If the map is not
-  enough, the fix is to improve the map, not to skip it.
-- Launching the researcher out of habit: only with declared gaps.
-- Giving the answer before the audit.
-- Writing `context/` inside the public repo: it always goes in the data folder.
+- Asking again what the index already says: it wastes the operator's time and tokens.
+- Reading the whole manual "to be sure": load the index and the one process.
+- Intervening before round 3 (limits): without a scope, nothing is touched.
+- Treating one OK as permission for the whole session: one OK covers one action.
+- Giving the answer before the audit, or leaving the lesson only in the conversation.
+- Writing `context/` or the manual inside the public repo: they live in the data folder.

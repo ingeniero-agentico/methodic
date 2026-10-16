@@ -138,10 +138,10 @@ def read_examples() -> dict:
     ex = HERE / "examples"
     out = {}
     for p in sorted(ex.glob("*.json")):
-        s = json.loads(p.read_text(encoding="utf-8"))["mcpServers"]["ingeniero-agentico"]
+        s = json.loads(p.read_text(encoding="utf-8"))["mcpServers"]["methodic"]
         out[p.name] = (s["command"], s["args"], s.get("env", {}))
     for p in sorted(ex.glob("*.toml")):
-        s = tomllib.loads(p.read_text(encoding="utf-8"))["mcp_servers"]["ingeniero-agentico"]
+        s = tomllib.loads(p.read_text(encoding="utf-8"))["mcp_servers"]["methodic"]
         out[p.name] = (s["command"], s["args"], s.get("env", {}))
     for p in sorted(ex.glob("*.yaml")):
         s = _hermes_yaml(p.read_text(encoding="utf-8"))
@@ -169,7 +169,7 @@ def run_test() -> int:
     (data / "profiles").mkdir(parents=True)
     work.mkdir()
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONIOENCODING="utf-8")
-    for var in ("INGENIERO_DATOS", "INGENIERO_MCP_ROOTS", "INGENIERO_MCP_RAICES"):
+    for var in ("METHODIC_DATA", "INGENIERO_DATOS", "METHODIC_MCP_ROOTS", "INGENIERO_MCP_ROOTS", "INGENIERO_MCP_RAICES"):
         env.pop(var, None)
     cli = Client(["--data", str(data), "--work", str(work), "--max-time", "120"], env)
     try:
@@ -178,7 +178,7 @@ def run_test() -> int:
                                        "clientInfo": {"name": "test_server", "version": "1.1.0"}})
         res = r.get("result", {})
         check(res.get("protocolVersion") == "2025-11-25", f"initialize answers 2025-11-25 ({res.get('protocolVersion')})")
-        check(res.get("serverInfo", {}).get("name") == "ingeniero-agentico", "serverInfo.name = ingeniero-agentico")
+        check(res.get("serverInfo", {}).get("name") == "methodic", "serverInfo.name = methodic")
         plugin_version = json.loads((REPO / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"]
         check(res.get("serverInfo", {}).get("version") == plugin_version,
               f"serverInfo.version = plugin.json version ({plugin_version})")
@@ -197,7 +197,7 @@ def run_test() -> int:
         res = r.get("result", {})
         check(MODERN in res.get("supportedVersions", []) and res.get("resultType") == "complete",
               f"server/discover: {res.get('supportedVersions')}")
-        check(res.get("_meta", {}).get("io.modelcontextprotocol/serverInfo", {}).get("name") == "ingeniero-agentico",
+        check(res.get("_meta", {}).get("io.modelcontextprotocol/serverInfo", {}).get("name") == "methodic",
               "serverInfo in _meta")
         cli.n += 1
         cli.send({"jsonrpc": "2.0", "id": cli.n, "method": "tools/list",
@@ -225,12 +225,15 @@ def run_test() -> int:
               "every inputSchema is an object")
         r = cli.request("resources/list")
         uris = [x["uri"] for x in r["result"]["resources"]]
-        uri = "ingeniero://skills/economic-evaluation/SKILL.md"
+        uri = "methodic://skills/economic-evaluation/SKILL.md"
         check(uri in uris, f"{len(uris)} resources, among them {uri}")
         check(any(u.endswith("/GUIA.md") for u in uris), "the Spanish GUIA.md guides are resources")
         r = cli.request("resources/read", {"uri": uri})
         check(r["result"]["contents"][0]["text"].startswith("---"), "resources/read returns the SKILL.md")
-        r = cli.request("resources/read", {"uri": "ingeniero://skills/../CLAUDE.md"})
+        r = cli.request("resources/read", {"uri": uri.replace("methodic://", "ingeniero://")})
+        check("result" in r and r["result"]["contents"][0]["text"].startswith("---"),
+              "the legacy ingeniero:// URI is still read")
+        r = cli.request("resources/read", {"uri": "methodic://skills/../CLAUDE.md"})
         check("error" in r and r["error"]["code"] == -32002, "unknown resource → error -32002 (legacy era)")
         r = cli.tool("list_methods", {})
         met = {m["method"]: m for m in r["result"]["structuredContent"]["methods"]}
@@ -395,7 +398,7 @@ def run_test() -> int:
             args_f = [fill(a) for a in args]
             env_f = {**env, **{k: fill(v) for k, v in env_cfg.items()}}
             shape_ok = cmd == "python" and args_f and Path(args_f[0]).resolve() == SERVER \
-                and env_cfg.get("INGENIERO_DATOS") == "<path-to-data>"
+                and env_cfg.get("METHODIC_DATA") == "<path-to-data>"
             c = Client(args_f[1:], env_f)  # the client's «python» = this interpreter
             try:
                 r = c.request("initialize", {"protocolVersion": "2025-11-25", "capabilities": {},
@@ -422,6 +425,42 @@ def run_test() -> int:
     got, source = srv._assumptions(old, Path("salida.json"))
     check(got == [{"parameter": "rate", "value": 0.12, "origin": "profile", "text": "SUPUESTO rate"}]
           and "normalized" in source, f"old supuestos normalized: {got} ({source})")
+
+    print("11. Data folder and roots: methodic names first, legacy names still honored (direct calls)")
+    saved_env, saved_repo = dict(os.environ), srv.REPO
+    tmp2 = Path(tempfile.mkdtemp(prefix="test-mcp-legacy-")).resolve()
+    try:
+        for var in ("METHODIC_DATA", "INGENIERO_DATOS", "METHODIC_MCP_ROOTS", "INGENIERO_MCP_ROOTS",
+                    "INGENIERO_MCP_RAICES"):
+            os.environ.pop(var, None)
+        srv.REPO = tmp2 / "repo"           # a fake repo, so the real sibling data folder is never seen
+        srv.REPO.mkdir()
+        new_d, old_d = tmp2 / "new-data", tmp2 / "old-data"
+        new_d.mkdir()
+        old_d.mkdir()
+        check(srv.Config._find_data(None) == (None, "none"), "no env var and no sibling folder → none")
+        (tmp2 / "ingeniero-agentico-datos").mkdir()
+        got = srv.Config._find_data(None)
+        check(got[0] == tmp2 / "ingeniero-agentico-datos", f"legacy sibling ../ingeniero-agentico-datos is used ({got[1]})")
+        (tmp2 / "methodic-data").mkdir()
+        got = srv.Config._find_data(None)
+        check(got[0] == tmp2 / "methodic-data", f"../methodic-data wins over the legacy sibling ({got[1]})")
+        os.environ["INGENIERO_DATOS"] = str(old_d)
+        got = srv.Config._find_data(None)
+        check(got == (old_d, "INGENIERO_DATOS"), f"legacy $INGENIERO_DATOS wins over the siblings ({got[1]})")
+        os.environ["METHODIC_DATA"] = str(new_d)
+        got = srv.Config._find_data(None)
+        check(got == (new_d, "METHODIC_DATA"), f"$METHODIC_DATA wins over $INGENIERO_DATOS ({got[1]})")
+        os.environ["INGENIERO_MCP_ROOTS"] = str(tmp2 / "legacy-root")
+        os.environ["METHODIC_MCP_ROOTS"] = str(tmp2 / "new-root")
+        cfg = srv.Config(work=str(tmp2 / "work"))
+        check(tmp2 / "legacy-root" in cfg.write_roots and tmp2 / "new-root" in cfg.write_roots,
+              "METHODIC_MCP_ROOTS and the legacy INGENIERO_MCP_ROOTS both add roots")
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
+        srv.REPO = saved_repo
+        shutil.rmtree(tmp2, ignore_errors=True)
 
     print("OK" if not failures else f"FAIL ({len(failures)})")
     return 0 if not failures else 1

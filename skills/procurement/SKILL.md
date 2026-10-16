@@ -38,9 +38,11 @@ The script reads from the company profile: `company.currency`, `company.currency
 `company.vat` and `purchasing.tie_break`. It looks for it in this order:
 
 1. `--profile <path or name>`.
-2. The environment variable `INGENIERO_DATOS` (a file, or a folder with `profiles/` or `perfiles/`).
-3. The repo's sibling folder, `../ingeniero-agentico-datos/profiles/` (then `perfiles/`). If there
-   are several profiles, pick one with `--company`.
+2. The environment variable `METHODIC_DATA`, then the legacy `INGENIERO_DATOS` (a file, or a folder
+   with `profiles/` or `perfiles/`).
+3. The repo's sibling folder, `../methodic-data/profiles/` (then `perfiles/`), or the legacy
+   `../ingeniero-agentico-datos/` when the new one does not exist. If there are several profiles,
+   pick one with `--company`.
 4. If there is none, `profiles/_template.yaml` (then `perfiles/_plantilla.yaml`), and **everything
    taken from it is listed as an assumption**.
 

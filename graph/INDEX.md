@@ -2,7 +2,7 @@
 type: index
 ---
 
-# ingeniero-agentico graph
+# methodic graph
 
 Three kinds of note, linked to each other. Open it in Obsidian (graph view) or run
 `graphify` on the repo folder.

@@ -1,0 +1,18 @@
+# Alcance del computador · los únicos límites que leen los scripts (docs/MANUAL-FORMAT.md).
+# Se llena con el operador en la tercera ronda de la entrevista. Rutas absolutas, con /.
+# Lo que no está bajo `read` queda fuera del alcance. La carpeta trabajo/ del manual siempre se puede usar.
+
+read:              # carpetas que methodic puede leer
+#  - C:/Users/usuario/Documents/Empresa
+
+write_with_ok:     # carpetas donde se puede cambiar un archivo, con respaldo y OK cada vez
+#  - C:/Users/usuario/Documents/Empresa/Planillas
+
+never:             # nunca se leen ni se tocan, aunque estén dentro de read
+#  - C:/Users/usuario/Documents/Empresa/Sueldos
+
+sensitive:         # tipos de dato que se tratan con cuidado (texto libre)
+#  - RUT y sueldos del personal
+
+ok_by:             # roles que pueden dar el OK para intervenir un archivo (vacío: cualquiera, con aviso)
+#  - dueña

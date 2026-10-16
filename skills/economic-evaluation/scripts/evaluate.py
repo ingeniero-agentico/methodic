@@ -235,17 +235,22 @@ def read_simple_yaml(path: Path) -> dict:
     return root
 
 
+ENV_DATA = ("METHODIC_DATA", "INGENIERO_DATOS")              # the second one is the legacy name
+SIBLING_DATA = ("methodic-data", "ingeniero-agentico-datos")  # the second one is the legacy name
+
+
 def _data_folders():
-    folders = []
-    if os.environ.get("INGENIERO_DATOS"):
-        folders.append(Path(os.environ["INGENIERO_DATOS"]))
-    folders.append(REPO.parent / "ingeniero-agentico-datos")
+    """$METHODIC_DATA · $INGENIERO_DATOS (legacy) · ../methodic-data, or the legacy
+    ../ingeniero-agentico-datos when the new one does not exist."""
+    folders = [Path(os.environ[v]) for v in ENV_DATA if os.environ.get(v)]
+    new, old = (REPO.parent / n for n in SIBLING_DATA)
+    folders.append(old if not new.is_dir() and old.is_dir() else new)
     return folders
 
 
 def find_profile(arg: str | None):
-    """Order: --profile (path or name) · $INGENIERO_DATOS · ../ingeniero-agentico-datos
-    (profiles/ first, then perfiles/) · repo template (profiles/_template.yaml, then
+    """Order: --profile (path or name) · $METHODIC_DATA · $INGENIERO_DATOS (legacy) · ../methodic-data
+    or the legacy ../ingeniero-agentico-datos (profiles/ first, then perfiles/) · repo template (profiles/_template.yaml, then
     perfiles/_plantilla.yaml). Returns (path, how, name)."""
     folders = _data_folders()
     if arg:
@@ -1179,9 +1184,31 @@ def run_test() -> int:
         failures.append("Spanish keys give a different NPV or different critical values")
     if abs(r3["sweeps"][0]["points"][1]["npv"] - ind["npv"]) > 1e-6 or r3["sweeps"][0]["key"] != "revenues[0].occupancy":
         failures.append("a Spanish sweep key is not read as revenues[0].occupancy")
+    # data folder: $METHODIC_DATA · legacy $INGENIERO_DATOS · ../methodic-data · legacy sibling
+    import tempfile
+    saved_env = {v: os.environ.pop(v) for v in ENV_DATA if v in os.environ}
+    saved_repo = REPO
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            globals()["REPO"] = Path(tmp) / "lookup" / "repo"
+            for folder, var, what in (("ingeniero-agentico-datos", None, "legacy sibling ../ingeniero-agentico-datos"),
+                                      ("methodic-data", None, "../methodic-data over the legacy sibling"),
+                                      ("env-old", "INGENIERO_DATOS", "legacy $INGENIERO_DATOS"),
+                                      ("env-new", "METHODIC_DATA", "$METHODIC_DATA over $INGENIERO_DATOS")):
+                d = Path(tmp) / "lookup" / folder / "profiles"
+                d.mkdir(parents=True)
+                (d / f"{folder}.yaml").write_text("language: es\n", encoding="utf-8")
+                if var:
+                    os.environ[var] = str(Path(tmp) / "lookup" / folder)
+                if find_profile(None)[2] != f"{folder}.yaml":
+                    failures.append(f"profile lookup: {what} is not honored")
+        finally:
+            globals()["REPO"] = saved_repo
+            for v in ENV_DATA:
+                os.environ.pop(v, None)
+            os.environ.update(saved_env)
     # Excel, es and en
     try:
-        import tempfile
         from openpyxl import load_workbook
         with tempfile.TemporaryDirectory() as tmp:
             res = evaluate(case, profile, "name", "sample-profile.yaml")

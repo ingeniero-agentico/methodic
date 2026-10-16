@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "ingeniero-agentico",
-  "description": "Catalog of the ingeniero-agentico plugin: industrial engineering methods turned into skills for AI agents.",
+  "name": "methodic",
+  "description": "Catalog of the methodic plugin: a methodical documenter that interviews a business, writes a traceable manual of its processes and intervenes safely, with industrial engineering methods as its tools.",
   "owner": {
     "name": "camiloalonsomerino-spec",
     "url": "https://github.com/camiloalonsomerino-spec"
   },
   "plugins": [
     {
-      "name": "ingeniero-agentico",
+      "name": "methodic",
       "source": "./",
-      "description": "Procurement, cost and pricing, economic and financial evaluation, with a six-stage orchestrator (map context, research, plan, execute, audit, consolidate).",
+      "description": "Interviews a business, writes a traceable manual of its processes and intervenes on the operator's computer only with backup and OK. Procurement, cost and pricing, economic and financial evaluation are its tools, under a six-stage orchestrator.",
       "category": "productivity",
-      "tags": ["industrial-engineering", "finance", "english", "spanish"]
+      "tags": ["documentation", "process-manual", "sop", "industrial-engineering", "finance", "english", "spanish"]
     }
   ]
 }

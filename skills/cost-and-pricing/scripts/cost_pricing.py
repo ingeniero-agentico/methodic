@@ -17,9 +17,10 @@ What it computes (all net, without value added tax):
   (d) Contribution margin and break-even of a service or product; if units produced and sold
       are declared, profit under variable costing and under absorption costing.
 
-Profile search order: --profile (path or name) · the case's `profile` field · INGENIERO_DATOS
-(profiles/, then perfiles/) · sibling folder ../ingeniero-agentico-datos/ (profiles/, then
-perfiles/) · the repo's profiles/_template.yaml, then perfiles/_plantilla.yaml.
+Profile search order: --profile (path or name) · the case's `profile` field · METHODIC_DATA, then the
+legacy INGENIERO_DATOS (profiles/, then perfiles/) · sibling folder ../methodic-data/, or the legacy
+../ingeniero-agentico-datos/ when the new one does not exist (profiles/, then perfiles/) · the repo's
+profiles/_template.yaml, then perfiles/_plantilla.yaml.
 
 Spanish input keys, Spanish profile keys and the old Spanish flags are still accepted.
 Output labels (Excel, console, the SUPUESTO / ASSUMPTION marker) follow the profile `language`
@@ -228,13 +229,28 @@ def _is_template(path):
     return os.path.basename(path).startswith(("_template", "_plantilla"))
 
 
+ENV_DATA = ("METHODIC_DATA", "INGENIERO_DATOS")              # the second one is the legacy name
+SIBLING_DATA = ("methodic-data", "ingeniero-agentico-datos")  # the second one is the legacy name
+
+
+def env_data():
+    """Values of $METHODIC_DATA and then the legacy $INGENIERO_DATOS, the ones that are set."""
+    return [os.environ[v] for v in ENV_DATA if os.environ.get(v)]
+
+
+def sibling_data():
+    """../methodic-data, or the legacy ../ingeniero-agentico-datos when the new one does not exist."""
+    new, old = (os.path.join(os.path.dirname(REPO), n) for n in SIBLING_DATA)
+    return old if not os.path.isdir(new) and os.path.isdir(old) else new
+
+
 def data_dirs():
-    """Where company profiles live, in order: INGENIERO_DATOS and the repo's sibling folder."""
+    """Where company profiles live, in order: METHODIC_DATA, INGENIERO_DATOS and the repo's sibling folder."""
     dirs = []
-    env = os.environ.get("INGENIERO_DATOS")
-    if env and not os.path.isfile(env):
-        dirs += [os.path.join(env, "profiles"), os.path.join(env, "perfiles"), env]
-    sibling = os.path.join(os.path.dirname(REPO), "ingeniero-agentico-datos")
+    for env in env_data():
+        if not os.path.isfile(env):
+            dirs += [os.path.join(env, "profiles"), os.path.join(env, "perfiles"), env]
+    sibling = sibling_data()
     dirs += [os.path.join(sibling, "profiles"), os.path.join(sibling, "perfiles")]
     return dirs
 
@@ -265,7 +281,8 @@ def _pick(dirs, company):
 
 
 def find_profile(arg=None, company=None):
-    """Return (path, is_template). Order: arg (path or name) · INGENIERO_DATOS · sibling · template."""
+    """Return (path, is_template). Order: arg (path or name) · METHODIC_DATA · INGENIERO_DATOS · sibling ·
+    template."""
     if arg:
         if os.path.isfile(arg):
             return arg, _is_template(arg)
@@ -276,7 +293,7 @@ def find_profile(arg=None, company=None):
                 return c, False
         raise CaseError(tr(f"No encontré el perfil «{arg}» (busqué en: {', '.join(tried)})",
                            f"Profile «{arg}» not found (looked in: {', '.join(tried)})"))
-    env = os.environ.get("INGENIERO_DATOS")
+    env = (env_data() or [None])[0]  # the first variable set may point straight at a profile file
     if env and os.path.isfile(env):
         return env, False
     found = _pick(data_dirs(), company)
@@ -1023,6 +1040,28 @@ def run_test():
             fh.write("pricing:\n  default_markup: 0.30\n")
         if os.path.basename(template_path(tmp) or "") != "_template.yaml":
             failures.append("profiles/_template.yaml is not preferred")
+        # data folder: $METHODIC_DATA · legacy $INGENIERO_DATOS · ../methodic-data · legacy sibling
+        saved_env = {v: os.environ.pop(v) for v in ENV_DATA if v in os.environ}
+        saved_repo = REPO
+        try:
+            globals()["REPO"] = os.path.join(tmp, "lookup", "repo")
+            for folder, var, what in (("ingeniero-agentico-datos", None, "legacy sibling ../ingeniero-agentico-datos"),
+                                      ("methodic-data", None, "../methodic-data over the legacy sibling"),
+                                      ("env-old", "INGENIERO_DATOS", "legacy $INGENIERO_DATOS"),
+                                      ("env-new", "METHODIC_DATA", "$METHODIC_DATA over $INGENIERO_DATOS")):
+                d = os.path.join(tmp, "lookup", folder, "profiles")
+                os.makedirs(d)
+                with open(os.path.join(d, f"{folder}.yaml"), "w", encoding="utf-8") as fh:
+                    fh.write("pricing:\n  default_markup: 0.30\n")
+                if var:
+                    os.environ[var] = os.path.join(tmp, "lookup", folder)
+                if os.path.basename(find_profile()[0]) != f"{folder}.yaml":
+                    failures.append(f"profile lookup: {what} is not honored")
+        finally:
+            globals()["REPO"] = saved_repo
+            for v in ENV_DATA:
+                os.environ.pop(v, None)
+            os.environ.update(saved_env)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -1109,8 +1148,9 @@ def main(argv=None):
     hide = argparse.SUPPRESS
     ap = argparse.ArgumentParser(description="Real cost per item, price by markup, and break-even")
     ap.add_argument("case", nargs="?", help="case.json (see templates/case.json)")
-    ap.add_argument("--profile", dest="profile", help="profile YAML path or company name (looked up in INGENIERO_DATOS "
-                                                      "and in ../ingeniero-agentico-datos, profiles/ then perfiles/)")
+    ap.add_argument("--profile", dest="profile", help="profile YAML path or company name (looked up in METHODIC_DATA "
+                                                      "and in ../methodic-data, profiles/ then perfiles/; the "
+                                                      "legacy names are still read)")
     ap.add_argument("--perfil", dest="profile", help=hide)
     ap.add_argument("--company", dest="company", help="profile name when there are several")
     ap.add_argument("--empresa", dest="company", help=hide)

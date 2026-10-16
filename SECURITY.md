@@ -1,6 +1,6 @@
 # Security policy
 
-`ingeniero-agentico` ships skills, agents, commands, an installer and an MCP server that other
+`methodic` ships skills, agents, commands, an installer and an MCP server that other
 people's AI agents load and run. The owner's rule is short: **nobody slips malicious skills or code
 into the source or into an installed copy, nothing in the repo helps anyone exploit an account,
 and no data leaks from the repository.** This file says what we defend against, how, what the owner
@@ -12,7 +12,7 @@ must switch on in GitHub, and how to report a problem.
 prompt injection that works, a leaked secret or leaked private data.
 
 - While the repo is **public**: use **Security → Report a vulnerability**
-  (`https://github.com/ingeniero-agentico/ingeniero-agentico/security/advisories/new`). Only the
+  (`https://github.com/ingeniero-agentico/methodic/security/advisories/new`). Only the
   owner sees it.
 - While the repo is **private**, private vulnerability reporting does not exist (GitHub offers it for
   public repositories only); collaborators write to the owner directly through GitHub
@@ -69,10 +69,12 @@ files are covered by CODEOWNERS and by the manifest.
 
 ### The private denylist
 
-`ingeniero-agentico-datos/security/denylist.txt`, **outside the repo**, one term per line: the real
+`methodic-data/security/denylist.txt`, **outside the repo**, one term per line: the real
 company, people, suppliers, clients, RUTs and case names of the private cases. The scanner reads it
-from `--denylist`, else `$INGENIERO_DATOS/security/denylist.txt`, else the sibling folder
-`../ingeniero-agentico-datos/security/denylist.txt`. Matching is case- and accent-insensitive, on whole
+from `--denylist`, else `$METHODIC_DATA/security/denylist.txt` (then the legacy
+`$INGENIERO_DATOS/security/denylist.txt`), else the sibling folder
+`../methodic-data/security/denylist.txt` (then the legacy `../ingeniero-agentico-datos/`). The
+pre-push hook follows the same order. Matching is case- and accent-insensitive, on whole
 words, in file contents and file names. It never prints a term: only `file:line` and the first letter
 with the length. A denylist found inside the scanned tree is itself a HIGH finding. CI has no copy
 (by design): the hooks on the owner's machine are where it acts.
@@ -175,7 +177,7 @@ Path to every item: profile picture → **Organizations** → `ingeniero-agentic
 | Fork PR workflows (private repos) | **Actions → General → Fork pull request workflows**: leave "Run workflows from fork pull requests" **unchecked**; if you ever enable it, keep "Send write tokens…" and "Send secrets…" unchecked and check "Require approval for fork pull request workflows" | FREE (private repositories only) | same page |
 | Third-party access | **Third-party Access → OAuth application policy**: keep access restricted; approve nothing you did not install yourself. Review **GitHub Apps** installed on the org | FREE | https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions |
 
-### Repository level (`ingeniero-agentico/ingeniero-agentico` → Settings)
+### Repository level (`ingeniero-agentico/methodic` → Settings)
 
 | Setting | Where and what to choose | Availability | Docs |
 |---|---|---|---|

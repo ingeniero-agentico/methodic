@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-map_context · stage 0 (map the context) of ingeniero-agentico.
+map_context · stage 0 (map the context) of methodic.
 
     python map_context.py <folder> [<folder> ...] --out <context/>
                           [--exclude PATTERN ...] [--threshold 0.20] [--max-words 3000]

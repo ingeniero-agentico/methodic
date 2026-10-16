@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "command": "python",
       "args": ["<path-to-repo>/mcp/server.py"],
       "env": {
-        "INGENIERO_DATOS": "<path-to-data>"
+        "METHODIC_DATA": "<path-to-data>"
       },
       "timeout": 300000
     }

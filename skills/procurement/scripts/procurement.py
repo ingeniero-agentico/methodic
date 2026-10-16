@@ -19,9 +19,10 @@ What it computes (the judgement is set by whoever fills the input; the script on
 5. Buys in the supplier's unit: if it sells 6 m lengths, whole lengths are bought and the
    leftover is declared and paid for (it stays in the cost).
 
-Profile search order: --profile · INGENIERO_DATOS (profiles/, then perfiles/) · sibling folder
-../ingeniero-agentico-datos/ (profiles/, then perfiles/) · the repo's profiles/_template.yaml,
-then perfiles/_plantilla.yaml.
+Profile search order: --profile · METHODIC_DATA, then the legacy INGENIERO_DATOS (profiles/, then
+perfiles/) · sibling folder ../methodic-data/, or the legacy ../ingeniero-agentico-datos/ when the new
+one does not exist (profiles/, then perfiles/) · the repo's profiles/_template.yaml, then
+perfiles/_plantilla.yaml.
 
 Spanish input keys, Spanish profile keys and the old Spanish flags are still accepted.
 Output labels (Excel, console, the SUPUESTO / ASSUMPTION marker) follow the profile `language`
@@ -248,13 +249,28 @@ def _is_template(p):
     return p.name.startswith(("_template", "_plantilla"))
 
 
+ENV_DATA = ("METHODIC_DATA", "INGENIERO_DATOS")              # the second one is the legacy name
+SIBLING_DATA = ("methodic-data", "ingeniero-agentico-datos")  # the second one is the legacy name
+
+
+def env_data():
+    """Values of $METHODIC_DATA and then the legacy $INGENIERO_DATOS, the ones that are set."""
+    return [os.environ[v] for v in ENV_DATA if os.environ.get(v)]
+
+
+def sibling_data():
+    """../methodic-data, or the legacy ../ingeniero-agentico-datos when the new one does not exist."""
+    new, old = (REPO.parent / n for n in SIBLING_DATA)
+    return old if not new.is_dir() and old.is_dir() else new
+
+
 def data_dirs():
     """Folders where company profiles live, in search order."""
     dirs = []
-    env = os.environ.get("INGENIERO_DATOS")
-    if env and not Path(env).is_file():
-        dirs += [Path(env) / "profiles", Path(env) / "perfiles", Path(env)]
-    sibling = REPO.parent / "ingeniero-agentico-datos"
+    for env in env_data():
+        if not Path(env).is_file():
+            dirs += [Path(env) / "profiles", Path(env) / "perfiles", Path(env)]
+    sibling = sibling_data()
     dirs += [sibling / "profiles", sibling / "perfiles"]
     return dirs
 
@@ -285,7 +301,7 @@ def _pick(dirs, company):
 
 
 def find_profile(arg=None, company=None):
-    """Return (path, is_template). Order: --profile · INGENIERO_DATOS · sibling · template."""
+    """Return (path, is_template). Order: --profile · METHODIC_DATA · INGENIERO_DATOS · sibling · template."""
     if arg:
         p = Path(arg)
         if p.is_file():
@@ -295,7 +311,7 @@ def find_profile(arg=None, company=None):
             if (d / name).is_file():
                 return d / name, False
         raise InputError(tr(f"--profile no existe: {arg}", f"--profile not found: {arg}"))
-    env = os.environ.get("INGENIERO_DATOS")
+    env = (env_data() or [None])[0]  # the first variable set may point straight at a profile file
     if env and Path(env).is_file():
         return Path(env), False
     found = _pick(data_dirs(), company)
@@ -1205,6 +1221,28 @@ def run_test():
         (tmp / "profiles").mkdir()
         (tmp / "profiles" / "_template.yaml").write_text("company:\n  currency: CLP\n", encoding="utf-8")
         same(template_path(tmp).name, "_template.yaml", "template preference")
+        # data folder: $METHODIC_DATA · legacy $INGENIERO_DATOS · ../methodic-data · legacy sibling
+        saved_env = {v: os.environ.pop(v) for v in ENV_DATA if v in os.environ}
+        saved_repo = REPO
+        try:
+            globals()["REPO"] = tmp / "lookup" / "repo"
+            steps = (("ingeniero-agentico-datos", None, "legacy sibling ../ingeniero-agentico-datos"),
+                     ("methodic-data", None, "../methodic-data over the legacy sibling"),
+                     ("env-old", "INGENIERO_DATOS", "legacy $INGENIERO_DATOS"),
+                     ("env-new", "METHODIC_DATA", "$METHODIC_DATA over $INGENIERO_DATOS"))
+            for folder, var, what in steps:
+                d = tmp / "lookup" / folder / "profiles"
+                d.mkdir(parents=True)
+                (d / f"{folder}.yaml").write_text("company:\n  currency: CLP\n", encoding="utf-8")
+                if var:
+                    os.environ[var] = str(tmp / "lookup" / folder)
+                found = find_profile()[0]
+                same(found.name if found else None, f"{folder}.yaml", what)
+        finally:
+            globals()["REPO"] = saved_repo
+            for v in ENV_DATA:
+                os.environ.pop(v, None)
+            os.environ.update(saved_env)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

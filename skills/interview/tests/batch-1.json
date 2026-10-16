@@ -1,0 +1,11 @@
+{
+ "_case": "Ferretería Andes (fictitious). Batch 1 of round 1, answered by the owner. The answer keys are question ids of templates/questions.es.json; a list is a multi answer.",
+ "round": 1,
+ "who": "dueña",
+ "answers": [
+  {"id": "neg-01", "answer": ["Productos que compra y revende"]},
+  {"id": "neg-02", "answer": "Comercio (tienda o distribuidora)"},
+  {"id": "neg-03", "answer": ["Personas (público general)", "Empresas"]},
+  {"id": "neg-04", "answer": ["Al contado al entregar", "Con factura a 30 o 60 días"]}
+ ]
+}

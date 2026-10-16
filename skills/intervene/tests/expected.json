@@ -1,0 +1,65 @@
+{
+  "_help": "Expected results of `intervene.py --test` (Ferretería Andes, fictitious). The test builds the folders in a temporary directory, so paths are not stored here: only verdicts, names, logbook lines and the rules that must appear. The clock is fixed at 16-10-2026 15:42:00.",
+  "verdicts": {
+    "doc": "read-only",
+    "planilla": "write-needs-ok",
+    "sueldos": "never",
+    "fuera": "out-of-scope",
+    "escape_dotdot_out": "out-of-scope",
+    "escape_dotdot_never": "never",
+    "trabajo": "work-area-free",
+    "respaldo": "read-only",
+    "manual_page": "read-only",
+    "write_root_outside_read": "out-of-scope",
+    "case_windows": "write-needs-ok",
+    "symlink_escape": "out-of-scope"
+  },
+  "write_allowed": {
+    "doc": false,
+    "planilla": true,
+    "trabajo": true,
+    "sueldos": false
+  },
+  "plan_number": 1,
+  "backups": [
+    "plantilla-oc_2026-10-16_1542.csv",
+    "plantilla-oc_2026-10-16_154200.csv",
+    "plantilla-oc_2026-10-16_154200-2.csv"
+  ],
+  "log_line_1": "16-10-2026 15:42 · COMPRAS-05 · plantilla-oc.csv · columna IVA corregida · respaldo: respaldos/plantilla-oc_2026-10-16_1542.csv · verificado: total 119000 = 100000 × 1,19 · OK: dueña",
+  "log_line_2": "16-10-2026 15:42 · COMPRAS-05 · plantilla-oc.csv · columna IVA corregida · respaldo: respaldos/plantilla-oc_2026-10-16_154200.csv · verificado: total 119000 = 100000 × 1,19 (reabierto) · OK: dueña · corrige línea 1",
+  "refused": [
+    "backup_never",
+    "backup_of_a_backup",
+    "backup_out_of_scope",
+    "log_backup_outside_backups",
+    "log_bad_step",
+    "log_corrects_missing_line",
+    "log_empty_change",
+    "log_missing_backup",
+    "log_no_ok",
+    "log_read_only_file",
+    "log_vague_verification",
+    "permissions_other_platform",
+    "permissions_outside_work",
+    "plan_never",
+    "plan_out_of_scope",
+    "plan_read_only"
+  ],
+  "permissions": {
+    "top_keys": ["permissions"],
+    "permissions_keys": ["allow", "ask", "defaultMode", "deny", "disableAutoMode", "disableBypassPermissionsMode"],
+    "deny_includes": [
+      "Bash(rm *)", "Bash(rmdir *)", "Bash(del *)", "Bash(rd *)", "PowerShell(Remove-Item *)",
+      "Bash(curl *)", "Bash(wget *)", "PowerShell(Invoke-WebRequest *)", "PowerShell(Invoke-RestMethod *)",
+      "WebFetch", "WebSearch",
+      "Bash(pip install *)", "Bash(npm install *)", "Bash(winget *)", "Bash(choco *)", "Bash(msiexec *)",
+      "Bash(git push *)"
+    ],
+    "ask_includes": ["mcp__*"]
+  },
+  "en": {
+    "log_line": "16-10-2026 15:42 · — · plantilla-oc.csv · IVA column fixed · backup: backups/plantilla-oc_2026-10-16_1542.csv · verified: total 119000 = 100000 × 1.19 · OK: owner",
+    "files": ["backups", "logbook.md", "scope.yaml"]
+  }
+}

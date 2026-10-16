@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""server.py · MCP server (stdio) for ingeniero-agentico.
+"""server.py · MCP server (stdio) for methodic.
 
 Exposes the repo's methods to any MCP client (Claude Desktop, Claude Code, Codex, Cursor,
 Gemini CLI, Hermes Agent and others). It computes nothing: it writes the input to a work folder,
@@ -45,9 +45,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 SKILLS = REPO / "skills"
 
-NAME = "ingeniero-agentico"
-VERSION = "1.1.3"
-SERVER_INFO = {"name": NAME, "title": "ingeniero-agentico · industrial engineering methods", "version": VERSION}
+NAME = "methodic"
+VERSION = "2.0.0"
+SERVER_INFO = {"name": NAME, "title": "methodic · methodical documenter with industrial engineering methods",
+               "version": VERSION}
 
 MODERN_VERSIONS = ["2026-07-28"]
 LEGACY_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
@@ -64,7 +65,10 @@ MAX_INPUT = 2_000_000         # bytes of the JSON input plus attached files
 MAX_SCRIPT_TEXT = 20_000      # characters of stdout/stderr returned
 SIMPLE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}")
 FILE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.(csv|json|txt|yaml|yml)", re.I)
-ENV_ROOTS = ("INGENIERO_MCP_ROOTS", "INGENIERO_MCP_RAICES")   # the second one is the old name
+# Data folder: the env var first, then the legacy one; the sibling folder first, then the legacy one.
+ENV_DATA = ("METHODIC_DATA", "INGENIERO_DATOS")
+SIBLING_DATA = ("methodic-data", "ingeniero-agentico-datos")
+ENV_ROOTS = ("METHODIC_MCP_ROOTS", "INGENIERO_MCP_ROOTS", "INGENIERO_MCP_RAICES")   # the last two are legacy
 
 INSTRUCTIONS = (
     "Industrial engineering methods (procurement, cost-and-pricing, economic-evaluation, "
@@ -148,7 +152,7 @@ class Cancelled(Exception):
 
 
 def log(*parts):
-    print("[ingeniero-agentico-mcp]", *parts, file=sys.stderr, flush=True)
+    print("[methodic-mcp]", *parts, file=sys.stderr, flush=True)
 
 
 def trim(text: str, n: int) -> str:
@@ -181,7 +185,7 @@ class Config:
         elif self.data:
             self.work, self.destination = self._cases_folder(self.data), "data folder"
         else:
-            self.work, self.destination = Path(tempfile.gettempdir()).resolve() / "ingeniero-agentico-mcp", "temp"
+            self.work, self.destination = Path(tempfile.gettempdir()).resolve() / "methodic-mcp", "temp"
         if inside(self.work, REPO):
             raise SystemExit(f"The work folder {self.work} is inside the repo: a case's outputs never go "
                              "into the repo. Use --work or --data outside it.")
@@ -196,15 +200,18 @@ class Config:
 
     @staticmethod
     def _find_data(arg):
-        """Same order as the scripts: --data · $INGENIERO_DATOS · ../ingeniero-agentico-datos."""
+        """Same order as the scripts: --data · $METHODIC_DATA · $INGENIERO_DATOS (legacy) ·
+        ../methodic-data · ../ingeniero-agentico-datos (legacy)."""
         if arg:
             return Path(arg).expanduser().resolve(), "--data"
-        env = os.environ.get("INGENIERO_DATOS")
-        if env and Path(env).expanduser().is_dir():
-            return Path(env).expanduser().resolve(), "INGENIERO_DATOS"
-        sibling = REPO.parent / "ingeniero-agentico-datos"
-        if sibling.is_dir():
-            return sibling.resolve(), "sibling folder"
+        for var in ENV_DATA:
+            env = os.environ.get(var)
+            if env and Path(env).expanduser().is_dir():
+                return Path(env).expanduser().resolve(), var
+        for name in SIBLING_DATA:
+            sibling = REPO.parent / name
+            if sibling.is_dir():
+                return sibling.resolve(), f"sibling folder {name}"
         return None, "none"
 
     @staticmethod
@@ -219,10 +226,11 @@ class Config:
         bases = []
         if self.data:
             bases.append(self.data)
-        env = os.environ.get("INGENIERO_DATOS")
-        if env:
-            bases.append(Path(env).expanduser())
-        bases.append(REPO.parent / "ingeniero-agentico-datos")
+        for var in ENV_DATA:
+            env = os.environ.get(var)
+            if env:
+                bases.append(Path(env).expanduser())
+        bases += [REPO.parent / name for name in SIBLING_DATA]
         seen, unique = set(), []
         for b in bases:
             for sub in ("profiles", "perfiles"):
@@ -334,7 +342,7 @@ class Runner:
         env = dict(os.environ)
         env.update(PYTHONDONTWRITEBYTECODE="1", PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
         if self.cfg.data:
-            env["INGENIERO_DATOS"] = str(self.cfg.data)
+            env["METHODIC_DATA"] = str(self.cfg.data)
         extra = {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}
         cmd = [sys.executable, str(script), *[str(a) for a in args]]
         p = subprocess.Popen(cmd, cwd=str(cwd), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -647,7 +655,7 @@ def t_run_method(ctx, args, id_):
         "method": method, "ok": ok, "exit_code": r["code"],
         "folder": str(run), "destination": ctx.cfg.destination,
         "input": str(input_path),
-        "profile": str(profile) if profile else "the script's own search (INGENIERO_DATOS · sibling folder · template)",
+        "profile": str(profile) if profile else "the script's own search (METHODIC_DATA · sibling folder · template)",
         "output_json": str(main) if main else None,
         "excel": excels, "result": result,
         "assumptions": assumptions, "assumptions_source": source,
@@ -848,7 +856,8 @@ def _translate_args(name, args):
 # Resources: SKILL.md, GUIDE.md and GUIA.md of each skill
 # --------------------------------------------------------------------------------------------
 
-RESOURCE_URI = re.compile(r"ingeniero://skills/([a-z0-9][a-z0-9-]*)/(SKILL\.md|GUIDE\.md|GUIA\.md)")
+# methodic:// is the scheme; the legacy ingeniero:// is still read so saved URIs keep working.
+RESOURCE_URI = re.compile(r"(?:methodic|ingeniero)://skills/([a-z0-9][a-z0-9-]*)/(SKILL\.md|GUIDE\.md|GUIA\.md)")
 RESOURCE_FILES = (("SKILL.md", "skill"), ("GUIDE.md", "guide"), ("GUIA.md", "guía (es)"))
 
 
@@ -858,7 +867,7 @@ def resources():
         for fname, title in RESOURCE_FILES:
             p = d / fname
             if p.is_file():
-                out.append({"uri": f"ingeniero://skills/{name}/{fname}", "name": f"{name}/{fname}",
+                out.append({"uri": f"methodic://skills/{name}/{fname}", "name": f"{name}/{fname}",
                             "title": f"{name} · {title}", "mimeType": "text/markdown",
                             "size": p.stat().st_size})
     return out
@@ -1053,10 +1062,10 @@ class Server:
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="MCP server (stdio) for ingeniero-agentico.")
+    ap = argparse.ArgumentParser(description="MCP server (stdio) for methodic.")
     hidden = argparse.SUPPRESS
-    ap.add_argument("--data", help="data folder (profiles/ and cases/); default INGENIERO_DATOS or "
-                                   "the sibling folder ../ingeniero-agentico-datos")
+    ap.add_argument("--data", help="data folder (profiles/ and cases/); default METHODIC_DATA or "
+                                   "the sibling folder ../methodic-data (legacy names still read)")
     ap.add_argument("--datos", dest="data", default=hidden, help=hidden)
     ap.add_argument("--work", help="folder where runs are stored (wins over the data folder)")
     ap.add_argument("--trabajo", dest="work", default=hidden, help=hidden)

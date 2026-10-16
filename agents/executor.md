@@ -26,7 +26,7 @@ In the message that launches you, the plan row:
 | depends on | the output of another row (for example, the `output.json` of economic-evaluation) |
 
 If the method, the case folder or the profile is missing, **do not run**: return `MISSING: <what>`.
-If the output points inside the `ingeniero-agentico/` repo, neither: real data lives outside.
+If the output points inside the `methodic/` repo, neither: real data lives outside.
 
 A case started before v1.1 has `contexto/` with `MAPA.md` and `datos-investigados.json`: read
 those names and keep writing there.

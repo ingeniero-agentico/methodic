@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SHA-256 manifest of every distributable file of ingeniero-agentico. Standard library only.
+"""SHA-256 manifest of every distributable file of methodic. Standard library only.
 
 Usage:
     python security/manifest.py write  [--root DIR]          regenerate security/MANIFEST.sha256
@@ -42,7 +42,7 @@ DISTRIBUTABLE_FILES = ("profiles/_template.yaml", "ARCHITECTURE.md", "AGENTS.md"
                        "security/manifest.py", "security/policy.json", "security/allowlist.json")
 GENERATED_PATTERNS = ("__pycache__", "*.pyc", "*.pyo", ".DS_Store", "Thumbs.db", "outputs", "salidas")
 GENERATED_PATHS = ("install/output", "install/salida", "instalar/salida")   # installer output folders
-HEADER = ("# ingeniero-agentico · SHA-256 of every distributable file (CRLF normalised to LF in text files)\n"
+HEADER = ("# methodic · SHA-256 of every distributable file (CRLF normalised to LF in text files)\n"
           "# Regenerate after any change: python security/manifest.py write · check: python security/manifest.py verify\n")
 
 for _stream in (sys.stdout, sys.stderr):

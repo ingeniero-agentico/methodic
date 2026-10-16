@@ -1,0 +1,58 @@
+{
+ "_how_computed": "By hand from the bank and docs/MANUAL-FORMAT.md, before running the script. Round 1 has 11 questions; after batches 1 and 2, 8 are answered, neg-09 does not apply (the owner decides, not a head) and neg-10 and neg-11 remain: 8/10. The only «No sé» is neg-05, so it is the only gap. neg-08 «Compras, Cobranza» names COMPRAS and COBRANZA, both painful, so round 2 starts with COMPRAS. Headers are compared without their date and time.",
+ "questions_per_round": {"1": 11, "2": 12, "3": 8},
+ "record_dir": "entrevista",
+ "next": {
+  "start": ["neg-01", "neg-02", "neg-03", "neg-04"],
+  "after_batch_1": ["neg-05", "neg-06", "neg-07", "neg-08"],
+  "after_batch_2": ["neg-10", "neg-11"],
+  "round_2": {"process": "COMPRAS", "ids": ["pro-01", "pro-02", "pro-03", "pro-04"]},
+  "gaps": ["neg-05"]
+ },
+ "blocks": [
+  {"header": "## Tanda 1 · El negocio", "who": "Respondió: dueña", "lines": [
+   "1. [neg-01] ¿Qué vende principalmente la empresa? → Productos que compra y revende",
+   "2. [neg-02] ¿En qué tipo de negocio está? → Comercio (tienda o distribuidora)",
+   "3. [neg-03] ¿Quiénes son sus clientes principales? → Personas (público general), Empresas",
+   "4. [neg-04] ¿Cómo cobra normalmente? → Al contado al entregar, Con factura a 30 o 60 días"]},
+  {"header": "## Tanda 2 · El negocio", "who": "Respondió: vendedor", "lines": [
+   "1. [neg-05] ¿Cómo se fija el precio de lo que vende? → No sé · HUECO",
+   "2. [neg-06] ¿Cuántas personas trabajan en la empresa contando al dueño? → 6 a 20",
+   "3. [neg-07] ¿Quién decide lo importante (precios, compras grandes, contrataciones)? → El dueño o la dueña",
+   "4. [neg-08] ¿Qué procesos le quitan más tiempo o le dan más problemas hoy? (si son otros, escríbalos separados por coma) → Compras, Cobranza"]}
+ ],
+ "status": {
+  "batches": 2,
+  "round_1": {"answered": 8, "applicable": 10, "not_applicable": 1, "pending": 2},
+  "gaps": ["neg-05"],
+  "processes": [
+   {"code": "COMPRAS", "name": "Compras", "pain": true},
+   {"code": "COBRANZA", "name": "Cobranza", "pain": true}
+  ]
+ },
+ "status_text_contains": [
+  "Ronda 1 · El negocio: 8/10 (1 no aplica)",
+  "COMPRAS (Compras) · duele: 0/12",
+  "Ronda 3 · Los límites: 0/8",
+  "Huecos abiertos (1):",
+  "neg-05 · ¿Cómo se fija el precio de lo que vende? · declarado el ",
+  "Siguiente: Ronda 1 · neg-10, neg-11"
+ ],
+ "form_round_3": {
+  "fill": {
+   "lim-01": {"tick": ["Una carpeta principal (escribo la ruta)"], "other": "C:/Users/usuario/Documents/FerreteriaAndes"},
+   "lim-02": {"other": "C:/Users/usuario/Documents/FerreteriaAndes/Planillas"},
+   "lim-03": {"tick": ["Sueldos y personal", "Contabilidad y bancos"]},
+   "lim-04": {"tick": ["No sé"]}
+  },
+  "header": "## Tanda 3 · Los límites",
+  "answered": 4,
+  "gaps_total": 2
+ },
+ "en": {
+  "record_dir": "interview",
+  "header": "## Batch 1 · The business",
+  "who": "Answered by: owner",
+  "gap_suffix": "→ I don't know · GAP"
+ }
+}

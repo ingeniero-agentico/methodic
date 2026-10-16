@@ -1,5 +1,5 @@
 {
-  "_help": "Copy this file to ingeniero-agentico-datos/cases/<case>/input.json. Every number may go alone or as {\"value\": x, \"source\": \"URL or who said it, with date\", \"assumption\": true}. Amounts net of VAT. Delete the alternatives that do not apply. Spanish keys (caso, activo, alternativas, valor, supuesto...) are also accepted.",
+  "_help": "Copy this file to methodic-data/cases/<case>/input.json. Every number may go alone or as {\"value\": x, \"source\": \"URL or who said it, with date\", \"assumption\": true}. Amounts net of VAT. Delete the alternatives that do not apply. Spanish keys (caso, activo, alternativas, valor, supuesto...) are also accepted.",
   "case": "short-case-name",
   "description": "",
   "profile": "",

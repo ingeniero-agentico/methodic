@@ -75,8 +75,9 @@ The Spanish flags (`--perfil --tasa --impuesto --barrer --salida --probar`) stil
 Spanish input keys (`ingresos`, `costos_fijos`, `supuesto`...) and Spanish sweep keys
 (`ingresos[0].ocupacion`).
 
-The profile is found in this order: `--profile` (name or path) · `$INGENIERO_DATOS` ·
-`../ingeniero-agentico-datos` (in `profiles/`, then `perfiles/`; used if there is only one) · the
+The profile is found in this order: `--profile` (name or path) · `$METHODIC_DATA` · the legacy
+`$INGENIERO_DATOS` · `../methodic-data`, or the legacy `../ingeniero-agentico-datos` when the new one
+does not exist (in `profiles/`, then `perfiles/`; used if there is only one) · the
 repo template `profiles/_template.yaml` (fallback `perfiles/_plantilla.yaml`). The empty input is
 `templates/input.json`.
 

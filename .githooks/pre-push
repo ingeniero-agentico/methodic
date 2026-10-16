@@ -1,5 +1,5 @@
 #!/bin/sh
-# ingeniero-agentico · pre-push
+# methodic · pre-push
 # For every commit being pushed, exports that exact tree (git archive) to a temporary folder and runs
 #   security/scan.py   (full scan, private denylist included when available) and
 #   security/manifest.py verify   (every distributable file matches security/MANIFEST.sha256)
@@ -25,12 +25,15 @@ PY=$(find_python) || {
     exit 1
 }
 
+# Private denylist, first found: $METHODIC_DATA · $INGENIERO_DATOS (legacy) · ../methodic-data ·
+# ../ingeniero-agentico-datos (legacy). Same order as security/scan.py.
 DENY=""
-if [ -n "$INGENIERO_DATOS" ] && [ -f "$INGENIERO_DATOS/security/denylist.txt" ]; then
-    DENY="$INGENIERO_DATOS/security/denylist.txt"
-elif [ -f "$ROOT/../ingeniero-agentico-datos/security/denylist.txt" ]; then
-    DENY="$ROOT/../ingeniero-agentico-datos/security/denylist.txt"
-fi
+for base in "$METHODIC_DATA" "$INGENIERO_DATOS" "$ROOT/../methodic-data" "$ROOT/../ingeniero-agentico-datos"; do
+    if [ -n "$base" ] && [ -f "$base/security/denylist.txt" ]; then
+        DENY="$base/security/denylist.txt"
+        break
+    fi
+done
 
 failed=0
 while read -r local_ref local_sha remote_ref remote_sha; do

@@ -1,54 +1,75 @@
-# ingeniero-agentico
+# methodic
 
 [Leer en español → README.es.md](README.es.md)
 
-Industrial engineering methods turned into **skills for AI agents**: each method brings the skill
-the agent runs, a guide for a person (English `GUIDE.md`, Spanish `GUIA.md`), templates, the
-calculation in a script and a test that has to match.
+**A methodical documenter for AI agents.** methodic understands any business by asking the right
+questions, writes what it learned as a **traceable manual** of its processes, and only then
+intervenes on the operator's computer: with a plan, the operator's OK for each action, a backup
+and a logbook line. Industrial engineering methods (procurement, costing, project evaluation,
+financing) are its tools; every number comes from a script with a test.
 
-It works for any company. Each company's data lives **outside this repo**, in its own profile (see
-«Private data»).
+It works for any company. Each company's data and manual live **outside this repo**, on the
+operator's computer (see «Private data»).
 
-## Methods
-
-| Method | What it solves | Status |
-|---|---|---|
-| [procurement](skills/procurement/) | Whom to buy what from, when each supplier covers only part of the list | v1 |
-| [cost-and-pricing](skills/cost-and-pricing/) | What a job really costs and what to sell it for (markup on cost) | v1 |
-| [economic-evaluation](skills/economic-evaluation/) | Whether a project or investment pays off: cash flow, NPV, IRR, sensitivity | v1 |
-| [financial-evaluation](skills/financial-evaluation/) | How to finance it: loan, leasing, rental or paying cash | v1 |
-
-Each method is tested with `python skills/<method>/scripts/<script>.py --test`: it runs a
-fictitious case whose result was computed by a second route, and ends in `OK` or fails.
-
-## How a task is orchestrated
+## How it works
 
 ```
-/new-task should I buy another van to rent it out?
+/new-task we lose a day every week comparing supplier quotes
 ```
 
-The `orchestrate` skill takes it through six stages (details in [ARCHITECTURE.md](ARCHITECTURE.md)):
+1. **Interview.** Batches of 3 to 4 questions with options, one batch at a time. "I don't know" is
+   a valid answer: it becomes a declared gap with its date. Three rounds: the business, the process
+   that hurts, the limits (which folders it may read, what it may never touch).
+2. **Document.** Each process becomes one page: SIPOC on top, numbered steps below. Every step has
+   a code (`PURCHASES-03`), a responsible, a tool and **where it came from** (interview, document,
+   observation or `ASSUMPTION`). Status, revision and history like any controlled document. A script
+   checks all of it.
+3. **Intervene.** Plan → **your OK for that one action** → backup → execute → verify with a fact →
+   logbook line. It never deletes, installs, uses the network, sends or pays: it prepares, you send.
+   A permissions file generated from your scope makes Claude Code block the usual commands for that,
+   because a skill's text alone cannot. It is a barrier, not a sandbox: your review of each plan
+   stays the main control.
+4. **Calculate** when a step needs numbers: the method's script computes, an independent agent
+   re-runs it, and the result is tied to the step of the manual that asked for it.
 
-1. **Map context:** a cheap agent maps the folders the task touches.
-2. **Research:** only if data is missing; every figure with source, date and reliability (A–D).
-3. **Plan and ask:** it shows you which agents it will launch, with which skill and model. It waits for your yes.
-4. **Execute:** one agent per method, in parallel when they do not depend on each other.
-5. **Audit:** an independent agent reruns every calculation and compares.
-6. **Consolidate:** one answer with the decision, the assumptions that decide it and what is missing.
+**It is cheap to run, on any plan.** A session loads the manual's index (≤ 400 words) and the one
+process it touches (≤ 800 words), not the whole manual nor a re-interview. What a session learns is
+written back before closing, so the next one starts by reading one page. Every token is paid by the
+operator's own agent account.
 
-**Two modes.** The *first run* on a topic researches and maps everything. The following ones are a
-*reread*: the map is read instead of the folders, with cheaper models. The mode is decided by
-comparing the files' fingerprints, not by the model.
+## Skills
+
+| Skill | What it does |
+|---|---|
+| [orchestrate](skills/orchestrate/) | Takes a task through the stages; start here when it is not obvious where to begin |
+| [interview](skills/interview/) | Asks in batches with options and records the answers and gaps |
+| [manual](skills/manual/) | Writes the index and the process pages and checks caps and traceability |
+| [intervene](skills/intervene/) | Changes a file on the operator's computer only through the safe cycle |
+| [map-context](skills/map-context/) | Maps the folders of a task before reading them |
+| [research](skills/research/) | One outside datum per gap, with source, date and reliability |
+| [audit](skills/audit/) | Re-runs every calculation and compares |
+| [procurement](skills/procurement/) | Whom to buy what from, when each supplier covers only part of the list |
+| [cost-and-pricing](skills/cost-and-pricing/) | What a job really costs and what to sell it for (markup on cost) |
+| [economic-evaluation](skills/economic-evaluation/) | Whether a project pays off: cash flow, NPV, IRR, sensitivity |
+| [financial-evaluation](skills/financial-evaluation/) | How to finance it: loan, leasing, rental or cash |
+
+Each skill with a script is tested with `python skills/<skill>/scripts/<script>.py --test`, which
+ends in `OK` or fails. `python security/run_tests.py` runs them all.
+
+The stages, modes and the `context/` folder are in [ARCHITECTURE.md](ARCHITECTURE.md); the
+manual's format in [docs/MANUAL-FORMAT.md](docs/MANUAL-FORMAT.md).
 
 ## How it is organized
 
 ```
-ingeniero-agentico/
-├── skills/        the methods + orchestrate · map-context · research · audit
+methodic/
+├── skills/        documenter (interview · manual · intervene), orchestration and the methods
 ├── agents/        workers for one stage: cartographer · researcher · executor · auditor
 ├── commands/      /new-task
+├── docs/          manual format, install, MCP server
 ├── mcp/           MCP server: the methods as tools for any MCP client
 ├── install/       installer for Codex, Cursor, Gemini CLI, Hermes and others
+├── security/      scanner, manifest and tests that guard every change
 ├── graph/         linked notes method ↔ course ↔ pattern, for Obsidian and graphify
 └── profiles/      the company profile template (empty)
 ```
@@ -57,55 +78,49 @@ ingeniero-agentico/
 
 | Where | How | Notes |
 |---|---|---|
-| Claude Code | `/plugin marketplace add ingeniero-agentico/ingeniero-agentico` and `/plugin install ingeniero-agentico@ingeniero-agentico` | Brings skills, agents, `/new-task` and the MCP server |
+| Claude Code | `/plugin marketplace add ingeniero-agentico/methodic` and `/plugin install methodic@methodic` | Brings skills, agents, `/new-task` and the MCP server |
 | Claude Code without the plugin | `python install/install.py --platform claude-code` | Skills, agents and commands in `~/.claude/` |
-| Claude Desktop / claude.ai | `python install/install.py --platform claude-desktop` and upload the ZIPs in Customize | No agents in chat: `orchestrate` runs the stages in sequence |
-| Codex | `python install/install.py --platform codex` | Skills in `~/.agents/skills/`, agents as TOML; reads `AGENTS.md` |
-| Cursor | `python install/install.py --platform cursor` | Skills and subagents in `~/.cursor/`; reads `AGENTS.md` |
-| Gemini CLI | `python install/install.py --platform gemini` | Skills and subagents in `~/.gemini/`; reads `GEMINI.md` → `AGENTS.md` |
-| Hermes Agent | `python install/install.py --platform hermes` | Skills in `HERMES_HOME/skills/`; delegates with `delegate_task` |
-| Other Agent Skills agents | `python install/install.py --platform agents` | Skills in `~/.agents/skills/`, in sequence |
+| Claude Desktop / claude.ai | `python install/install.py --platform claude-desktop` and upload the ZIPs in Customize | No agents in chat: the stages run in sequence |
+| Codex | `python install/install.py --platform codex` | Reads `AGENTS.md` |
+| Cursor | `python install/install.py --platform cursor` | Reads `AGENTS.md` |
+| Gemini CLI | `python install/install.py --platform gemini` | Reads `GEMINI.md` → `AGENTS.md` |
+| Hermes Agent | `python install/install.py --platform hermes` | Delegates with `delegate_task` |
+| Other Agent Skills agents | `python install/install.py --platform agents` | Skills in `~/.agents/skills/` |
 | Any MCP client | `python mcp/server.py` in its configuration | The methods as tools |
 
-Step by step per platform in [docs/INSTALL.md](docs/INSTALL.md); the MCP server in
-[docs/MCP.md](docs/MCP.md). `python install/install.py --test` installs into a temporary HOME for
-every platform and checks it without touching your configuration.
+Step by step in [docs/INSTALL.md](docs/INSTALL.md); the MCP server in [docs/MCP.md](docs/MCP.md).
+Before letting methodic touch files, install the permissions file that `intervene` generates from
+your scope (see [skills/intervene/GUIDE.md](skills/intervene/GUIDE.md)).
 
 ## Private data
 
-Each skill looks for the company profile in this order:
+Everything about a company lives in a data folder outside the repo, found in this order:
+`--data` / `--profile` · `METHODIC_DATA` · the sibling folder `../methodic-data/` (the legacy
+`INGENIERO_DATOS` and `../ingeniero-agentico-datos/` still work). It holds:
 
-1. The path given with `--profile`.
-2. The path in the `INGENIERO_DATOS` environment variable.
-3. The sibling folder `../ingeniero-agentico-datos/`.
-4. If it finds none, it works with `profiles/_template.yaml` and asks you for the missing data
-   (everything it fills in comes out marked as an assumption).
+```
+methodic-data/
+├── profiles/<company>.yaml     currency, taxes, rates, language
+├── manual/<company>/           the manual, the interview record, the scope, the logbook, backups
+└── cases/<case>/               inputs, outputs and context/ of each calculation
+```
 
-That folder holds `profiles/<company>.yaml` and `cases/<case>/` (the older `perfiles/` and `casos/`
-still work). **It is never uploaded to this repo.**
+**It is never uploaded to this repo.** The profile's `language: es | en` sets the language of every
+output for a person, `es` by default.
 
-The profile's `language: es | en` field sets the language of the outputs (Excel labels, the
-`SUPUESTO` / `ASSUMPTION` marker, console text). It defaults to `es`, so cases built with version
-1.0 produce the same files. Spanish profile and input keys are still accepted.
-
-## Next version
-
-Version 1.1 (this branch) moves the repo to English with Spanish alongside, and closes the first
-three items of the audit on real cases (15-10-2026): `procurement` and `cost-and-pricing` take and
-return `assumptions` like the evaluation methods; one `research-data.json` format shared by
-`research`, `executor` and `auditor`; and the map's core excludes a file that another declares
-replaced («Replaces»). What remains:
+## Next
 
 1. **Self-contained skills.** The profile template inside each skill, so the scripts work on
    claude.ai without `--profile` and without copying anything outside the skill.
 2. **Tested inside real Codex, Cursor and Gemini.** Today only the installed format was checked.
-3. **Release versioning rule.** Every release bumps `version` in `.claude-plugin/plugin.json`:
-   whoever installed the plugin receives no changes while the version stays the same.
+3. **The documenter on a real business**, end to end: interview, manual approved by the operator,
+   one intervention with its logbook line.
 
 ## Where it comes from
 
-Each method comes from Industrial Engineering courses and from its use in real companies. Each
-method's `SOURCES.md` cites the bibliography; course material is not reproduced.
+The methods come from Industrial Engineering courses and their use in real companies; the
+documenter, from documenting real processes for small businesses. Each skill's `SOURCES.md` cites
+the bibliography; course material is not reproduced.
 
 ## License
 

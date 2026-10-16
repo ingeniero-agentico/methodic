@@ -1,10 +1,10 @@
 # Goes in ~/.codex/config.toml (or .codex/config.toml of a trusted project).
 # On Windows, write the path with forward slashes (C:/...) or in single quotes ('C:\...').
-[mcp_servers.ingeniero-agentico]
+[mcp_servers.methodic]
 command = "python"
 args = ["<path-to-repo>/mcp/server.py"]
 startup_timeout_sec = 20
 tool_timeout_sec = 300
 
-[mcp_servers.ingeniero-agentico.env]
-INGENIERO_DATOS = "<path-to-data>"
+[mcp_servers.methodic.env]
+METHODIC_DATA = "<path-to-data>"

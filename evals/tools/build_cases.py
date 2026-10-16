@@ -55,8 +55,9 @@ min: {min}
 
 
 def pattern_for(aliases: list[str]) -> str:
-    # Matches {"skill": "procurement"} and the namespaced {"skill": "ingeniero-agentico:procurement"}.
-    # The old Spanish name is accepted while the translation is in progress.
+    # Matches {"skill": "procurement"} and any namespaced form: {"skill": "methodic:procurement"} and the
+    # legacy {"skill": "ingeniero-agentico:procurement"}. The old Spanish name is accepted while the
+    # translation is in progress.
     names = "|".join(aliases)  # plain [a-z-] names, nothing to escape
     return r'"skill"\s*:\s*"(?:[\w-]+:)?(?:' + names + r')"'
 

@@ -59,7 +59,7 @@ Every grader is `tool_used` on the `Skill` tool, so grading is free (no judge mo
 | `fires-<skill>` | the expected skill was invoked at least once | 7 |
 | `silent-<skill>` | that skill was never invoked (`min: 0`, `max: 0`) | 1 each |
 
-The match accepts `procurement` and the namespaced `ingeniero-agentico:procurement`, and also the
+The match accepts `procurement` and the namespaced `methodic:procurement` (and the legacy `ingeniero-agentico:procurement`), and also the
 pre-v1.1 Spanish name (`adquisiciones`, `costo-y-precio`, `evaluacion-economica`,
 `evaluacion-financiera`, `orquestar`, `cartografiar`, `investigar`, `auditar`) while the
 translation is in progress. Remove the old names from `skills` in `cases.json` once it is merged.
@@ -79,7 +79,7 @@ in your normal sessions. **Every run is a real model call on your account** (pla
 bill). The suite grants no Bash, Write or WebFetch, so it needs no OS sandbox and runs on native
 Windows.
 
-From the plugin root (`ingeniero-agentico/`):
+From the plugin root (`methodic/`):
 
 ```bash
 # Cheap pass: one run per case, no baseline arm (80 agent runs)

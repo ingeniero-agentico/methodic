@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability (privately)
-    url: https://github.com/ingeniero-agentico/ingeniero-agentico/security/advisories/new
+    url: https://github.com/ingeniero-agentico/methodic/security/advisories/new
     about: Never open a public issue for a vulnerability, a leaked secret or leaked private data. Use this private form (available while the repo is public) or follow SECURITY.md.
   - name: Security policy
-    url: https://github.com/ingeniero-agentico/ingeniero-agentico/blob/main/SECURITY.md
+    url: https://github.com/ingeniero-agentico/methodic/blob/main/SECURITY.md
     about: Threat model, controls and how to report.

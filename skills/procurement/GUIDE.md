@@ -10,7 +10,7 @@ the purchase orders** (step 6). They are described here so the method is complet
 
 ## 0 · The company profile
 
-Copy `profiles/_template.yaml` to `ingeniero-agentico-datos/profiles/<company>.yaml` and fill in at
+Copy `profiles/_template.yaml` to `methodic-data/profiles/<company>.yaml` and fill in at
 least `currency`, `currency_decimals`, `vat` and `purchasing.tie_break`. Set `language: en` if you
 want the workbook in English (`es` is the default). Without a profile, the script uses the template
 and lists everything it took from it as an assumption: good for testing, not for buying.

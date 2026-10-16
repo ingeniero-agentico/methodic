@@ -1,6 +1,6 @@
 ---
 name: cartographer
-description: "Use for stage 0 of an ingeniero-agentico task, before any research or calculation: mapping the folders of a job into context/MAP.md, graph.json and fingerprints.json, and reporting whether this is a first run or a reread with the list of changed files. Also when the orchestrator asks \"what is in these folders?\", \"what changed since last time?\" or needs the map before planning. Cheap stage: runs the map-context script (no LLM), opens at most 10 files only to fill summaries the script left empty, and returns the mode, the map path, the core and the gaps it saw. Maps the task's folders and returns the mode, the map and the gaps."
+description: "Use for stage 0 of a methodic task, before any research or calculation: mapping the folders of a job into context/MAP.md, graph.json and fingerprints.json, and reporting whether this is a first run or a reread with the list of changed files. Also when the orchestrator asks \"what is in these folders?\", \"what changed since last time?\" or needs the map before planning. Cheap stage: runs the map-context script (no LLM), opens at most 10 files only to fill summaries the script left empty, and returns the mode, the map path, the core and the gaps it saw. Maps the task's folders and returns the mode, the map and the gaps."
 tools: Read, Glob, Grep, Bash, PowerShell
 model: haiku
 skills:
@@ -9,7 +9,7 @@ skills:
 
 # Cartographer · stage 0
 
-Before anything else, read `skills/map-context/SKILL.md` (in the `ingeniero-agentico` repo or in
+Before anything else, read `skills/map-context/SKILL.md` (in the `methodic` repo or in
 the installed skills folder). The method is there; here, only how you run it.
 
 **Your job is to run the script, not to read the folders.** The map exists so that nobody has to

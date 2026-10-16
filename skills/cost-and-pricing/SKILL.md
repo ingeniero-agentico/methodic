@@ -55,8 +55,9 @@ Spanish keys (`compras`, `tipos_de_cambio`, `precio_unit`, `factor_unidad`, `rec
 work.
 
 **The profile** is looked up like this: `--profile` (path or name) · the case's `profile` field ·
-`$INGENIERO_DATOS/profiles/` (then `perfiles/`) · `../ingeniero-agentico-datos/profiles/` (then
-`perfiles/`); with a name it looks for `<name>.yaml`, without one it takes the only profile there
+`$METHODIC_DATA/profiles/`, then the legacy `$INGENIERO_DATOS/profiles/` (then `perfiles/`) ·
+`../methodic-data/profiles/`, or the legacy `../ingeniero-agentico-datos/` when the new one does not
+exist (then `perfiles/`); with a name it looks for `<name>.yaml`, without one it takes the only profile there
 (`--company` if there are several) · and if there is none, `profiles/_template.yaml` (then
 `perfiles/_plantilla.yaml`), and everything taken from it is an assumption. From the profile it
 reads `company.currency`, `company.currency_decimals`, `pricing.default_markup` and

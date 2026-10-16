@@ -1,5 +1,5 @@
 # Company profile · template
-# Copy this file to ingeniero-agentico-datos/profiles/<company>.yaml and fill it in.
+# Copy this file to methodic-data/profiles/<company>.yaml and fill it in.
 # Every skill in the repo reads it. An empty field is asked by the skill, never invented.
 # Spanish keys (empresa, compras, precios, finanzas, idioma...) are still accepted: every
 # script normalizes them to the English keys below at load time.

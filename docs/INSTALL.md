@@ -1,4 +1,4 @@
-# Installing ingeniero-agentico
+# Installing methodic
 
 Version 1.1.0 · checked against each platform's documentation on 15-10-2026.
 
@@ -12,7 +12,7 @@ arrives.
 
 | Platform | Command | Where the skills end up | Orchestration |
 |---|---|---|---|
-| Claude Code | `/plugin marketplace add ingeniero-agentico/ingeniero-agentico` and `/plugin install ingeniero-agentico@ingeniero-agentico` | plugin cache (`~/.claude/plugins/`) | with agents |
+| Claude Code | `/plugin marketplace add methodic/methodic` and `/plugin install methodic@methodic` | plugin cache (`~/.claude/plugins/`) | with agents |
 | Claude Code without the plugin | `python install/install.py --platform claude-code` | `~/.claude/skills/` | with agents |
 | Claude Desktop and claude.ai | `python install/install.py --platform claude-desktop` and upload the ZIPs | your account (Customize) | chat: in sequence · Cowork: with agents |
 | Codex | `python install/install.py --platform codex` | `~/.agents/skills/` | TOML subagents or in sequence |
@@ -29,21 +29,23 @@ The full table of paths, with the URL that backs each one, is in `install/platfo
 
 ## Private data, on every platform
 
-The scripts look for the company profile in this order: `--profile` · the `INGENIERO_DATOS`
-variable · the sibling folder `ingeniero-agentico-datos/` · the repo template (everything comes out
-as an assumption). Inside the data folder they look in `profiles/` first and then in the older
+The scripts look for the company profile in this order: `--profile` · the `METHODIC_DATA`
+variable · the sibling folder `methodic-data/` · the repo template (everything comes out
+as an assumption). Installs made before the rename keep working: the legacy `INGENIERO_DATOS`
+variable is read after `METHODIC_DATA`, and the legacy sibling folder `ingeniero-agentico-datos/` is
+used when `methodic-data/` does not exist. Inside the data folder they look in `profiles/` first and then in the older
 `perfiles/`; cases go in `cases/` or the older `casos/`. The sibling folder depends on where the
 script was installed:
 
 | Installation | «Sibling folder» the script looks for |
 |---|---|
-| Cloned repo or `--link` | next to the repo: `<repo folder>/../ingeniero-agentico-datos/` |
-| Copy in Claude Code, Codex, Cursor, Gemini or `agents` | `~/ingeniero-agentico-datos/` |
-| Copy in Hermes (Windows) | `%LOCALAPPDATA%\ingeniero-agentico-datos\` |
-| Claude Code plugin | none that helps (it lands inside the cache): use `INGENIERO_DATOS` |
+| Cloned repo or `--link` | next to the repo: `<repo folder>/../methodic-data/` |
+| Copy in Claude Code, Codex, Cursor, Gemini or `agents` | `~/methodic-data/` |
+| Copy in Hermes (Windows) | `%LOCALAPPDATA%\methodic-data\` |
+| Claude Code plugin | none that helps (it lands inside the cache): use `METHODIC_DATA` |
 | claude.ai (sandbox) | does not exist: upload the profile to the chat and pass it with `--profile` |
 
-**The safe choice is to set `INGENIERO_DATOS`** to the path of your data folder. Never put a real
+**The safe choice is to set `METHODIC_DATA`** to the path of your data folder. Never put a real
 profile inside the repo or inside the installed skills folder.
 
 The profile field `language: es | en` decides the language of the script outputs (Excel labels,
@@ -60,40 +62,40 @@ version 1.0 keep producing the same files. Spanish profile keys (`empresa`, `com
 Inside a Claude Code session:
 
 ```
-/plugin marketplace add ingeniero-agentico/ingeniero-agentico
-/plugin install ingeniero-agentico@ingeniero-agentico
+/plugin marketplace add methodic/methodic
+/plugin install methodic@methodic
 ```
 
-Since version 2.1.275 one line is enough: `/plugin install ingeniero-agentico --marketplace ingeniero-agentico/ingeniero-agentico`.
+Since version 2.1.275 one line is enough: `/plugin install methodic --marketplace methodic/methodic`.
 From the terminal, the same with `claude plugin marketplace add ...` and `claude plugin install ...`.
 
 - **Repo access.** Claude Code clones with your computer's git and without asking for a password.
   If the repo is not public for you, first run `gh auth login` and `gh auth setup-git` (HTTPS), or
   load an SSH key in `ssh-agent`. Without an SSH key, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`.
 - **Branch.** The catalog is read from the default branch (`main`).
-- **Names.** Skills get a prefix: `/ingeniero-agentico:orchestrate`,
-  `/ingeniero-agentico:new-task`; agents, `ingeniero-agentico:cartographer`, etc.
+- **Names.** Skills get a prefix: `/methodic:orchestrate`,
+  `/methodic:new-task`; agents, `methodic:cartographer`, etc.
 - **Updates.** `plugin.json` pins `"version": "1.1.0"`: whoever installed does not receive changes
   until the version goes up. Every new release bumps the version. Users update with
-  `/plugin marketplace update ingeniero-agentico`.
-- **Data.** In `~/.claude/settings.json`: `"env": { "INGENIERO_DATOS": "<path to ingeniero-agentico-datos>" }`.
+  `/plugin marketplace update methodic`.
+- **Data.** In `~/.claude/settings.json`: `"env": { "METHODIC_DATA": "<path to methodic-data>" }`.
 
 **The MCP server comes included.** `plugin.json` declares the `mcp/server.py` server in `mcpServers`
 (details in `docs/MCP.md`), so `/plugin install` registers it by itself, as
-`plugin:ingeniero-agentico:ingeniero-agentico`. It is launched with `${CLAUDE_PLUGIN_ROOT}/mcp/server.py`
-and three plugin options (`userConfig`), changed with `/plugin configure ingeniero-agentico@ingeniero-agentico`
+`plugin:methodic:methodic`. It is launched with `${CLAUDE_PLUGIN_ROOT}/mcp/server.py`
+and three plugin options (`userConfig`), changed with `/plugin configure methodic@methodic`
 or at install time with `--config KEY=value`:
 
 | Option | Default | What it is |
 |---|---|---|
 | `python` | `python` | The command that launches the server. On Windows `python` (if it is on the PATH) or `py`; on macOS and Linux, `python3`; or the absolute path to the executable |
-| `data` | empty | Data folder; passed to the server as `INGENIERO_DATOS`. Empty: the server uses the environment variable or the temp folder |
-| `roots` | empty | Extra folders the server can read and write (`INGENIERO_MCP_ROOTS`), separated by `;` on Windows and `:` on macOS and Linux |
+| `data` | empty | Data folder; passed to the server as `METHODIC_DATA`. Empty: the server uses the environment variable or the temp folder |
+| `roots` | empty | Extra folders the server can read and write (`METHODIC_MCP_ROOTS`), separated by `;` on Windows and `:` on macOS and Linux |
 
 Version 1.0 called the last two options `datos` and `raices`. After updating to 1.1.0, set them
 again with `/plugin configure`.
 
-Example from the terminal: `claude plugin install ingeniero-agentico@ingeniero-agentico --config python=py --config data=D:/ingeniero-agentico-datos`.
+Example from the terminal: `claude plugin install methodic@methodic --config python=py --config data=D:/methodic-data`.
 The server requires absolute paths inside an allowed root (the plugin, `data`, the work folder and
 `roots`): to map the folders of a task with `map_context`, add them to `roots`.
 
@@ -125,13 +127,13 @@ Leaves in `install/output/claude-desktop/` (ignored by git):
 
 - one ZIP per skill (`orchestrate.zip`, `procurement.zip`, ...), each with the `<skill>/` folder as
   its only top level, which is what claude.ai requires;
-- `ingeniero-agentico-plugin.zip`, the whole plugin in an `ingeniero-agentico/` folder (it includes
+- `methodic-plugin.zip`, the whole plugin in an `methodic/` folder (it includes
   `mcp/`, because `plugin.json` declares the MCP server).
 
 Upload them in one of these ways:
 
 1. **One skill at a time:** Customize > Skills > upload the ZIP, and turn it on.
-2. **The whole plugin:** Customize > Plugins > Add > Upload plugin > `ingeniero-agentico-plugin.zip`.
+2. **The whole plugin:** Customize > Plugins > Add > Upload plugin > `methodic-plugin.zip`.
 3. **From GitHub:** Customize > Plugins > Add > Add marketplace with the repo URL (claude.ai must be
    able to read the repo; if it cannot, use option 2).
 
@@ -182,7 +184,7 @@ it, so `orchestrate` can delegate; if it does not, it runs the stages in sequenc
 approval as the gate. `/new-task` does not exist: use `$orchestrate`. The converted agents were not
 tested inside Codex; the installer checks that the TOML parses.
 
-**Data:** set `INGENIERO_DATOS` in the environment before opening Codex, or use `~/ingeniero-agentico-datos/`.
+**Data:** set `METHODIC_DATA` in the environment before opening Codex, or use `~/methodic-data/`.
 
 Sources: [Skills](https://developers.openai.com/codex/skills) ·
 [Subagents](https://developers.openai.com/codex/subagents) ·
@@ -259,7 +261,7 @@ skills:
 - **Curator:** the Hermes curator only maintains skills created by the agent itself; these have
   «no origin mark» and it does not archive them. But if the agent uses `skill_manage` it can edit
   them wherever they are: reinstalling puts them back as they are in the repo.
-- **Data:** set `INGENIERO_DATOS` in the system environment (Hermes keeps its `.env` for secrets),
+- **Data:** set `METHODIC_DATA` in the system environment (Hermes keeps its `.env` for secrets),
   or pass `--profile`.
 - **MCP:** see `docs/MCP.md`.
 
@@ -307,12 +309,15 @@ The version 1.0 Spanish flags (`--plataforma`, `--destino`, `--enlazar`, `--forz
 `--desinstalar`, `--listar`, `--probar`, `--sin-scripts`) still work as hidden aliases, and
 manifests written by 1.0 are still read.
 
-`--test` runs each method with your real user environment (only `INGENIERO_DATOS` is removed, so
+`--test` runs each method with your real user environment (only `METHODIC_DATA` and the legacy
+`INGENIERO_DATOS` are removed, so
 nothing reaches your data folder): the Microsoft Store Python only launches with the real user
 profile, and overriding it broke `audit` in 1.0.
 
 It never edits `settings.json`, `config.yaml` or `config.toml`. It leaves a manifest in
-`<configuration folder>/.ingeniero-agentico/<platform>.json`.
+`<configuration folder>/.methodic/<platform>.json`. An install made before the rename (manifest in
+`.ingeniero-agentico/`) is still detected: reinstalling upgrades it and moves the manifest to
+`.methodic/`, and `--uninstall` removes it.
 
 **What gets installed.** Each whole `skills/<name>/`, with `tests/`, because every `SKILL.md` says
 to run `--test` and the auditor uses it to confirm the method works where it landed. Generated files
@@ -347,7 +352,7 @@ OK
 
 | Platform | Does not work or changes |
 |---|---|
-| Claude Code (plugin) | The sibling data folder does not help (use `INGENIERO_DATOS`). Names with the `ingeniero-agentico:` prefix |
+| Claude Code (plugin) | The sibling data folder does not help (use `METHODIC_DATA`). Names with the `methodic:` prefix |
 | claude.ai chat | No agents (orchestration in sequence). No `/new-task`. No disk: profile and case are uploaded; outputs are downloaded. No profile template in single-skill ZIPs. Without code execution there are no numbers |
 | Cowork | Loads agents; the data folder depends on whether the session runs on your computer |
 | Codex | No `/new-task` (use `$orchestrate`). Converted agents without their own tools or model |

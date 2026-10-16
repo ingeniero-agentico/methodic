@@ -1,7 +1,8 @@
 #!/bin/sh
-# ingeniero-agentico · pre-commit
+# methodic · pre-commit
 # Scans the STAGED version of the staged files with security/scan.py (private denylist included when
-# ../ingeniero-agentico-datos/security/denylist.txt or $INGENIERO_DATOS/security/denylist.txt exists)
+# $METHODIC_DATA or the legacy $INGENIERO_DATOS, else ../methodic-data or the legacy
+# ../ingeniero-agentico-datos, has security/denylist.txt)
 # and blocks the commit on any HIGH finding. Works in Git for Windows (sh) and on macOS/Linux.
 # Enable once per clone:  git config core.hooksPath .githooks
 # Skipping it (git commit --no-verify) skips this layer only: CI runs the same scan on every push and PR.

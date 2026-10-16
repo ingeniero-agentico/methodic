@@ -21,13 +21,13 @@
         "https://code.claude.com/docs/en/sub-agents",
         "https://code.claude.com/docs/en/plugins-reference"
       ],
-      "note": "The recommended route is the plugin (/plugin marketplace add ingeniero-agentico/ingeniero-agentico). This copy is the alternative without GitHub; do not install both at once."
+      "note": "The recommended route is the plugin (/plugin marketplace add ingeniero-agentico/methodic). This copy is the alternative without GitHub; do not install both at once."
     },
     "claude-desktop": {
       "name": "Claude Desktop and claude.ai (chat and Cowork)",
       "kind": "zip",
       "output": "install/output/claude-desktop",
-      "plugin_zip": "ingeniero-agentico-plugin.zip",
+      "plugin_zip": "methodic-plugin.zip",
       "plugin_zip_includes": [".claude-plugin/plugin.json", "skills", "agents", "commands", "mcp", "profiles/_template.yaml", "ARCHITECTURE.md", "README.md", "README.es.md", "LICENSE", "requirements.txt", "security/manifest.py", "security/MANIFEST.sha256"],
       "plugin_zip_rationale": "mcp/ goes because plugin.json declares the MCP server with ${CLAUDE_PLUGIN_ROOT}/mcp/server.py: the chat ignores it (it is local), Cowork starts it if the session runs on your computer.",
       "orchestration": "chat: no agents (stages in sequence); Cowork: loads agents/",

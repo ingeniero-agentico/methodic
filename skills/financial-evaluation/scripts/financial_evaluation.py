@@ -248,20 +248,34 @@ def template_profile() -> Path:
     raise InputError("No profile template in the repo (profiles/_template.yaml or perfiles/_plantilla.yaml).")
 
 
+ENV_DATA = ("METHODIC_DATA", "INGENIERO_DATOS")              # the second one is the legacy name
+SIBLING_DATA = ("methodic-data", "ingeniero-agentico-datos")  # the second one is the legacy name
+
+
+def sibling_data() -> Path:
+    """../methodic-data, or the legacy ../ingeniero-agentico-datos when the new one does not exist."""
+    new, old = (REPO_ROOT.parent / n for n in SIBLING_DATA)
+    return old if not new.is_dir() and old.is_dir() else new
+
+
 def find_profile(name: str | None) -> tuple[Path, str]:
-    """Order: direct path · $INGENIERO_DATOS/(profiles|perfiles) · ../ingeniero-agentico-datos/
-    (profiles|perfiles) · repo template. Returns (path, how)."""
+    """Order: direct path · $METHODIC_DATA/(profiles|perfiles) · $INGENIERO_DATOS (legacy) ·
+    ../methodic-data/(profiles|perfiles), or the legacy ../ingeniero-agentico-datos/ when the new one
+    does not exist · repo template. Returns (path, how), how = arg_path, env:<VAR>, sibling:<folder>
+    or template."""
     if name:
         direct = Path(name)
         if direct.is_file():
             return direct, "arg_path"
         fname = name if name.endswith((".yaml", ".yml")) else name + ".yaml"
         candidates = []
-        if os.environ.get("INGENIERO_DATOS"):
-            for sub in ("profiles", "perfiles"):
-                candidates.append((Path(os.environ["INGENIERO_DATOS"]) / sub / fname, "env"))
+        for var in ENV_DATA:
+            if os.environ.get(var):
+                for sub in ("profiles", "perfiles"):
+                    candidates.append((Path(os.environ[var]) / sub / fname, f"env:{var}"))
+        sibling = sibling_data()
         for sub in ("profiles", "perfiles"):
-            candidates.append((REPO_ROOT.parent / "ingeniero-agentico-datos" / sub / fname, "sibling"))
+            candidates.append((sibling / sub / fname, f"sibling:{sibling.name}"))
         for path, how in candidates:
             if path.is_file():
                 return path, how
@@ -271,10 +285,11 @@ def find_profile(name: str | None) -> tuple[Path, str]:
 
 
 def profile_origin(how: str) -> str:
+    kind, _, detail = how.partition(":")
     return {"arg_path": tr("ruta indicada en --perfil", "path given in --profile"),
-            "env": tr("variable INGENIERO_DATOS", "INGENIERO_DATOS variable"),
-            "sibling": tr("carpeta hermana ingeniero-agentico-datos", "sibling folder ingeniero-agentico-datos"),
-            "template": tr("plantilla (no hay perfil de empresa)", "template (no company profile)")}[how]
+            "env": tr(f"variable {detail}", f"{detail} variable"),
+            "sibling": tr(f"carpeta hermana {detail}", f"sibling folder {detail}"),
+            "template": tr("plantilla (no hay perfil de empresa)", "template (no company profile)")}[kind]
 
 
 def is_template(path: Path) -> bool:
@@ -1553,6 +1568,29 @@ def run_test() -> int:
               f"Excel sheets (en): {wb.sheetnames}")
         check(all(x["text"].startswith("ASSUMPTION · ") for x in o6["assumptions"]) and o6["pv_difference"] == out["pv_difference"],
               "en: marker ASSUMPTION, same figures")
+
+    print("7. Profile lookup: $METHODIC_DATA · legacy $INGENIERO_DATOS · ../methodic-data · legacy sibling")
+    saved_env = {v: os.environ.pop(v) for v in ENV_DATA if v in os.environ}
+    saved_root = REPO_ROOT
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            globals()["REPO_ROOT"] = Path(tmp) / "lookup" / "repo"
+            for folder, var, how in (("ingeniero-agentico-datos", None, "sibling:ingeniero-agentico-datos"),
+                                     ("methodic-data", None, "sibling:methodic-data"),
+                                     ("env-old", "INGENIERO_DATOS", "env:INGENIERO_DATOS"),
+                                     ("env-new", "METHODIC_DATA", "env:METHODIC_DATA")):
+                d = Path(tmp) / "lookup" / folder / "profiles"
+                d.mkdir(parents=True)
+                (d / "co.yaml").write_text("language: es\n", encoding="utf-8")
+                if var:
+                    os.environ[var] = str(Path(tmp) / "lookup" / folder)
+                got = find_profile("co")
+                check(got == (d / "co.yaml", how), f"profile «co» found through {how} ({profile_origin(got[1])})")
+        finally:
+            globals()["REPO_ROOT"] = saved_root
+            for v in ENV_DATA:
+                os.environ.pop(v, None)
+            os.environ.update(saved_env)
     _LANG = "es"
     print("OK" if not failures else f"FAIL ({len(failures)})")
     return 0 if not failures else 1
@@ -1562,7 +1600,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Financial evaluation: cash, loan, leasing or rental.")
     ap.add_argument("--case", dest="case", help="case JSON (see templates/case.json); Spanish keys are accepted")
     ap.add_argument("--project", dest="project", help="pure project flow: economic-evaluation output JSON, or CSV/JSON with year and flow")
-    ap.add_argument("--profile", dest="profile", help="profile name (looked up in INGENIERO_DATOS and ../ingeniero-agentico-datos) or path")
+    ap.add_argument("--profile", dest="profile", help="profile name (looked up in METHODIC_DATA and ../methodic-data; the legacy names are still read) or path")
     ap.add_argument("--rate", dest="rate", type=float, help="annual discount rate (required if the profile does not have it)")
     ap.add_argument("--tax", dest="tax", type=float, help="income tax rate (required if the profile does not have it)")
     ap.add_argument("--out", dest="out", help="output folder (default <case folder>/salidas, or /outputs with language en)")

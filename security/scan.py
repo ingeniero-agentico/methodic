@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Security scanner for ingeniero-agentico. Standard library only.
+"""Security scanner for methodic. Standard library only.
 
 Usage:
     python security/scan.py [PATH ...] [--root DIR] [--json] [--staged] [--all-files]
@@ -26,7 +26,8 @@ Which files: inside a git work tree, the tracked files plus untracked files that
 staged version of the staged files (the pre-commit hook). Explicit PATHs restrict the scan.
 
 The private denylist (one term per line, # comments) is read from --denylist, else
-$INGENIERO_DATOS/security/denylist.txt, else <root>/../ingeniero-agentico-datos/security/denylist.txt.
+$METHODIC_DATA (then the legacy $INGENIERO_DATOS)/security/denylist.txt, else the sibling data folder
+<root>/../methodic-data/security/denylist.txt (then the legacy ../ingeniero-agentico-datos/).
 It never lives in the repo; a denylist file inside the scanned tree is itself a HIGH finding.
 
 Exceptions: security/allowlist.json (rule, path glob, optional match, mandatory reason).
@@ -57,7 +58,8 @@ DEFAULT_ROOT = HERE.parent
 POLICY_FILE = HERE / "policy.json"
 ALLOWLIST_FILE = HERE / "allowlist.json"
 DENYLIST_REL = Path("security") / "denylist.txt"
-DATA_DIR_NAME = "ingeniero-agentico-datos"
+DATA_DIR_NAMES = ("methodic-data", "ingeniero-agentico-datos")   # current, then the legacy name
+DATA_ENV_VARS = ("METHODIC_DATA", "INGENIERO_DATOS")                # current, then the legacy name
 SEVERITIES = ("HIGH", "MEDIUM", "LOW")
 
 for _stream in (sys.stdout, sys.stderr):
@@ -152,7 +154,7 @@ RULES: dict[str, tuple[str, str]] = {
     "file-env": ("HIGH", ".env file"),
     "file-key": ("HIGH", "key or certificate file (.pem, .key, .pfx, .p12, id_rsa...)"),
     "file-office": ("HIGH", "xlsx / xls / pdf / zip / docx outside documented fixtures"),
-    "file-private-folder": ("HIGH", "private data folder (ingeniero-agentico-datos/, context/, contexto/, datos-privados/, *.privado.*)"),
+    "file-private-folder": ("HIGH", "private data folder (methodic-data/, ingeniero-agentico-datos/, context/, contexto/, datos-privados/, *.privado.*)"),
     "file-private-profile": ("HIGH", "company profile other than the template in profiles/"),
     "file-generated": ("HIGH", "__pycache__ / .pyc / .pyo"),
     "config-allowlist": ("HIGH", "allowlist entry without a reason or malformed"),
@@ -311,7 +313,7 @@ OFFICE_EXT = {".xlsx", ".xlsm", ".xls", ".pdf", ".zip", ".docx", ".doc", ".pptx"
 KEY_EXT = {".pem", ".key", ".pfx", ".p12", ".jks", ".keystore", ".ppk", ".asc", ".gpg", ".kdbx"}
 KEY_NAMES = {"id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", ".netrc", ".git-credentials", ".npmrc", ".pypirc",
              "credentials.json", ".credentials.json", "denylist.txt"}
-PRIVATE_DIRS = {DATA_DIR_NAME, "context", "contexto", "datos-privados", "private-data", "cases", "casos"}
+PRIVATE_DIRS = {*DATA_DIR_NAMES, "context", "contexto", "datos-privados", "private-data", "cases", "casos"}
 GENERATED = {"__pycache__"}
 MAX_TEXT_BYTES = 3_000_000
 
@@ -1065,11 +1067,12 @@ def load_json(path: Path, default):
 def find_denylist(root: Path, explicit: str | None) -> Path | None:
     if explicit:
         return Path(explicit)
-    env = os.environ.get("INGENIERO_DATOS", "").strip()
     candidates = []
-    if env:
-        candidates.append(Path(env).expanduser() / DENYLIST_REL)
-    candidates.append(root.resolve().parent / DATA_DIR_NAME / DENYLIST_REL)
+    for var in DATA_ENV_VARS:
+        env = os.environ.get(var, "").strip()
+        if env:
+            candidates.append(Path(env).expanduser() / DENYLIST_REL)
+    candidates += [root.resolve().parent / name / DENYLIST_REL for name in DATA_DIR_NAMES]
     for c in candidates:
         if c.is_file():
             return c
@@ -1270,13 +1273,13 @@ def print_report(ctx: Context, deny_path: Path | None, show_low: bool, hook: boo
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Security scanner for ingeniero-agentico (stdlib only).")
+    ap = argparse.ArgumentParser(description="Security scanner for methodic (stdlib only).")
     ap.add_argument("paths", nargs="*", help="restrict the scan to these files or folders (inside --root)")
     ap.add_argument("--root", default=str(DEFAULT_ROOT), help="repo root (default: the folder above security/)")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--staged", action="store_true", help="scan the staged version of staged files (pre-commit)")
     ap.add_argument("--all-files", action="store_true", help="walk every file instead of asking git")
-    ap.add_argument("--denylist", help="private denylist file (default: $INGENIERO_DATOS or sibling data folder)")
+    ap.add_argument("--denylist", help="private denylist file (default: $METHODIC_DATA, $INGENIERO_DATOS or the sibling data folder)")
     ap.add_argument("--no-denylist", action="store_true", help="do not load the private denylist")
     ap.add_argument("--show-low", action="store_true", help="also print LOW findings")
     ap.add_argument("--hook", action="store_true", help="hook mode: short hint when blocking")
@@ -1408,12 +1411,13 @@ def _seed(base: Path) -> tuple[dict[str, list[str]], Path]:
     exp("docs/private.md", "private-rut", "private-plate", "private-email", "private-phone", "private-user-path",
         "private-denylist")
     for rel in (".env", "keys/server.pem", "keys/app.pfx", "data/report.xlsx", "data/doc.pdf", "data/a.zip",
-                "context/MAP.md", "ingeniero-agentico-datos/x.txt", "skills/evil/__pycache__/m.cpython-311.pyc",
+                "context/MAP.md", "methodic-data/x.txt", "ingeniero-agentico-datos/x.txt", "skills/evil/__pycache__/m.cpython-311.pyc",
                 "profiles/realco.yaml", ".mcp.json"):
         w(rel, b"x\n")
     for rel, rule in ((".env", "file-env"), ("keys/server.pem", "file-key"), ("keys/app.pfx", "file-key"),
                       ("data/report.xlsx", "file-office"), ("data/doc.pdf", "file-office"),
                       ("data/a.zip", "file-office"), ("context/MAP.md", "file-private-folder"),
+                      ("methodic-data/x.txt", "file-private-folder"),
                       ("ingeniero-agentico-datos/x.txt", "file-private-folder"),
                       ("skills/evil/__pycache__/m.cpython-311.pyc", "file-generated"),
                       ("profiles/realco.yaml", "file-private-profile"), (".mcp.json", "agent-autorun-config")):
@@ -1528,6 +1532,33 @@ def self_test() -> int:
         print(f"  {'ok  ' if ok else 'FAIL'} denylist inside the scanned tree is reported")
         if not ok:
             failures.append("denylist-in-repo not reported")
+        # denylist lookup: $METHODIC_DATA · $INGENIERO_DATOS · ../methodic-data · ../ingeniero-agentico-datos
+        saved = {v: os.environ.pop(v) for v in DATA_ENV_VARS if v in os.environ}
+        try:
+            fake_root = tmp / "lookup" / "repo"
+            fake_root.mkdir(parents=True)
+            spots = {}
+            for name in ("ingeniero-agentico-datos", "methodic-data", "env-old", "env-new"):
+                spots[name] = tmp / "lookup" / name / DENYLIST_REL
+                spots[name].parent.mkdir(parents=True)
+                spots[name].write_text("zzz term\n", encoding="utf-8")
+            steps = []
+            spots["methodic-data"].unlink()
+            steps.append((find_denylist(fake_root, None), spots["ingeniero-agentico-datos"], "legacy sibling"))
+            spots["methodic-data"].write_text("zzz term\n", encoding="utf-8")
+            steps.append((find_denylist(fake_root, None), spots["methodic-data"], "methodic-data sibling"))
+            os.environ["INGENIERO_DATOS"] = str(tmp / "lookup" / "env-old")
+            steps.append((find_denylist(fake_root, None), spots["env-old"], "legacy $INGENIERO_DATOS"))
+            os.environ["METHODIC_DATA"] = str(tmp / "lookup" / "env-new")
+            steps.append((find_denylist(fake_root, None), spots["env-new"], "$METHODIC_DATA"))
+            ok = all(got is not None and got.resolve() == want.resolve() for got, want, _ in steps)
+            print(f"  {'ok  ' if ok else 'FAIL'} denylist lookup order: " + " < ".join(s[2] for s in steps))
+            if not ok:
+                failures.append("denylist lookup order (methodic and legacy names)")
+        finally:
+            for v in DATA_ENV_VARS:
+                os.environ.pop(v, None)
+            os.environ.update(saved)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     # the real repo: zero HIGH expected (only a warning while the translation is in progress)

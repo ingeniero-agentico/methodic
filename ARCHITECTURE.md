@@ -1,7 +1,9 @@
 # Architecture · how a task is orchestrated
 
-Version 2.1 (15-10-2026). Replaces the `orquestador` agent of v1. English since v1.1 (names in
-the table at the end).
+Version 3.0 (16-10-2026, methodic). The documenter is the way in: methodic first understands the
+business by asking, writes it down as a traceable manual and only then calculates or intervenes.
+The engineering methods are its tools. The manual's format is in `docs/MANUAL-FORMAT.md`.
+Replaces version 2.1 (15-10-2026, six stages, methods first).
 
 ## The constraint that rules
 
@@ -11,16 +13,29 @@ In Claude Code **an agent cannot launch other agents**. That is why:
   only one that can launch agents.
 - The **agents are workers** (`agents/`): each one does one stage, with its skills and its model.
 
-## The six stages
+## The stages
 
 | # | Stage | Who | Model | Reads | Leaves |
 |---|---|---|---|---|---|
-| 0 | Map the context | agent `cartographer` + skill `map-context` | economical | the task's folders | `context/MAP.md` + `context/graph.json` + `context/fingerprints.json` + `context/changes.json` |
-| 1 | Research | agent `researcher` + skill `research` | strong | the map and the gaps | `context/RESEARCH.md` + `context/research-data.json` (each datum with source, date and reliability) |
-| 2 | Plan and ask | skill `orchestrate` | the session's | map + research | `context/PLAN.md`; **it is shown to the person and waits for their yes** |
-| 3 | Execute | agent `executor` (one per method, in parallel if they do not depend on each other) | per the plan | the plan and its input | the method's output in `cases/` + `context/runs/<id>.json` |
-| 4 | Audit | agent `auditor` (read-only) | strong | inputs, scripts and outputs | `context/AUDIT.md` (re-runs each script and compares) |
-| 5 | Consolidate | skill `orchestrate` | the session's | everything above | the answer: decision, deciding assumptions, where it was left, what is missing |
+| 0 | Understand the task | skill `orchestrate` | the session's | the manual's index, if there is one | the route (document, intervene, calculate) |
+| 1 | Map the context | agent `cartographer` + skill `map-context` | economical | the task's folders inside the scope | `context/MAP.md` + `context/graph.json` + `context/fingerprints.json` + `context/changes.json` |
+| 2 | Interview | skill `interview`, in the main conversation | the session's | the index (to not ask twice) | the interview record, gaps with date, `alcance.yaml` / `scope.yaml` |
+| 3 | Research | agent `researcher` + skill `research` (only for gaps that need outside data) | strong | the map and the gaps | `context/RESEARCH.md` + `context/research-data.json` |
+| 4 | Document | skill `manual` | the session's | record, documents, research | the index and process pages; `manual.py check` passes; the operator approves |
+| 5 | Plan and ask | skill `orchestrate` | the session's | manual + map + research | `context/PLAN.md`; **it is shown to the person and waits for their yes** |
+| 6 | Execute and audit | agent `executor` per method + agent `auditor`; skill `intervene` in the main conversation | per the plan | the plan and its input | the method's output in `cases/` + `context/runs/<id>.json` + `context/AUDIT.md`; one logbook line per intervention |
+| 7 | Consolidate | skill `orchestrate` | the session's | everything above | the answer (≤ 150 words) and the lesson written into the manual |
+
+**An intervention is never delegated.** The OK has to come from the person, one OK per action, so
+`intervene` always runs in the main conversation: plan → OK → backup → execute → verify → logbook.
+Without a scope (interview round 3) nothing on the operator's computer is touched.
+
+## The manual is the memory
+
+Each session starts by reading the manual's index (≤ 400 words) and the one process the task
+touches (≤ 800 words), not by asking again. `manual.py check` measures those caps and the
+traceability (a code per step, a source per step, status and revision, history). What a session
+learns is written back with `manual.py revise` before closing. Details: `docs/MANUAL-FORMAT.md`.
 
 ## Two modes, depending on what is already known
 
@@ -30,8 +45,9 @@ file) and the unread changes in `changes.json` with the disk. The model does not
 | | First run (`first-run`) | Reread (`reread`) |
 |---|---|---|
 | When | There is no map, or the scope is new, or too much changed | There is a map and the fingerprints barely changed |
-| Stage 0 | Full map | Only the files that changed |
-| Stage 1 | Full research of the gaps | Skipped, unless the plan declares a new gap |
+| Map (1) | Full map | Only the files that changed |
+| Interview (2) | All three rounds | Only what the manual's index does not answer |
+| Research (3) | Full research of the gaps | Skipped, unless the plan declares a new gap |
 | Reading | The source files | `MAP.md` (≤ 3,000 words) + its **core** (max. 3 files) + the ones that changed |
 | Models | Strong in research and audit | Economical everywhere except the audit |
 | For whom | Whoever arrives at a topic and researches it for the first time | Whoever returns to the same topic with a bounded budget |
@@ -47,7 +63,7 @@ rule: the old list stays out and the current one gets in.
 Changes accumulate in `context/changes.json` until `orchestrate` marks them read when
 consolidating: two runs of the cartographer in a row do not erase what nobody read.
 
-## The request (stage 2)
+## The request (stage 5)
 
 No agent is launched without the person approving the plan. The plan is a table:
 
@@ -62,8 +78,9 @@ plus the mode, the number of agents and a rough cost estimate (agents × model).
 
 Next to the task's data, never in the public repo:
 `<data>/cases/<case>/context/`, or `<task folder>/context/` if there is no data folder. The data
-folder is `ingeniero-agentico-datos/` (or `INGENIERO_DATOS`); the scripts look in `profiles/` then
-`perfiles/`, and in `cases/` then `casos/`.
+folder is `methodic-data/` (or `METHODIC_DATA`); the legacy `ingeniero-agentico-datos/` and
+`INGENIERO_DATOS` are still read. The scripts look in `profiles/` then `perfiles/`, and in
+`cases/` then `casos/`. The manual lives in `<data>/manual/<company>/`.
 
 ## One research format (read by `research`, `executor` and `auditor`)
 

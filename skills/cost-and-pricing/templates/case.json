@@ -2,7 +2,7 @@
   "_help": "Empty cost-and-pricing template. Delete the keys that start with _ if you want; the script ignores them. Net amounts, without value added tax. Spanish keys (compras, tipos_de_cambio, precio_unit, factor_unidad, recargo, equilibrio, supuestos...) are still accepted.",
   "case": "",
   "profile": "",
-  "_profile": "Profile name (looks for <name>.yaml in INGENIERO_DATOS and ../ingeniero-agentico-datos, profiles/ then perfiles/) or a path. Empty = the only profile found there, or the repo template, and then everything taken from it is an assumption. --profile on the command line overrides this field.",
+  "_profile": "Profile name (looks for <name>.yaml in METHODIC_DATA and ../methodic-data, profiles/ then perfiles/; the legacy INGENIERO_DATOS and ../ingeniero-agentico-datos are still read) or a path. Empty = the only profile found there, or the repo template, and then everything taken from it is an assumption. --profile on the command line overrides this field.",
 
   "global_markup": null,
   "_global_markup": "Markup ON COST for items without their own: 0.30 = cost × 1.30. null = the profile's (pricing.default_markup).",

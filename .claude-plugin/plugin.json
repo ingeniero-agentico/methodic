@@ -1,17 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "ingeniero-agentico",
-  "displayName": "Ingeniero agéntico",
-  "version": "1.1.3",
-  "description": "Industrial engineering methods as agent skills: procurement, cost and pricing, economic and financial evaluation, plus orchestrate, map-context, research and audit. Every number comes from a script with a test that must match; the company's data lives outside the plugin. Guides in English and Spanish.",
+  "name": "methodic",
+  "displayName": "methodic",
+  "version": "2.0.0",
+  "description": "methodic: interviews a business, writes a traceable manual of its processes and intervenes on the operator's computer only with backup and OK. Industrial engineering methods (procurement, cost and pricing, economic and financial evaluation) are its tools; every number comes from a script with a test. The company's data lives outside the plugin. Guides in English and Spanish.",
   "author": {
     "name": "camiloalonsomerino-spec",
     "url": "https://github.com/camiloalonsomerino-spec"
   },
-  "homepage": "https://github.com/ingeniero-agentico/ingeniero-agentico",
-  "repository": "https://github.com/ingeniero-agentico/ingeniero-agentico",
+  "homepage": "https://github.com/ingeniero-agentico/methodic",
+  "repository": "https://github.com/ingeniero-agentico/methodic",
   "license": "MIT AND CC-BY-SA-4.0",
   "keywords": [
+    "documentation",
+    "process-manual",
+    "sop",
     "industrial-engineering",
     "procurement",
     "costing",
@@ -31,7 +34,7 @@
     "data": {
       "type": "string",
       "title": "Data folder (optional)",
-      "description": "Absolute path to ingeniero-agentico-datos (the one with profiles/ and cases/). Empty: the server uses INGENIERO_DATOS or the temp folder.",
+      "description": "Absolute path to the data folder methodic-data (the one with profiles/ and cases/). Empty: the server uses METHODIC_DATA (or the legacy INGENIERO_DATOS), then the sibling folder ../methodic-data (or the legacy ../ingeniero-agentico-datos), else the temp folder.",
       "default": ""
     },
     "roots": {
@@ -42,12 +45,12 @@
     }
   },
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "command": "${user_config.python}",
       "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.py"],
       "env": {
-        "INGENIERO_DATOS": "${user_config.data}",
-        "INGENIERO_MCP_ROOTS": "${user_config.roots}"
+        "METHODIC_DATA": "${user_config.data}",
+        "METHODIC_MCP_ROOTS": "${user_config.roots}"
       }
     }
   }

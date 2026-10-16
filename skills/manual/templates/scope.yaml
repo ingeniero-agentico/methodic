@@ -1,0 +1,18 @@
+# Scope of the computer · the only limits the scripts read (docs/MANUAL-FORMAT.md).
+# Filled in with the operator during the third interview round. Absolute paths, with /.
+# Anything not under `read` is out of scope. The manual's own work/ folder is always usable.
+
+read:              # folders methodic may read
+#  - C:/Users/usuario/Documents/Company
+
+write_with_ok:     # folders where a file may be changed, with backup and OK each time
+#  - C:/Users/usuario/Documents/Company/Spreadsheets
+
+never:             # never read nor touched, even inside read
+#  - C:/Users/usuario/Documents/Company/Payroll
+
+sensitive:         # kinds of data to treat with care (free text)
+#  - staff tax IDs and salaries
+
+ok_by:             # roles that may give the OK for an intervention (empty: any role, with a warning)
+#  - owner

@@ -10,7 +10,7 @@ del script y se hacen a mano: **leer las cotizaciones** (paso 1) y **emitir las 
 
 ## 0 · El perfil de la empresa
 
-Copia `profiles/_template.yaml` a `ingeniero-agentico-datos/profiles/<empresa>.yaml` y llena al
+Copia `profiles/_template.yaml` a `methodic-data/profiles/<empresa>.yaml` y llena al
 menos `moneda`, `decimales_moneda`, `iva` y `compras.desempate`. Sin perfil, el script usa la
 plantilla y marca todo como `SUPUESTO`: sirve para probar, no para comprar.
 

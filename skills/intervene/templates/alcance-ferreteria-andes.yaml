@@ -1,0 +1,19 @@
+# Scope of the computer · Ferretería Andes (fictitious example)
+# Contract: docs/MANUAL-FORMAT.md, "The scope". It lives in the operator's data folder as
+# <data>/manual/<company>/alcance.yaml (scope.yaml with `language: en`), never in this repo.
+# Written with the operator in the third interview round. Absolute paths only.
+# The manual's own work folder (trabajo/) is always writable without asking; it is not listed here.
+
+read:              # folders methodic may read
+  - C:/Users/usuario/Documents/FerreteriaAndes
+write_with_ok:     # folders where a file may be changed, with plan, OK and backup each time
+  - C:/Users/usuario/Documents/FerreteriaAndes/Planillas
+never:             # never read nor touched, even inside read
+  - C:/Users/usuario/Documents/FerreteriaAndes/Sueldos
+  - C:/Users/usuario/Documents/FerreteriaAndes/Bancos
+sensitive:         # kinds of data to treat with care (free text)
+  - RUT y sueldos del personal
+  - datos bancarios de clientes y proveedores
+ok_by:             # roles that may give the OK for an intervention (log --ok warns for any other)
+  - dueña
+  - encargado de compras

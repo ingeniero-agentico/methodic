@@ -73,7 +73,8 @@ and so do Spanish case keys (`activo`, `alternativas`, `valor`, `supuesto`...) a
 (`credito`, `francesa`, `una_cuota`, `instantanea`).
 
 The profile is found in this order: path given in `--profile` (or the case `profile` field) ·
-`$INGENIERO_DATOS/profiles/<company>.yaml` (then `perfiles/`) · `../ingeniero-agentico-datos/`
+`$METHODIC_DATA/profiles/<company>.yaml` (then `perfiles/`), then the legacy `$INGENIERO_DATOS` ·
+`../methodic-data/`, or the legacy `../ingeniero-agentico-datos/` when the new one does not exist
 (same two folders) · the repo template `profiles/_template.yaml` (fallback
 `perfiles/_plantilla.yaml`), and then everything comes out as an assumption.
 

@@ -50,24 +50,24 @@ are gone from the tool list; the server still translates the old argument names 
 
 ### Resources
 
-The `SKILL.md`, `GUIDE.md` and `GUIA.md` of each skill, with URIs `ingeniero://skills/<method>/SKILL.md`,
-`ingeniero://skills/<method>/GUIDE.md` and `ingeniero://skills/<method>/GUIA.md` (`resources/list`,
-`resources/read`).
+The `SKILL.md`, `GUIDE.md` and `GUIA.md` of each skill, with URIs `methodic://skills/<method>/SKILL.md`,
+`methodic://skills/<method>/GUIDE.md` and `methodic://skills/<method>/GUIA.md` (`resources/list`,
+`resources/read`). The legacy `ingeniero://` URIs are still read.
 
 ## Where the outputs go
 
 The data folder is found in the same order the scripts use:
 
 1. `--data <folder>` when launching the server;
-2. the `INGENIERO_DATOS` environment variable;
-3. the sibling folder `../ingeniero-agentico-datos/`.
+2. the `METHODIC_DATA` environment variable, then the legacy `INGENIERO_DATOS`;
+3. the sibling folder `../methodic-data/`, then the legacy `../ingeniero-agentico-datos/`.
 
 Each run lands in `<base>/<case>/<method>-<YYYYMMDD-HHMMSS>-<id>/`, with `input.json` and whatever
 the script wrote. The base is, in order:
 
 1. `--work <folder>`, if given;
 2. `<data>/cases/` (or the older `<data>/casos/` if that is the one that exists), if there is a data folder;
-3. `<user temp>/ingeniero-agentico-mcp/`.
+3. `<user temp>/methodic-mcp/`.
 
 **Never inside the repo.** The server refuses to start if the work folder falls inside the repo.
 
@@ -76,8 +76,9 @@ the script wrote. The base is, in order:
 - **Paths.** Every path that arrives in an argument must be absolute, cannot contain `..` and must
   fall inside an allowed root:
   - it can **read** from the repo, the data folder, the work folder and the extra roots
-    (`--root <folder>`, repeatable, or `INGENIERO_MCP_ROOTS` with folders separated by `;` on
-    Windows or `:` on macOS and Linux; the 1.0 name `INGENIERO_MCP_RAICES` still works);
+    (`--root <folder>`, repeatable, or `METHODIC_MCP_ROOTS` with folders separated by `;` on
+    Windows or `:` on macOS and Linux; the legacy names `INGENIERO_MCP_ROOTS` and `INGENIERO_MCP_RAICES`
+    still work);
   - it can **write** to the same ones, except the repo.
 
   To map the folders of a task with `map_context`, those folders must be in a root. The input fields
@@ -143,8 +144,8 @@ block and the outputs will go to the temp folder.
 
 **On Windows:**
 
-- In JSON, write paths with forward slashes (`D:/projects/ingeniero-agentico`) or with a double
-  backslash (`D:\\projects\\ingeniero-agentico`).
+- In JSON, write paths with forward slashes (`D:/projects/methodic`) or with a double
+  backslash (`D:\\projects\\methodic`).
 - If `python` is not on the client's PATH (or opens the Microsoft Store), put the absolute path to
   `python.exe` in `command`, or use `"command": "py"` with `"args": ["-3", "<path-to-repo>/mcp/server.py"]`.
 
@@ -166,16 +167,16 @@ server the way the client would.
 ```json
 {
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "command": "python",
       "args": ["<path-to-repo>/mcp/server.py"],
-      "env": { "INGENIERO_DATOS": "<path-to-data>" }
+      "env": { "METHODIC_DATA": "<path-to-data>" }
     }
   }
 }
 ```
 
-Logs go to `%APPDATA%\Claude\logs\mcp-server-ingeniero-agentico.log` (macOS: `~/Library/Logs/Claude/`).
+Logs go to `%APPDATA%\Claude\logs\mcp-server-methodic.log` (macOS: `~/Library/Logs/Claude/`).
 Source: https://modelcontextprotocol.io/docs/develop/connect-local-servers
 
 ### Claude Code
@@ -183,14 +184,14 @@ Source: https://modelcontextprotocol.io/docs/develop/connect-local-servers
 By command (everything after `--` passes untouched to the server):
 
 ```
-claude mcp add --transport stdio --scope project ingeniero-agentico -- python <path-to-repo>/mcp/server.py
+claude mcp add --transport stdio --scope project methodic -- python <path-to-repo>/mcp/server.py
 ```
 
 - `--scope project` writes `.mcp.json` at the project root. `local` (the default) and `user`
   write to `~/.claude.json`.
-- To pass the data folder, add `--env INGENIERO_DATOS=<path-to-data>` before `--transport`. If the
+- To pass the data folder, add `--env METHODIC_DATA=<path-to-data>` before `--transport`. If the
   server name comes right after `--env`, the CLI reads it as another `KEY=value` pair.
-- `claude mcp list` shows the status and `claude mcp get ingeniero-agentico` the details. The first
+- `claude mcp list` shows the status and `claude mcp get methodic` the details. The first
   time it is used, a server from `.mcp.json` asks for approval in the interactive session.
 - `.mcp.json` accepts `${VAR}` and `${VAR:-default}`.
 - `.mcp.json` template: `mcp/examples/claude-code.mcp.json`.
@@ -198,11 +199,11 @@ claude mcp add --transport stdio --scope project ingeniero-agentico -- python <p
 ```json
 {
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "type": "stdio",
       "command": "python",
       "args": ["<path-to-repo>/mcp/server.py"],
-      "env": { "INGENIERO_DATOS": "<path-to-data>" }
+      "env": { "METHODIC_DATA": "<path-to-data>" }
     }
   }
 }
@@ -214,18 +215,18 @@ Source: https://code.claude.com/docs/en/mcp
 
 - File `~/.codex/config.toml`, or `.codex/config.toml` in a project marked as trusted.
 - Section `[mcp_servers.<name>]`.
-- By command: `codex mcp add ingeniero-agentico --env INGENIERO_DATOS=<path-to-data> -- python <path-to-repo>/mcp/server.py`.
+- By command: `codex mcp add methodic --env METHODIC_DATA=<path-to-data> -- python <path-to-repo>/mcp/server.py`.
 - Template: `mcp/examples/codex.config.toml`.
 
 ```toml
-[mcp_servers.ingeniero-agentico]
+[mcp_servers.methodic]
 command = "python"
 args = ["<path-to-repo>/mcp/server.py"]
 startup_timeout_sec = 20
 tool_timeout_sec = 300
 
-[mcp_servers.ingeniero-agentico.env]
-INGENIERO_DATOS = "<path-to-data>"
+[mcp_servers.methodic.env]
+METHODIC_DATA = "<path-to-data>"
 ```
 
 `tool_timeout_sec` is 60 by default; `map_context` over large folders can take longer, so the
@@ -241,11 +242,11 @@ Source: https://developers.openai.com/codex/mcp (redirects to https://learn.chat
 ```json
 {
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "type": "stdio",
       "command": "python",
       "args": ["<path-to-repo>/mcp/server.py"],
-      "env": { "INGENIERO_DATOS": "<path-to-data>" }
+      "env": { "METHODIC_DATA": "<path-to-data>" }
     }
   }
 }
@@ -257,7 +258,7 @@ Source: https://cursor.com/docs/context/mcp
 
 - File `~/.gemini/settings.json` (user) or `.gemini/settings.json` (project).
 - Key `mcpServers`. `timeout` is in milliseconds (600000 by default).
-- By command: `gemini mcp add -s user -e INGENIERO_DATOS=<path-to-data> ingeniero-agentico python <path-to-repo>/mcp/server.py`.
+- By command: `gemini mcp add -s user -e METHODIC_DATA=<path-to-data> methodic python <path-to-repo>/mcp/server.py`.
   The default scope is `project`. Server arguments that start with a hyphen go after `--`.
 - `/mcp` shows the status.
 - Template: `mcp/examples/gemini.settings.json`.
@@ -265,10 +266,10 @@ Source: https://cursor.com/docs/context/mcp
 ```json
 {
   "mcpServers": {
-    "ingeniero-agentico": {
+    "methodic": {
       "command": "python",
       "args": ["<path-to-repo>/mcp/server.py"],
-      "env": { "INGENIERO_DATOS": "<path-to-data>" },
+      "env": { "METHODIC_DATA": "<path-to-data>" },
       "timeout": 300000
     }
   }
@@ -288,21 +289,21 @@ Source: https://geminicli.com/docs/tools/mcp-server/ (the notice on that page sa
 
 ```yaml
 mcp_servers:
-  ingeniero-agentico:
+  methodic:
     command: "python"
     args: ["<path-to-repo>/mcp/server.py"]
     env:
-      INGENIERO_DATOS: "<path-to-data>"
+      METHODIC_DATA: "<path-to-data>"
     enabled: true
     timeout: 300          # seconds per tool call
     connect_timeout: 60   # seconds to start and list tools
 ```
 
 - By command:
-  `hermes mcp add ingeniero-agentico --command python --env INGENIERO_DATOS=<path-to-data> --args <path-to-repo>/mcp/server.py`.
+  `hermes mcp add methodic --command python --env METHODIC_DATA=<path-to-data> --args <path-to-repo>/mcp/server.py`.
   `--args` goes last, because it takes everything that follows.
-- `hermes mcp test ingeniero-agentico` tests the connection and `/reload-mcp` reloads the configuration.
-- Tools show up as `mcp__ingeniero_agentico__<tool>`.
+- `hermes mcp test methodic` tests the connection and `/reload-mcp` reloads the configuration.
+- Tools show up as `mcp__methodic__<tool>`.
 - The `protocol` key (`auto`, the default, `stateless` or `legacy`) picks the era. With `auto` it
   tries `initialize` first, and this server answers it.
 
@@ -323,15 +324,15 @@ defines `hermes mcp add`.
 | Hermes Agent | `%LOCALAPPDATA%\hermes\config.yaml` · `~/.hermes/config.yaml` | `hermes.config.yaml` | hermes-agent.nousresearch.com/docs/reference/mcp-config-reference |
 
 Any other MCP client with stdio works the same: command `python`, argument `<path-to-repo>/mcp/server.py`
-and, if needed, the `INGENIERO_DATOS` variable.
+and, if needed, the `METHODIC_DATA` variable.
 
 ## Server options
 
 | Option | What it does |
 |---|---|
-| `--data <folder>` | Data folder (`profiles/` and `cases/`). Wins over `INGENIERO_DATOS` and the sibling folder |
+| `--data <folder>` | Data folder (`profiles/` and `cases/`). Wins over `METHODIC_DATA` and the sibling folder |
 | `--work <folder>` | Where the runs go. Wins over the data folder |
-| `--root <folder>` | Extra read and write root (repeatable). Also `INGENIERO_MCP_ROOTS` |
+| `--root <folder>` | Extra read and write root (repeatable). Also `METHODIC_MCP_ROOTS` |
 | `--max-time <s>` | Maximum seconds per script run (300) |
 | `--max-response <n>` | Maximum characters of a response (40,000) |
 | `--check` | Shows the configuration, the tools and the resources, then exits |
@@ -342,7 +343,7 @@ are still accepted as hidden aliases.
 ## Known limits
 
 - **The default profile is chosen by the script.** Without `profile`, each script searches on its own
-  in `INGENIERO_DATOS` and in the sibling folder `../ingeniero-agentico-datos/`, even if the server
+  in `METHODIC_DATA` and in the sibling folder `../methodic-data/`, even if the server
   was launched with another `--data`. To avoid depending on that, pass `profile` explicitly.
 - **Roots are fixed when the server starts.** It does not use the client's *roots* (revision
   2026-07-28 deprecated them): a new folder is added with `--root` and restarting the server.

@@ -1,116 +1,127 @@
-# ingeniero-agentico
+# methodic
 
 [Read in English → README.md](README.md)
 
-Métodos de ingeniería industrial convertidos en **skills para agentes de IA**: cada método trae la
-skill que ejecuta el agente, la guía para una persona (`GUIA.md` en español, `GUIDE.md` en inglés),
-plantillas, el cálculo en un script y una prueba que tiene que cuadrar.
+**Un documentador metódico para agentes de IA.** methodic entiende cualquier negocio haciendo las
+preguntas pertinentes, deja lo aprendido en un **manual trazable** de sus procesos y recién
+entonces interviene en el computador del operador: con un plan, el OK del operador para cada
+acción, un respaldo y una línea en la bitácora. Los métodos de ingeniería industrial (compras,
+costos, evaluación de proyectos, financiamiento) son sus herramientas; cada número sale de un
+script con su prueba.
 
-Sirve para cualquier empresa. Los datos de cada empresa viven **fuera de este repo**, en un perfil
-propio (ver «Datos privados»).
+Sirve para cualquier empresa. Los datos y el manual de cada empresa viven **fuera de este repo**,
+en el computador del operador (ver «Datos privados»).
 
-## Métodos
-
-| Método | Qué resuelve | Estado |
-|---|---|---|
-| [procurement](skills/procurement/) | A quién comprar qué, cuando cada proveedor cubre solo una parte | v1 |
-| [cost-and-pricing](skills/cost-and-pricing/) | Cuánto cuesta de verdad un trabajo y a cuánto venderlo (recargo sobre el costo) | v1 |
-| [economic-evaluation](skills/economic-evaluation/) | Si un proyecto o inversión conviene: flujo de caja, VAN, TIR, sensibilidad | v1 |
-| [financial-evaluation](skills/financial-evaluation/) | Cómo financiarlo: crédito, leasing, arriendo o compra al contado | v1 |
-
-Los nombres de las skills quedaron en inglés desde la versión 1.1 (antes: `adquisiciones`,
-`costo-y-precio`, `evaluacion-economica`, `evaluacion-financiera`).
-
-Cada método se prueba con `python skills/<metodo>/scripts/<script>.py --test`: corre un caso
-ficticio cuyo resultado se calculó por un segundo camino, y termina en `OK` o falla.
-
-## Cómo se trabaja un encargo
+## Cómo funciona
 
 ```
-/new-task ¿me conviene comprar otra camioneta para arrendarla?
+/new-task perdemos un día a la semana comparando cotizaciones de proveedores
 ```
 
-La skill `orchestrate` lo lleva por seis etapas (detalle en [ARCHITECTURE.md](ARCHITECTURE.md)):
+1. **Entrevista.** Tandas de 3 a 4 preguntas con opciones, una tanda a la vez. «No sé» es una
+   respuesta válida: queda como hueco declarado con su fecha. Tres rondas: el negocio, el proceso
+   que duele y los límites (qué carpetas puede leer, qué no se toca nunca).
+2. **Documentación.** Cada proceso queda en una página: SIPOC arriba y pasos numerados abajo. Cada
+   paso tiene un código (`COMPRAS-03`), un responsable, una herramienta y **de dónde salió**
+   (entrevista, documento, observación o `SUPUESTO`). Estado, revisión e historial como cualquier
+   documento controlado. Un script lo verifica todo.
+3. **Intervención.** Plan → **tu OK para esa acción** → respaldo → ejecución → verificación con un
+   hecho → línea en la bitácora. Nunca borra, instala, sale a la red, envía ni paga: prepara, y la
+   persona envía. Un archivo de permisos generado desde tu alcance hace que Claude Code bloquee los
+   comandos habituales para eso, porque el texto de una skill por sí solo no obliga. Es una
+   barrera, no una jaula: tu revisión de cada plan sigue siendo el control principal.
+4. **Cálculo**, cuando un paso necesita números: el script del método calcula, un agente
+   independiente lo vuelve a correr y el resultado queda amarrado al paso del manual que lo pidió.
 
-1. **Cartografiar** (`map-context`): un agente barato hace el mapa de las carpetas que toca el encargo.
-2. **Investigar** (`research`): solo si faltan datos; cada dato con fuente, fecha y fiabilidad (A a D).
-3. **Planificar y pedir:** te muestra qué agentes lanzará, con qué skill y modelo. Espera tu sí.
-4. **Ejecutar:** un agente por método, en paralelo cuando no dependen entre sí.
-5. **Auditar** (`audit`): un agente independiente vuelve a correr cada cálculo y compara.
-6. **Consolidar:** una respuesta con la decisión, los supuestos que la deciden y qué falta.
+**Es barato de usar, con cualquier plan.** Una sesión carga el índice del manual (≤ 400 palabras)
+y el proceso que toca (≤ 800 palabras), no el manual completo ni una entrevista nueva. Lo que una
+sesión aprende se escribe antes de cerrar, así que la siguiente parte leyendo una página. Los
+tokens los paga la cuenta del agente del operador.
 
-**Dos modos.** La *primera vez* (`first-run`) sobre un tema se investiga y se mapea completo. Las
-siguientes son *relectura* (`reread`): se lee el mapa en vez de las carpetas, con modelos
-económicos. El modo lo decide la comparación de huellas de los archivos, no el modelo.
+## Skills
 
-## Cómo está ordenado
+| Skill | Qué hace |
+|---|---|
+| [orchestrate](skills/orchestrate/) | Lleva una tarea por las etapas; se parte aquí cuando no está claro por dónde |
+| [interview](skills/interview/) | Pregunta en tandas con opciones y registra respuestas y huecos |
+| [manual](skills/manual/) | Escribe el índice y las páginas de proceso y verifica topes y trazabilidad |
+| [intervene](skills/intervene/) | Cambia un archivo del operador solo mediante el ciclo seguro |
+| [map-context](skills/map-context/) | Mapea las carpetas de una tarea antes de leerlas |
+| [research](skills/research/) | Un dato externo por hueco, con fuente, fecha y confiabilidad |
+| [audit](skills/audit/) | Vuelve a correr cada cálculo y compara |
+| [procurement](skills/procurement/) | A quién comprarle qué, cuando cada proveedor cubre solo una parte |
+| [cost-and-pricing](skills/cost-and-pricing/) | Cuánto cuesta de verdad un trabajo y a cuánto venderlo (recargo sobre el costo) |
+| [economic-evaluation](skills/economic-evaluation/) | Si un proyecto conviene: flujo de caja, VAN, TIR, sensibilidad |
+| [financial-evaluation](skills/financial-evaluation/) | Cómo financiarlo: crédito, leasing, arriendo o contado |
+
+Cada skill con script se prueba con `python skills/<skill>/scripts/<script>.py --test`, que
+termina en `OK` o falla. `python security/run_tests.py` las corre todas.
+
+Las etapas, los modos y la carpeta `context/` están en [ARCHITECTURE.md](ARCHITECTURE.md); el
+formato del manual, en [docs/MANUAL-FORMAT.md](docs/MANUAL-FORMAT.md).
+
+## Cómo está organizado
 
 ```
-ingeniero-agentico/
-├── skills/        los métodos + orchestrate · map-context · research · audit
+methodic/
+├── skills/        documentador (interview · manual · intervene), orquestación y métodos
 ├── agents/        trabajadores de una etapa: cartographer · researcher · executor · auditor
 ├── commands/      /new-task
+├── docs/          formato del manual, instalación, servidor MCP
 ├── mcp/           servidor MCP: los métodos como herramientas para cualquier cliente MCP
 ├── install/       instalador para Codex, Cursor, Gemini CLI, Hermes y otros
+├── security/      escáner, manifiesto y pruebas que vigilan cada cambio
 ├── graph/         notas enlazadas método ↔ ramo ↔ patrón, para Obsidian y graphify
 └── profiles/      la plantilla del perfil de empresa (vacía)
 ```
 
-## Instalar
+## Instalación
 
-| Dónde | Cómo | Detalle |
+| Dónde | Cómo | Notas |
 |---|---|---|
-| Claude Code | `/plugin marketplace add ingeniero-agentico/ingeniero-agentico` y `/plugin install ingeniero-agentico@ingeniero-agentico` | Trae skills, agentes, `/new-task` y el servidor MCP |
-| Claude Code sin plugin | `python install/install.py --platform claude-code` | Skills, agentes y comandos en `~/.claude/` |
-| Claude Desktop / claude.ai | `python install/install.py --platform claude-desktop` y subir los ZIP en Customize | Sin agentes en el chat: `orchestrate` corre las etapas en secuencia |
-| Codex | `python install/install.py --platform codex` | Skills en `~/.agents/skills/`, agentes en TOML; lee `AGENTS.md` |
-| Cursor | `python install/install.py --platform cursor` | Skills y subagentes en `~/.cursor/`; lee `AGENTS.md` |
-| Gemini CLI | `python install/install.py --platform gemini` | Skills y subagentes en `~/.gemini/`; lee `GEMINI.md` → `AGENTS.md` |
-| Hermes Agent | `python install/install.py --platform hermes` | Skills en `HERMES_HOME/skills/`; delega con `delegate_task` |
-| Otros agentes con Agent Skills | `python install/install.py --platform agents` | Skills en `~/.agents/skills/`, en secuencia |
+| Claude Code | `/plugin marketplace add ingeniero-agentico/methodic` y `/plugin install methodic@methodic` | Trae skills, agentes, `/new-task` y el servidor MCP |
+| Claude Code sin el plugin | `python install/install.py --platform claude-code` | Skills, agentes y comandos en `~/.claude/` |
+| Claude Desktop / claude.ai | `python install/install.py --platform claude-desktop` y subir los ZIP en Personalizar | Sin agentes en el chat: las etapas corren en secuencia |
+| Codex | `python install/install.py --platform codex` | Lee `AGENTS.md` |
+| Cursor | `python install/install.py --platform cursor` | Lee `AGENTS.md` |
+| Gemini CLI | `python install/install.py --platform gemini` | Lee `GEMINI.md` → `AGENTS.md` |
+| Hermes Agent | `python install/install.py --platform hermes` | Delega con `delegate_task` |
+| Otros agentes Agent Skills | `python install/install.py --platform agents` | Skills en `~/.agents/skills/` |
 | Cualquier cliente MCP | `python mcp/server.py` en su configuración | Los métodos como herramientas |
 
-Paso a paso por plataforma en [docs/INSTALL.md](docs/INSTALL.md) (en inglés); el servidor MCP en
-[docs/MCP.md](docs/MCP.md). `python install/install.py --test` instala en un HOME temporal para cada
-plataforma y lo verifica sin tocar tu configuración. Las opciones en español de la versión 1.0
-(`--plataforma`, `--probar` y las demás) siguen funcionando.
+Paso a paso en [docs/INSTALL.md](docs/INSTALL.md); el servidor MCP en [docs/MCP.md](docs/MCP.md).
+Antes de dejar que methodic toque archivos, instala el archivo de permisos que `intervene` genera
+a partir de tu alcance (ver [skills/intervene/GUIA.md](skills/intervene/GUIA.md)).
 
 ## Datos privados
 
-Cada skill busca el perfil de la empresa en este orden:
+Todo lo de una empresa vive en una carpeta de datos fuera del repo, que se busca en este orden:
+`--data` / `--profile` · `METHODIC_DATA` · la carpeta hermana `../methodic-data/` (siguen
+funcionando las antiguas `INGENIERO_DATOS` y `../ingeniero-agentico-datos/`). Contiene:
 
-1. La ruta que se pasa con `--profile`.
-2. La ruta en la variable de entorno `INGENIERO_DATOS`.
-3. La carpeta hermana `../ingeniero-agentico-datos/`.
-4. Si no encuentra ninguna, trabaja con `profiles/_template.yaml` y te pide los datos que falten
-   (todo lo que completa sale marcado `SUPUESTO`).
+```
+methodic-data/
+├── profiles/<empresa>.yaml     moneda, impuestos, tasas, idioma
+├── manual/<empresa>/           el manual, el registro de la entrevista, el alcance, la bitácora y los respaldos
+└── cases/<caso>/               entradas, salidas y context/ de cada cálculo
+```
 
-Esa carpeta lleva `profiles/<empresa>.yaml` y `cases/<caso>/` (las carpetas antiguas `perfiles/` y
-`casos/` siguen sirviendo). **Nunca se sube a este repo.**
+**Nunca se sube a este repo.** El campo `language: es | en` del perfil fija el idioma de todo lo
+que lee una persona, `es` por defecto.
 
-El campo `language: es | en` del perfil fija el idioma de las salidas (rótulos del Excel, la marca
-`SUPUESTO` o `ASSUMPTION`, el texto de la consola). Por defecto es `es`, así que los casos armados
-con la versión 1.0 producen los mismos archivos. Las claves en español del perfil y de las
-entradas se siguen aceptando.
+## Lo que sigue
 
-## Próxima versión
-
-La versión 1.1 (esta rama) pasa el repo a inglés con el español al lado, y cierra los tres
-primeros puntos de la auditoría sobre casos reales (15-10-2026): `procurement` y `cost-and-pricing`
-reciben y devuelven supuestos, como los métodos de evaluación; un mismo formato de
-`research-data.json` entre `research`, `executor` y `auditor`; y el núcleo del mapa excluye un
-archivo que otro declara reemplazado («Reemplaza a»). Lo que queda:
-
-1. **Skills autosuficientes.** La plantilla de perfil dentro de cada skill, para que los scripts
+1. **Skills autónomas.** La plantilla del perfil dentro de cada skill, para que los scripts
    funcionen en claude.ai sin `--profile` y sin copiar nada fuera de la skill.
-2. **Probar dentro de Codex, Cursor y Gemini reales.** Hoy se verificó solo el formato instalado.
-3. **Regla de versiones al publicar.** Cada entrega sube `version` en `.claude-plugin/plugin.json`:
-   quien instaló el plugin no recibe cambios mientras la versión sea la misma.
+2. **Probado dentro de Codex, Cursor y Gemini reales.** Hoy solo se verificó el formato instalado.
+3. **El documentador en un negocio real**, de punta a punta: entrevista, manual aprobado por el
+   operador y una intervención con su línea en la bitácora.
 
-## De dónde sale
+## De dónde viene
 
-Cada método nace de ramos de Ingeniería Civil Industrial y de su uso en empresas reales. El
-`SOURCES.md` de cada método cita la bibliografía; el material de los cursos no se reproduce.
+Los métodos vienen de ramos de Ingeniería Civil Industrial y de su uso en empresas reales; el
+documentador, de documentar procesos reales de pymes. El `SOURCES.md` de cada skill cita la
+bibliografía; el material de los ramos no se reproduce.
 
 ## Licencia
 

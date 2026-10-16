@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""rerun.py · the mechanical half of the audit (stage 4 of ingeniero-agentico).
+"""rerun.py · the mechanical half of the audit (stage 4 of methodic).
 
 Runs a method's script again with the SAME input, but leaving the output in a temporary folder,
 and compares figure by figure what came out now against the archived output. It writes nothing

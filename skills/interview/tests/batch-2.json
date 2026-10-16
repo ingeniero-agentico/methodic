@@ -1,0 +1,10 @@
+{
+ "_case": "Ferretería Andes (fictitious). Batch 2 of round 1, answered by the salesperson (passed with --who vendedor). He does not know how prices are set: «No sé» becomes a gap with its date. neg-07 = the owner decides, so neg-09 (a head's limit) does not apply. neg-08 names two processes that hurt.",
+ "round": 1,
+ "answers": {
+  "neg-05": "No sé",
+  "neg-06": "6 a 20",
+  "neg-07": "El dueño o la dueña",
+  "neg-08": "Compras, Cobranza"
+ }
+}
