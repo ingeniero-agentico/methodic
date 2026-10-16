@@ -7,7 +7,7 @@ runs the method's script with the same Python that runs this server and returns 
 
 Usage:
     python mcp/server.py [--data <folder>] [--work <folder>] [--root <folder>]...
-                         [--max-time 300] [--max-response 400000]
+                         [--max-time 300] [--max-response 40000]
     python mcp/server.py --check      (prints the configuration and exits; does not speak MCP)
 
 Protocol: JSON-RPC 2.0, one message per line on stdin/stdout. It serves both eras:
@@ -46,7 +46,7 @@ REPO = HERE.parent
 SKILLS = REPO / "skills"
 
 NAME = "ingeniero-agentico"
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 SERVER_INFO = {"name": NAME, "title": "ingeniero-agentico · industrial engineering methods", "version": VERSION}
 
 MODERN_VERSIONS = ["2026-07-28"]
@@ -174,7 +174,7 @@ def inside(path: Path, root: Path) -> bool:
 # --------------------------------------------------------------------------------------------
 
 class Config:
-    def __init__(self, data=None, work=None, roots=(), max_time=300.0, max_response=400_000):
+    def __init__(self, data=None, work=None, roots=(), max_time=300.0, max_response=40_000):
         self.data, self.data_source = self._find_data(data)
         if work:
             self.work, self.destination = Path(work).expanduser().resolve(), "--work"
@@ -1064,7 +1064,7 @@ def main(argv=None):
     ap.add_argument("--raiz", dest="root", action="append", default=hidden, help=hidden)
     ap.add_argument("--max-time", type=float, default=300.0, help="maximum seconds per script run")
     ap.add_argument("--tiempo-max", dest="max_time", type=float, default=hidden, help=hidden)
-    ap.add_argument("--max-response", type=int, default=400_000, help="maximum characters of a response")
+    ap.add_argument("--max-response", type=int, default=40_000, help="maximum characters of a response")
     ap.add_argument("--max-respuesta", dest="max_response", type=int, default=hidden, help=hidden)
     ap.add_argument("--check", action="store_true", help="prints the configuration and the tools, then exits")
     ap.add_argument("--comprobar", dest="check", action="store_true", default=hidden, help=hidden)

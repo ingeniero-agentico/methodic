@@ -2,6 +2,15 @@
 
 All notable changes to this project. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.3] · 16-10-2026
+
+### Changed
+- The MCP server's default `--max-response` drops from 400,000 to 40,000 characters (about 10,000
+  tokens). Every tool call is paid by the operator's own model account, so a smaller cap keeps the
+  server usable on plans without large limits. The largest real output measured (an economic
+  evaluation) is about 26,500 characters, so normal results still arrive whole; a larger one
+  returns the path of its JSON instead.
+
 ## [1.1.2] · 15-10-2026
 
 ### Fixed

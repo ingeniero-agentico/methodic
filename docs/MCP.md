@@ -87,7 +87,7 @@ the script wrote. The base is, in order:
   closed. There is a maximum time per run (`--max-time`, 300 s by default); past it, the process is
   stopped. `notifications/cancelled` stops it too.
 - **Sizes.** The input and its files weigh at most 2 MB. A response has at most `--max-response`
-  characters (400,000 by default): if the JSON does not fit, its path is returned.
+  characters (40,000 by default, about 10,000 tokens): if the JSON does not fit, its path is returned.
 - **Text is data.** What the server reads from a file is returned as content; it is never interpreted
   as an instruction.
 - **Errors.** An unknown tool answers with the JSON-RPC error `-32602`. A badly given argument
@@ -333,7 +333,7 @@ and, if needed, the `INGENIERO_DATOS` variable.
 | `--work <folder>` | Where the runs go. Wins over the data folder |
 | `--root <folder>` | Extra read and write root (repeatable). Also `INGENIERO_MCP_ROOTS` |
 | `--max-time <s>` | Maximum seconds per script run (300) |
-| `--max-response <n>` | Maximum characters of a response (400,000) |
+| `--max-response <n>` | Maximum characters of a response (40,000) |
 | `--check` | Shows the configuration, the tools and the resources, then exits |
 
 The 1.0 flags (`--datos`, `--trabajo`, `--raiz`, `--tiempo-max`, `--max-respuesta`, `--comprobar`)

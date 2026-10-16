@@ -1,7 +1,7 @@
 # ingeniero-agentico · SHA-256 of every distributable file (CRLF normalised to LF in text files)
 # Regenerate after any change: python security/manifest.py write · check: python security/manifest.py verify
 4823b422b0f87b85635e54226879619d6bca3105a4eb14ef0a194bcf6e8e574f  .claude-plugin/marketplace.json
-2b41b3f60e3808823525f594314b6f2bba094b6deab85b3da014a10794ed2f69  .claude-plugin/plugin.json
+ed7c5cf5561101619a2bb80ac5f1c16ba81eb26701f42a2eb8b8912d78f17ac5  .claude-plugin/plugin.json
 fe9af1b8c938133a987ce5515ac3baca6f62612056ca381f7f35e8cc0c7a64ff  AGENTS.md
 0841a671da3dc0b291003d5f0525fa8cafc93b805e6efbfd022471071cd183f4  ARCHITECTURE.md
 f9d53cfb91241cdac558e1992402a03c6779be3b7e73fe2c402156a5b5a14e1e  agents/auditor.md
@@ -17,7 +17,7 @@ d77dd5302664535a6de29b8f07e3c5fdc655859d3147de501f96af851a89873f  mcp/examples/c
 8af1b9ae0d93c55840ab9e87a76f582a8802a8aff9bc6c3972b1f4614b559510  mcp/examples/cursor.mcp.json
 8ad47706180012a8216e2568bc9a7ef636c604694699d135d73607dd2fc5ec77  mcp/examples/gemini.settings.json
 1a25c397d11356dd23dd69784eca84b3dcdb04c7e2613fbea2fe9a8938841c9d  mcp/examples/hermes.config.yaml
-15e081017f284066644b778bd19adfda2c84967eaa2de09d2de88b2a693343a2  mcp/server.py
+c53d25018427e7a0b8795bd5e5fc7bb0fb2065d56b497a1e1eb65cbc21431865  mcp/server.py
 529f2a3ecc72164aedcb86319af18a1fd9e842b9e683e14388c2e6d6af04927b  mcp/test_server.py
 21dfb8412990a6ca71fb134d5ffcfdece5c817d726732dcf8f800ce2fd91ad33  profiles/_template.yaml
 45e4634b4ea62f4b08c3900da33de8479fd0fdadc3bc7c11fed7cce2115801e4  security/allowlist.json
